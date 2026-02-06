@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{PROJEKT_ID}}: {{PROJEKT_TITEL}} - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">{{EMOJI}}</div>
+                        <h1>{{PROJEKT_TITEL}}</h1>
+                        <p class="subtitle">Projekt {{PROJEKT_ID}}</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">{{SCHWIERIGKEIT}}</div>
+                            <div class="tech-badge">{{KATEGORIE}}</div>
+                        </div>
+                        <div class="tech-stack center mt-20">
+                            <!-- Komponenten-Badges -->
+                            {{KOMPONENTEN_BADGES}}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        {{LERNZIELE_LISTE}}
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>{{VORAUSSETZUNGEN}}</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Komponenten-Übersicht -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Was du brauchst</p>
+
+                    <div class="grid-2 mt-40">
+                        {{KOMPONENTEN_CARDS}}
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Theorie -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">{{THEORIE_TITEL}}</h2>
+                        </div>
+                    </div>
+
+                    {{THEORIE_INHALT}}
+                </div>
+
+                <!-- SLIDE 5: Schaltplan -->
+                <div class="slide">
+                    <h2>Schaltplan</h2>
+                    <p class="subtitle">Verbindungen auf dem Breadboard</p>
+
+                    <div class="card mt-40">
+                        <img src="img/schaltplan.png" alt="Schaltplan" style="width: 100%; border-radius: 12px;">
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Wichtige Verbindungen</h4>
+                        <ul>
+                            {{VERBINDUNGEN_LISTE}}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Code Schritt 1 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 1: {{CODE_STEP1_TITEL}}</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code>{{CODE_STEP1}}</code></pre></div>
+
+                    <p class="content mt-20">
+                        {{CODE_STEP1_ERKLAERUNG}}
+                    </p>
+                </div>
+
+                <!-- SLIDE 7: Code Schritt 2 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 2: {{CODE_STEP2_TITEL}}</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code>{{CODE_STEP2}}</code></pre></div>
+
+                    <p class="content mt-20">
+                        {{CODE_STEP2_ERKLAERUNG}}
+                    </p>
+                </div>
+
+                <!-- SLIDE 8: Code Schritt 3 (Fertig) -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 3: {{CODE_STEP3_TITEL}}</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code>{{CODE_STEP3}}</code></pre></div>
+
+                    <p class="content mt-20">
+                        {{CODE_STEP3_ERKLAERUNG}}
+                    </p>
+                </div>
+
+                <!-- SLIDE 9: Wokwi Demo -->
+                <div class="slide">
+                    <h2>Ausprobieren</h2>
+                    <p class="subtitle">Simulation in Wokwi</p>
+
+                    <div class="center mt-50">
+                        <div class="card card-dark">
+                            <h3>Wokwi Simulator</h3>
+                            <p class="mt-20">Öffne das Projekt im Browser und teste den Code:</p>
+                            <div class="mt-30">
+                                <a href="{{WOKWI_LINK}}" target="_blank" style="color: #0071e3; font-size: 20px; text-decoration: none;">
+                                    Projekt in Wokwi öffnen
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-40">
+                        <h4>So testest du</h4>
+                        <ul>
+                            <li>Klicke auf den grünen "Play"-Button</li>
+                            <li>Beobachte das Verhalten der Komponenten</li>
+                            <li>Ändere den Code und experimentiere</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Erweiterungen -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Challenges</div>
+                            <h2 class="no-margin">Erweiterungen</h2>
+                        </div>
+                    </div>
+
+                    <p class="subtitle">Probiere diese Aufgaben aus</p>
+
+                    <div class="grid-2 mt-40">
+                        {{ERWEITERUNGEN_CARDS}}
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">{{EMOJI}}</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du hast {{PROJEKT_TITEL}} erfolgreich abgeschlossen</p>
+
+                        <div class="grid-3 mt-50">
+                            {{ZUSAMMENFASSUNG_CARDS}}
+                        </div>
+
+                        <div class="card card-dark mt-50">
+                            <h3>Nächstes Projekt</h3>
+                            <p class="mt-10">{{NAECHSTES_PROJEKT}}</p>
+                            <div class="tech-stack center mt-20">
+                                <div class="tech-badge">{{NAECHSTES_PROJEKT_ID}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

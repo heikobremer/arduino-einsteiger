@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I08: IR-Fernbedienung - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">📡</div>
+                        <h1>IR-Fernbedienung</h1>
+                        <p class="subtitle">Projekt I08 - Infrarot-Empfaenger VS1838B</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Intermediate</div>
+                            <div class="tech-badge">VS1838B</div>
+                            <div class="tech-badge">IR-Remote</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>IR-Protokoll</strong> - NEC-Format mit 38 kHz Traegerfrequenz verstehen</li>
+                        <li><strong>IRremote Library</strong> - Bibliothek einbinden und konfigurieren</li>
+                        <li><strong>Codes dekodieren</strong> - Empfangene Tasten-Codes auswerten</li>
+                        <li><strong>switch-case</strong> - Verschiedene Tasten unterschiedlichen Aktionen zuordnen</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Beginner-Projekte abgeschlossen, Grundlagen der seriellen Kommunikation und switch-case bekannt</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Komponenten -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Was du brauchst</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">📡</div>
+                            <h4>VS1838B IR-Empfaenger</h4>
+                            <p>Miniatur-Infrarot-Empfaengermodul fuer 38 kHz modulierte IR-Signale. Demoduliert das Signal und gibt digitale Impulse aus.</p>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Frequenz:</strong> 38 kHz Traeger</p>
+                            <p style="font-size: 14px;"><strong>Reichweite:</strong> bis 18 Meter</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">📌</div>
+                            <h4>VS1838B Pinbelegung</h4>
+                            <ul style="font-size: 14px;" class="mt-10">
+                                <li><strong>Pin 1 (DAT)</strong> - Datenausgang (Signal)</li>
+                                <li><strong>Pin 2 (GND)</strong> - Masse</li>
+                                <li><strong>Pin 3 (VCC)</strong> - Versorgung 2.7V-5.5V</li>
+                            </ul>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Hinweis:</strong> In Wokwi heisst der Empfaenger "IR Receiver"</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>IR-Fernbedienung</h4>
+                        <p>In Wokwi ist eine virtuelle Fernbedienung integriert. Echte Fernbedienungen (TV, DVD, etc.) funktionieren meist mit dem NEC-Protokoll.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Theorie -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">Infrarot-Kommunikation</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Wie funktioniert IR?</h3>
+                            <ul class="mt-20">
+                                <li>Unsichtbares Licht bei 940nm Wellenlaenge</li>
+                                <li>38 kHz Traegerfrequenz gegen Stoerlicht</li>
+                                <li>Timing-basierte Kodierung (NEC-Protokoll)</li>
+                                <li>32 Bit pro Befehl: Adresse + Daten + Invers</li>
+                            </ul>
+
+                            <h3 class="mt-30">NEC-Protokoll Timing</h3>
+                            <ul class="mt-10" style="font-size: 14px;">
+                                <li><strong>Start:</strong> 9ms Burst + 4.5ms Pause</li>
+                                <li><strong>Bit 0:</strong> 562us Burst + 562us Pause</li>
+                                <li><strong>Bit 1:</strong> 562us Burst + 1687us Pause</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>NEC-Signalstruktur</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 12px;">
+   Start        32 Bit Daten         Ende
+┌─────────┐ ┌─────────────────────┐ ┌───┐
+│ 9ms+4.5ms │ │ Adresse + Command   │ │End│
+└─────────┘ └─────────────────────┘ └───┘
+
+   Bit 0          Bit 1
+┌───┐ ┌───┐   ┌───┐     ┌───┐
+│562│ │562│   │562│     │1687│
+└───┘ └───┘   └───┘     └───┘
+ Burst Pause   Burst    Pause
+            </pre></div>
+                            <p class="mt-20" style="font-size: 14px;"><strong>Vorteil:</strong> Traegerfrequenz filtert Sonnenlicht und Lampen aus</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Schaltplan -->
+                <div class="slide">
+                    <h2>Schaltplan</h2>
+                    <p class="subtitle">Verbindungen zum Arduino</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Wokwi-Aufbau</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 14px;">
+    Arduino Uno           VS1838B
+   ┌───────────┐        ┌───────┐
+   │           │        │ ┌───┐ │
+   │  5V ──────┼────────┼─┤VCC│ │
+   │           │        │ └───┘ │
+   │  Pin 7 ───┼────────┼─┤DAT│ │
+   │           │        │ └───┘ │
+   │  GND ─────┼────────┼─┤GND│ │
+   │           │        │ └───┘ │
+   └───────────┘        └───────┘
+            </pre></div>
+                        </div>
+                        <div class="card card-info">
+                            <h4>Wichtige Verbindungen</h4>
+                            <ul class="mt-20">
+                                <li><strong>VS1838B VCC</strong> → Arduino 5V</li>
+                                <li><strong>VS1838B DAT</strong> → Arduino Pin 7</li>
+                                <li><strong>VS1838B GND</strong> → Arduino GND</li>
+                            </ul>
+
+                            <h4 class="mt-30">Wokwi-Fernbedienung</h4>
+                            <p style="font-size: 14px;">Klicke in der Simulation auf die Fernbedienung und druecke die Tasten - die Codes werden sofort gesendet!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Code Schritt 1 - Library -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 1: Library einbinden</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 1: IRremote-Library einbinden</span>
+
+<span class="keyword">#include</span> <span class="string">&lt;IRremote.h&gt;</span>
+
+<span class="comment">// IR-Empfaenger an Pin 7</span>
+<span class="keyword">#define</span> IR_PIN <span class="number">7</span>
+
+<span class="keyword">void</span> setup() {
+    Serial.begin(<span class="number">9600</span>);
+
+    <span class="comment">// IR-Empfaenger initialisieren</span>
+    IrReceiver.begin(IR_PIN, ENABLE_LED_FEEDBACK);
+
+    Serial.println(<span class="string">"Warte auf IR-Signale..."</span>);
+}
+
+<span class="keyword">void</span> loop() {
+    <span class="comment">// Wird gleich gefuellt...</span>
+}</code></pre></div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Erklaerung</h4>
+                            <ul style="font-size: 16px;">
+                                <li><code>#include &lt;IRremote.h&gt;</code> - Bindet die IR-Bibliothek ein</li>
+                                <li><code>IrReceiver.begin()</code> - Startet den Empfaenger</li>
+                                <li><code>ENABLE_LED_FEEDBACK</code> - LED blinkt bei Empfang</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>IRremote Library</h4>
+                            <p style="font-size: 14px;">Die Library dekodiert automatisch NEC, Sony, RC5, RC6 und viele weitere IR-Protokolle. Du musst nur die empfangenen Codes auswerten!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Code Schritt 2 - Decode -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 2: Signal dekodieren</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="keyword">void</span> loop() {
+    <span class="comment">// Pruefen ob IR-Signal empfangen wurde</span>
+    <span class="keyword">if</span> (IrReceiver.decode()) {
+
+        <span class="comment">// Pruefen ob bekanntes Protokoll</span>
+        <span class="keyword">if</span> (IrReceiver.decodedIRData.protocol != UNKNOWN) {
+
+            <span class="comment">// Tasten-Code ausgeben</span>
+            Serial.print(<span class="string">"Code: 0x"</span>);
+            Serial.println(IrReceiver.decodedIRData.command, HEX);
+
+            <span class="comment">// Protokoll-Name ausgeben</span>
+            Serial.print(<span class="string">"Protokoll: "</span>);
+            Serial.println(getProtocolString(IrReceiver.decodedIRData.protocol));
+        }
+
+        <span class="comment">// Empfaenger fuer naechstes Signal vorbereiten</span>
+        IrReceiver.resume();
+    }
+}</code></pre></div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Wichtige Funktionen</h4>
+                        <p><code>decode()</code> gibt true zurueck wenn ein Signal empfangen wurde. <code>decodedIRData.command</code> enthaelt den Tasten-Code. <code>resume()</code> bereitet den Empfang des naechsten Signals vor.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Code Schritt 3 - Switch-Case -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 3: Tasten zuordnen</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Typische Tasten-Codes (China-Fernbedienung)</span>
+<span class="keyword">void</span> handleKey(<span class="keyword">uint8_t</span> code) {
+    <span class="keyword">switch</span> (code) {
+        <span class="keyword">case</span> <span class="number">0x0C</span>: Serial.println(<span class="string">"Taste 1"</span>); <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="number">0x18</span>: Serial.println(<span class="string">"Taste 2"</span>); <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="number">0x5E</span>: Serial.println(<span class="string">"Taste 3"</span>); <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="number">0x44</span>: Serial.println(<span class="string">"PREV"</span>);    <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="number">0x40</span>: Serial.println(<span class="string">"NEXT"</span>);    <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="number">0x43</span>: Serial.println(<span class="string">"PLAY"</span>);    <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="number">0x07</span>: Serial.println(<span class="string">"VOL-"</span>);    <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="number">0x15</span>: Serial.println(<span class="string">"VOL+"</span>);    <span class="keyword">break</span>;
+        <span class="keyword">default</span>:  Serial.println(<span class="string">"Unbekannt"</span>);
+    }
+}</code></pre></div>
+
+                    <div class="grid-2 mt-20">
+                        <div class="card">
+                            <h4>switch-case Struktur</h4>
+                            <p style="font-size: 14px;">Jeder <code>case</code> vergleicht mit einem Hex-Code. Bei Treffer wird die Aktion ausgefuehrt. <code>break</code> verhindert Durchfallen zum naechsten case.</p>
+                        </div>
+                        <div class="card">
+                            <h4>Eigene Codes finden</h4>
+                            <p style="font-size: 14px;">Starte das Programm und druecke jede Taste. Notiere die Hex-Codes im Serial Monitor und passe die switch-Werte an!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: Wokwi Demo -->
+                <div class="slide">
+                    <h2>Ausprobieren</h2>
+                    <p class="subtitle">Simulation in Wokwi</p>
+
+                    <div class="center mt-40">
+                        <div class="card card-dark">
+                            <h3>Wokwi Projekt</h3>
+                            <p class="mt-20">Erstelle ein neues Projekt mit Arduino Uno und IR-Receiver:</p>
+                            <div class="mt-30">
+                                <a href="https://wokwi.com/projects/new/arduino-uno" target="_blank" style="color: #0071e3; font-size: 20px; text-decoration: none;">
+                                    Neues Arduino-Projekt in Wokwi
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-40">
+                        <h4>So testest du</h4>
+                        <ul>
+                            <li>Fuege einen "IR Receiver" hinzu (Suche: "ir receiver")</li>
+                            <li>Fuege eine "IR Remote" hinzu (Suche: "ir remote")</li>
+                            <li>Verbinde: VCC → 5V, DAT → Pin 7, GND → GND</li>
+                            <li>Kopiere den Code in die sketch.ino</li>
+                            <li>Klicke auf Play - dann auf die Fernbedienungs-Tasten</li>
+                            <li><strong>Tipp:</strong> Im Serial Monitor siehst du die empfangenen Codes!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Challenges -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Challenges</div>
+                            <h2 class="no-margin">Erweiterungen</h2>
+                        </div>
+                    </div>
+
+                    <p class="subtitle">Probiere diese Aufgaben aus</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">💡</div>
+                            <h4>Challenge 1: LED-Steuerung</h4>
+                            <p>3 LEDs mit den Tasten 1, 2 und 3 ein- und ausschalten (Toggle)</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🔆</div>
+                            <h4>Challenge 2: LED-Dimmer</h4>
+                            <p>LED-Helligkeit mit VOL+ erhoehen und VOL- verringern</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🌈</div>
+                            <h4>Challenge 3: RGB-Farbwechsel</h4>
+                            <p>RGB-LED mit Zifferntasten 1-6 in verschiedenen Farben steuern</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🔄</div>
+                            <h4>Challenge 4: Servo-Steuerung</h4>
+                            <p>Servo mit PREV/NEXT Tasten links/rechts bewegen</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">📡</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du beherrschst jetzt die IR-Fernsteuerung</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">📚</div>
+                                <h4>IRremote Library</h4>
+                                <p>Externe Bibliothek genutzt</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">🔢</div>
+                                <h4>NEC-Protokoll</h4>
+                                <p>38 kHz IR-Signale dekodiert</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">🎛️</div>
+                                <h4>switch-case</h4>
+                                <p>Tasten Aktionen zugeordnet</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../../advanced/A01_multi_sensor/index.html">
+                            <h3>Intermediate komplett!</h3>
+                            <p class="mt-10">Du hast alle 8 Intermediate-Projekte abgeschlossen! Bereit fuer die Advanced-Projekte?</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

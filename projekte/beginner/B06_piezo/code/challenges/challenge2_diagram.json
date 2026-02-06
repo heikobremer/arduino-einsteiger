@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": -96.6, "attrs": {} },
+    { "type": "wokwi-buzzer", "id": "buzzer1", "top": -100, "left": 180, "attrs": {} },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": -90, "left": -60, "attrs": { "color": "red", "label": "C" } },
+    { "type": "wokwi-pushbutton", "id": "btn2", "top": -90, "left": 0, "attrs": { "color": "orange", "label": "D" } },
+    { "type": "wokwi-pushbutton", "id": "btn3", "top": -90, "left": 60, "attrs": { "color": "yellow", "label": "E" } },
+    { "type": "wokwi-pushbutton", "id": "btn4", "top": -90, "left": 120, "attrs": { "color": "green", "label": "F" } }
+  ],
+  "connections": [
+    [ "uno:9", "buzzer1:1", "purple", [ "v-58", "h180" ] ],
+    [ "buzzer1:2", "uno:GND.1", "black", [ "v105", "h-189" ] ],
+    [ "uno:2", "btn1:1.l", "red", [ "v-28", "h-108" ] ],
+    [ "btn1:2.l", "uno:GND.2", "black", [ "v48", "h35" ] ],
+    [ "uno:3", "btn2:1.l", "orange", [ "v-38", "h-58" ] ],
+    [ "btn2:2.l", "uno:GND.2", "black", [ "v58", "h-25" ] ],
+    [ "uno:4", "btn3:1.l", "yellow", [ "v-48", "h2" ] ],
+    [ "btn3:2.l", "uno:GND.2", "black", [ "v68", "h-85" ] ],
+    [ "uno:5", "btn4:1.l", "green", [ "v-58", "h62" ] ],
+    [ "btn4:2.l", "uno:GND.2", "black", [ "v78", "h-145" ] ]
+  ],
+  "dependencies": {}
+}

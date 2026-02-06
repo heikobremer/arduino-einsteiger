@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I06: DS1307/DS3231 RTC - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#x23F0;</div>
+                        <h1>Echtzeituhr (RTC)</h1>
+                        <p class="subtitle">Projekt I06 - DS1307/DS3231 Real-Time Clock</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Intermediate</div>
+                            <div class="tech-badge">DS1307</div>
+                            <div class="tech-badge">I2C</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>Echtzeituhr (RTC)</strong> - Zeit unabhaengig vom Arduino messen</li>
+                        <li><strong>Batterie-Backup</strong> - Zeit auch bei Stromausfall behalten</li>
+                        <li><strong>DateTime-Objekte</strong> - Datum und Zeit strukturiert verarbeiten</li>
+                        <li><strong>I2C-Kommunikation</strong> - Daten ueber zwei Leitungen austauschen</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Beginner-Projekte B01-B08 abgeschlossen, Grundlagen von I2C aus B07 (LCD) bekannt</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Komponenten -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Was du brauchst</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">&#x23F0;</div>
+                            <h4>DS1307 vs DS3231</h4>
+                            <table style="width: 100%; font-size: 14px; margin-top: 10px;">
+                                <tr><th></th><th>DS1307</th><th>DS3231</th></tr>
+                                <tr><td>Genauigkeit</td><td>+/- 2 Sek/Tag</td><td>+/- 2 Sek/Monat</td></tr>
+                                <tr><td>Temperatur</td><td>Nein</td><td>Integriert</td></tr>
+                                <tr><td>Preis</td><td>Guenstiger</td><td>Teurer</td></tr>
+                                <tr><td>I2C Adresse</td><td>0x68</td><td>0x68</td></tr>
+                            </table>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Tipp:</strong> Die RTClib funktioniert mit beiden!</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">&#x1F50B;</div>
+                            <h4>Backup-Batterie</h4>
+                            <p style="font-size: 14px;">Eine CR2032 Knopfzelle haelt die Zeit, wenn der Arduino stromlos ist.</p>
+                            <ul style="font-size: 14px;" class="mt-10">
+                                <li><strong>Spannung:</strong> 3V Lithium</li>
+                                <li><strong>Lebensdauer:</strong> 5-10 Jahre typisch</li>
+                                <li><strong>Wichtig:</strong> Polaritaet beachten!</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>I2C Pins am Arduino Uno</h4>
+                        <p><strong>A4 = SDA</strong> (Datenleitung) | <strong>A5 = SCL</strong> (Taktleitung) - Diese Pins sind fest vorgegeben!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Theorie -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">Wie funktioniert eine RTC?</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Quarz-Oszillator</h3>
+                            <ul class="mt-20">
+                                <li>Praeziser 32.768 kHz Kristall</li>
+                                <li>Schwingt 32768 Mal pro Sekunde</li>
+                                <li>2^15 = exakt 1 Sekunde zaehlen</li>
+                                <li>Temperaturkompensiert beim DS3231</li>
+                            </ul>
+
+                            <h3 class="mt-30">Unix-Timestamp</h3>
+                            <p class="mt-10">Sekunden seit 1. Januar 1970. Einfach zu speichern und zu vergleichen!</p>
+                            <p style="font-size: 14px;" class="mt-10"><code>1704067200 = 1.1.2024 00:00:00</code></p>
+                        </div>
+                        <div class="card">
+                            <h4>RTC Blockdiagramm</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 12px;">
+┌─────────────────────────────┐
+│         DS1307/DS3231       │
+│  ┌─────────┐  ┌──────────┐  │
+│  │ 32.768  │  │ Sekunden │  │
+│  │  kHz    │→→│ Minuten  │  │
+│  │ Quarz   │  │ Stunden  │  │
+│  └─────────┘  │ Datum    │  │
+│               └──────────┘  │
+│  ┌─────────┐       ↑↓       │
+│  │ Batterie│  ┌──────────┐  │
+│  │ CR2032  │  │   I2C    │  │
+│  └─────────┘  │ Interface│  │
+└───────────────┴──────────┴──┘
+                    ↕
+              SDA  SCL
+            </pre></div>
+                            <p class="mt-20" style="font-size: 14px;"><strong>Speicher:</strong> 56 Bytes RAM fuer eigene Daten</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Schaltplan -->
+                <div class="slide">
+                    <h2>Schaltplan</h2>
+                    <p class="subtitle">Verbindungen zum Arduino</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Wokwi-Aufbau</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 14px;">
+    Arduino Uno           DS1307
+   ┌───────────┐        ┌───────┐
+   │           │        │       │
+   │  5V ──────┼────────┼─ VCC  │
+   │           │        │       │
+   │  A4 ──────┼────────┼─ SDA  │
+   │           │        │       │
+   │  A5 ──────┼────────┼─ SCL  │
+   │           │        │       │
+   │  GND ─────┼────────┼─ GND  │
+   │           │        │       │
+   └───────────┘        └───────┘
+            </pre></div>
+                        </div>
+                        <div class="card card-info">
+                            <h4>Wichtige Verbindungen</h4>
+                            <ul class="mt-20">
+                                <li><strong>RTC VCC</strong> → Arduino 5V</li>
+                                <li><strong>RTC SDA</strong> → Arduino A4</li>
+                                <li><strong>RTC SCL</strong> → Arduino A5</li>
+                                <li><strong>RTC GND</strong> → Arduino GND</li>
+                            </ul>
+
+                            <h4 class="mt-30">I2C Pull-Ups</h4>
+                            <p style="font-size: 14px;">Die meisten RTC-Module haben bereits integrierte 4.7k Pull-Up Widerstaende. In Wokwi nicht noetig.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Code Schritt 1 - Library -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 1: Library einbinden</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 1: RTC-Library einbinden</span>
+
+<span class="keyword">#include</span> <span class="string">&lt;Wire.h&gt;</span>      <span class="comment">// I2C-Kommunikation</span>
+<span class="keyword">#include</span> <span class="string">&lt;RTClib.h&gt;</span>   <span class="comment">// RTC-Bibliothek von Adafruit</span>
+
+<span class="comment">// RTC-Objekt erstellen (funktioniert mit DS1307 und DS3231)</span>
+RTC_DS1307 rtc;
+
+<span class="comment">// Wochentage auf Deutsch</span>
+<span class="keyword">const char</span>* wochentage[] = {
+    <span class="string">"Sonntag"</span>, <span class="string">"Montag"</span>, <span class="string">"Dienstag"</span>, <span class="string">"Mittwoch"</span>,
+    <span class="string">"Donnerstag"</span>, <span class="string">"Freitag"</span>, <span class="string">"Samstag"</span>
+};</code></pre></div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Erklaerung</h4>
+                            <ul style="font-size: 16px;">
+                                <li><code>Wire.h</code> - Standard I2C-Library</li>
+                                <li><code>RTClib.h</code> - Vereinfacht RTC-Zugriff</li>
+                                <li><code>RTC_DS1307</code> - Auch fuer DS3231 nutzbar</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Alternative Klassen</h4>
+                            <p style="font-size: 14px;"><code>RTC_DS3231</code> fuer DS3231-spezifische Features wie Temperaturauslese.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Code Schritt 2 - Zeit lesen -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 2: Zeit lesen</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="keyword">void</span> setup() {
+    Serial.begin(<span class="number">9600</span>);
+
+    <span class="keyword">if</span> (!rtc.begin()) {
+        Serial.println(<span class="string">"RTC nicht gefunden!"</span>);
+        <span class="keyword">while</span> (<span class="keyword">true</span>);  <span class="comment">// Anhalten</span>
+    }
+
+    <span class="comment">// Pruefen ob RTC laeuft (Batterie leer?)</span>
+    <span class="keyword">if</span> (!rtc.isrunning()) {
+        Serial.println(<span class="string">"RTC laeuft nicht - setze Zeit..."</span>);
+        <span class="comment">// Zeit auf Kompilierzeitpunkt setzen</span>
+        rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    }
+}
+
+<span class="keyword">void</span> loop() {
+    <span class="comment">// DateTime-Objekt mit aktueller Zeit</span>
+    DateTime now = rtc.now();
+
+    Serial.println(now.hour());    <span class="comment">// 0-23</span>
+    Serial.println(now.minute());  <span class="comment">// 0-59</span>
+    Serial.println(now.second());  <span class="comment">// 0-59</span>
+
+    delay(<span class="number">1000</span>);
+}</code></pre></div>
+
+                    <div class="card card-info mt-20">
+                        <h4>DateTime-Objekt</h4>
+                        <p><code>rtc.now()</code> liefert ein DateTime-Objekt mit allen Zeit- und Datumsinformationen. Einmal abfragen, mehrfach nutzen!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Code Schritt 3 - Formatierung -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 3: Formatierte Ausgabe</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="keyword">void</span> loop() {
+    DateTime now = rtc.now();
+
+    <span class="comment">// Datum formatiert ausgeben: DD.MM.YYYY</span>
+    <span class="keyword">if</span> (now.day() < <span class="number">10</span>) Serial.print(<span class="string">"0"</span>);
+    Serial.print(now.day());
+    Serial.print(<span class="string">"."</span>);
+    <span class="keyword">if</span> (now.month() < <span class="number">10</span>) Serial.print(<span class="string">"0"</span>);
+    Serial.print(now.month());
+    Serial.print(<span class="string">"."</span>);
+    Serial.print(now.year());
+    Serial.print(<span class="string">" ("</span>);
+    Serial.print(wochentage[now.dayOfTheWeek()]);
+    Serial.println(<span class="string">")"</span>);
+
+    <span class="comment">// Zeit formatiert: HH:MM:SS</span>
+    <span class="keyword">if</span> (now.hour() < <span class="number">10</span>) Serial.print(<span class="string">"0"</span>);
+    Serial.print(now.hour());
+    Serial.print(<span class="string">":"</span>);
+    <span class="keyword">if</span> (now.minute() < <span class="number">10</span>) Serial.print(<span class="string">"0"</span>);
+    Serial.print(now.minute());
+    Serial.print(<span class="string">":"</span>);
+    <span class="keyword">if</span> (now.second() < <span class="number">10</span>) Serial.print(<span class="string">"0"</span>);
+    Serial.println(now.second());
+
+    <span class="comment">// Unix-Timestamp</span>
+    Serial.print(<span class="string">"Unix: "</span>);
+    Serial.println(now.unixtime());
+
+    delay(<span class="number">1000</span>);
+}</code></pre></div>
+
+                    <div class="card mt-20">
+                        <h4>DateTime Methoden</h4>
+                        <p style="font-size: 14px;"><code>year()</code>, <code>month()</code>, <code>day()</code>, <code>hour()</code>, <code>minute()</code>, <code>second()</code>, <code>dayOfTheWeek()</code> (0=So), <code>unixtime()</code></p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: Wokwi Demo -->
+                <div class="slide">
+                    <h2>Ausprobieren</h2>
+                    <p class="subtitle">Simulation in Wokwi</p>
+
+                    <div class="center mt-40">
+                        <div class="card card-dark">
+                            <h3>Wokwi Projekt</h3>
+                            <p class="mt-20">Erstelle ein neues Projekt mit Arduino Uno und DS1307:</p>
+                            <div class="mt-30">
+                                <a href="https://wokwi.com/projects/new/arduino-uno" target="_blank" style="color: #0071e3; font-size: 20px; text-decoration: none;">
+                                    Neues Arduino-Projekt in Wokwi
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-40">
+                        <h4>So testest du</h4>
+                        <ul>
+                            <li>Fuege einen DS1307 hinzu (Suche: "ds1307" oder "rtc")</li>
+                            <li>Verbinde: VCC → 5V, SDA → A4, SCL → A5, GND → GND</li>
+                            <li>Kopiere den Code in die sketch.ino</li>
+                            <li>Klicke auf Play - im Serial Monitor erscheint die Zeit</li>
+                            <li><strong>Tipp:</strong> In Wokwi kannst du die simulierte Zeit aendern!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Challenges -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Challenges</div>
+                            <h2 class="no-margin">Erweiterungen</h2>
+                        </div>
+                    </div>
+
+                    <p class="subtitle">Probiere diese Aufgaben aus</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">&#x1F4FA;</div>
+                            <h4>Challenge 1: LCD Uhr</h4>
+                            <p>Zeige Uhrzeit und Datum auf einem LCD Display an</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">&#x23F0;</div>
+                            <h4>Challenge 2: Wecker</h4>
+                            <p>Wecker mit einstellbarer Zeit und Buzzer-Alarm</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">&#x23F1;</div>
+                            <h4>Challenge 3: Stoppuhr</h4>
+                            <p>Stoppuhr mit Start/Stop/Reset Tastern</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">&#x23F3;</div>
+                            <h4>Challenge 4: Countdown</h4>
+                            <p>Countdown-Timer mit LED-Warnung bei Ablauf</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#x23F0;</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du kannst jetzt Zeit unabhaengig vom Arduino messen</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">&#x1F4C5;</div>
+                                <h4>DateTime</h4>
+                                <p>Zeit und Datum als Objekt</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">&#x1F50B;</div>
+                                <h4>Batterie-Backup</h4>
+                                <p>Zeit bleibt bei Stromausfall</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">&#x1F517;</div>
+                                <h4>I2C Bus</h4>
+                                <p>Nur 2 Leitungen noetig</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../I07_encoder/index.html">
+                            <h3>Naechstes Projekt</h3>
+                            <p class="mt-10">I07: Drehgeber (Rotary Encoder) - Praezise Eingaben mit Drehbewegungen</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">&larr; &rarr;</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intermediate Projekte - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../presentation_framework/styles.css">
+    <style>
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .project-card {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 24px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: block;
+        }
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .project-card h4 {
+            margin: 10px 0 6px 0;
+            color: #1d1d1f;
+            font-size: 18px;
+        }
+        .project-card p {
+            font-size: 14px;
+            color: #515154;
+            margin: 0;
+        }
+        .project-card .emoji {
+            font-size: 36px;
+        }
+        .difficulty {
+            display: inline-block;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: #fff3cd;
+            color: #856404;
+            margin-top: 10px;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #0071e3;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .header-badge {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+            color: #333;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container" style="height: auto; min-height: 90vh;">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper" style="padding-bottom: 40px;">
+
+                <a href="index.html" class="back-link">← Zurück zur Projektübersicht</a>
+
+                <div class="header-badge">Intermediate</div>
+                <h1>Fortgeschrittene Projekte</h1>
+                <p class="subtitle">8 Projekte mit komplexeren Sensoren und Komponenten</p>
+
+                <div class="project-grid">
+                    <a href="intermediate/I01_dht22/index.html" class="project-card">
+                        <div class="emoji">🌡️</div>
+                        <h4>I01 DHT22 Sensor</h4>
+                        <p>Temperatur und Luftfeuchtigkeit messen.</p>
+                        <span class="difficulty">Intermediate</span>
+                    </a>
+                    <a href="intermediate/I02_ultraschall/index.html" class="project-card">
+                        <div class="emoji">📏</div>
+                        <h4>I02 Ultraschall</h4>
+                        <p>HC-SR04 Entfernungsmessung. Echo-Laufzeit.</p>
+                        <span class="difficulty">Intermediate</span>
+                    </a>
+                    <a href="intermediate/I03_servo/index.html" class="project-card">
+                        <div class="emoji">⚙️</div>
+                        <h4>I03 Servo</h4>
+                        <p>PWM-Steuerung mit 50Hz Signal. Winkelpositionierung.</p>
+                        <span class="difficulty">Intermediate</span>
+                    </a>
+                    <a href="intermediate/I04_oled/index.html" class="project-card">
+                        <div class="emoji">🖥️</div>
+                        <h4>I04 OLED Display</h4>
+                        <p>SSD1306 mit Grafik und Framebuffer.</p>
+                        <span class="difficulty">Intermediate</span>
+                    </a>
+                    <a href="intermediate/I05_neopixel/index.html" class="project-card">
+                        <div class="emoji">✨</div>
+                        <h4>I05 NeoPixel</h4>
+                        <p>WS2812 RGB-LED-Strips programmieren.</p>
+                        <span class="difficulty">Intermediate</span>
+                    </a>
+                    <a href="intermediate/I06_rtc/index.html" class="project-card">
+                        <div class="emoji">⏰</div>
+                        <h4>I06 Echtzeituhr</h4>
+                        <p>DS3231 RTC-Modul. Zeit speichern.</p>
+                        <span class="difficulty">Intermediate</span>
+                    </a>
+                    <a href="intermediate/I07_encoder/index.html" class="project-card">
+                        <div class="emoji">🔄</div>
+                        <h4>I07 Drehencoder</h4>
+                        <p>Quadratur-Signale auswerten. Drehrichtung.</p>
+                        <span class="difficulty">Intermediate</span>
+                    </a>
+                    <a href="intermediate/I08_ir_remote/index.html" class="project-card">
+                        <div class="emoji">📡</div>
+                        <h4>I08 IR-Fernbedienung</h4>
+                        <p>VS1838B Empfänger. NEC-Protokoll dekodieren.</p>
+                        <span class="difficulty">Intermediate</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

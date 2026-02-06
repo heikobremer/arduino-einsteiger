@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": -96.6, "attrs": {} },
+    { "type": "wokwi-ir-receiver", "id": "ir1", "top": -100, "left": 100, "attrs": {} },
+    { "type": "wokwi-ir-remote", "id": "remote1", "top": -100, "left": 220, "attrs": {} },
+    { "type": "wokwi-servo", "id": "servo1", "top": -100, "left": -80, "attrs": {} }
+  ],
+  "connections": [
+    [ "ir1:VCC", "uno:5V", "red", [ "v48", "h-140" ] ],
+    [ "ir1:GND", "uno:GND.1", "black", [ "v105", "h-110" ] ],
+    [ "ir1:DAT", "uno:7", "green", [ "v58", "h-35" ] ],
+    [ "servo1:V+", "uno:5V", "red", [ "v0" ] ],
+    [ "servo1:GND", "uno:GND.2", "black", [ "v0" ] ],
+    [ "servo1:PWM", "uno:9", "orange", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}

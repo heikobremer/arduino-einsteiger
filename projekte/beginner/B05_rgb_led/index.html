@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B05: RGB-LED Farbmischer - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🌈</div>
+                        <h1>RGB-LED Farbmischer</h1>
+                        <p class="subtitle">Projekt B05 - Farben mischen mit PWM</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Beginner</div>
+                            <div class="tech-badge">RGB-LED</div>
+                            <div class="tech-badge">3x PWM</div>
+                            <div class="tech-badge">3x Poti</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>Mehrkanal-PWM</strong> - Drei PWM-Signale gleichzeitig steuern</li>
+                        <li><strong>Additive Farbmischung</strong> - Rot + Grün + Blau = Weiß</li>
+                        <li><strong>RGB-LED</strong> - Drei LEDs in einem Gehäuse</li>
+                        <li><strong>Interaktive Steuerung</strong> - Mit drei Potis Farben mischen</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Projekt B04 (Potentiometer) abgeschlossen</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Theorie Farbmischung -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">Additive Farbmischung</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Wie entstehen Farben?</h3>
+                            <p class="mt-10">Bei RGB-LEDs werden drei Farben überlagert:</p>
+                            <ul class="mt-20">
+                                <li><strong>Rot + Grün</strong> = Gelb</li>
+                                <li><strong>Rot + Blau</strong> = Magenta</li>
+                                <li><strong>Grün + Blau</strong> = Cyan</li>
+                                <li><strong>Rot + Grün + Blau</strong> = Weiß</li>
+                                <li><strong>Alle aus</strong> = Schwarz</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>RGB-Werte</h4>
+                            <p class="mt-10">Jede Farbe wird durch 3 Werte definiert:</p>
+                            <ul class="mt-10" style="font-size: 16px;">
+                                <li><strong>(255, 0, 0)</strong> = Rot</li>
+                                <li><strong>(0, 255, 0)</strong> = Grün</li>
+                                <li><strong>(0, 0, 255)</strong> = Blau</li>
+                                <li><strong>(255, 255, 0)</strong> = Gelb</li>
+                                <li><strong>(255, 128, 0)</strong> = Orange</li>
+                                <li><strong>(128, 0, 128)</strong> = Lila</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Komponenten -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Was du brauchst</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🌈</div>
+                            <h4>RGB-LED (gemeinsame Kathode)</h4>
+                            <p>Eine LED mit vier Pins: Rot, Grün, Blau und gemeinsame Kathode (GND).</p>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Wichtig:</strong> Bei "gemeinsamer Kathode" ist der längste Pin GND.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🎛️</div>
+                            <h4>3x Potentiometer 10kΩ</h4>
+                            <p>Jeweils ein Poti für Rot, Grün und Blau.</p>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Benötigt:</strong> 3 ADC-Pins (A0, A1, A2)</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Vorwiderstände</h4>
+                        <p>Jede Farbe braucht einen eigenen Widerstand: 220Ω für alle drei Kanäle.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Code -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">RGB-LED mit 3 Potis steuern</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// B05: RGB-LED Farbmischer</span>
+
+<span class="keyword">const int</span> POTI_R = A0;
+<span class="keyword">const int</span> POTI_G = A1;
+<span class="keyword">const int</span> POTI_B = A2;
+
+<span class="keyword">const int</span> LED_R = <span class="number">9</span>;   <span class="comment">// PWM-Pins!</span>
+<span class="keyword">const int</span> LED_G = <span class="number">10</span>;
+<span class="keyword">const int</span> LED_B = <span class="number">11</span>;
+
+<span class="keyword">void</span> setup() {
+  pinMode(LED_R, OUTPUT);
+  pinMode(LED_G, OUTPUT);
+  pinMode(LED_B, OUTPUT);
+  Serial.begin(<span class="number">9600</span>);
+  Serial.println(<span class="string">"RGB-Farbmischer gestartet!"</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="comment">// Potis lesen und auf 0-255 mappen</span>
+  <span class="keyword">int</span> r = map(analogRead(POTI_R), <span class="number">0</span>, <span class="number">1023</span>, <span class="number">0</span>, <span class="number">255</span>);
+  <span class="keyword">int</span> g = map(analogRead(POTI_G), <span class="number">0</span>, <span class="number">1023</span>, <span class="number">0</span>, <span class="number">255</span>);
+  <span class="keyword">int</span> b = map(analogRead(POTI_B), <span class="number">0</span>, <span class="number">1023</span>, <span class="number">0</span>, <span class="number">255</span>);
+
+  analogWrite(LED_R, r);
+  analogWrite(LED_G, g);
+  analogWrite(LED_B, b);
+  delay(<span class="number">50</span>);
+}</code></pre></div>
+                </div>
+
+                <!-- SLIDE 6: Erweiterung Farbübergänge -->
+                <div class="slide">
+                    <h2>Bonus: Automatischer Regenbogen</h2>
+                    <p class="subtitle">Farbübergänge ohne Potis</p>
+
+                    <div class="code-block"><pre><code><span class="comment">// Regenbogen-Effekt</span>
+
+<span class="keyword">const int</span> LED_R = <span class="number">9</span>;
+<span class="keyword">const int</span> LED_G = <span class="number">10</span>;
+<span class="keyword">const int</span> LED_B = <span class="number">11</span>;
+
+<span class="keyword">void</span> setup() {
+  pinMode(LED_R, OUTPUT);
+  pinMode(LED_G, OUTPUT);
+  pinMode(LED_B, OUTPUT);
+}
+
+<span class="keyword">void</span> setColor(<span class="keyword">int</span> r, <span class="keyword">int</span> g, <span class="keyword">int</span> b) {
+  analogWrite(LED_R, r);
+  analogWrite(LED_G, g);
+  analogWrite(LED_B, b);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="comment">// Rot → Gelb → Gruen → Cyan → Blau → Magenta → Rot</span>
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < <span class="number">255</span>; i++) { setColor(<span class="number">255</span>, i, <span class="number">0</span>); delay(<span class="number">10</span>); }
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">255</span>; i > <span class="number">0</span>; i--) { setColor(i, <span class="number">255</span>, <span class="number">0</span>); delay(<span class="number">10</span>); }
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < <span class="number">255</span>; i++) { setColor(<span class="number">0</span>, <span class="number">255</span>, i); delay(<span class="number">10</span>); }
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">255</span>; i > <span class="number">0</span>; i--) { setColor(<span class="number">0</span>, i, <span class="number">255</span>); delay(<span class="number">10</span>); }
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < <span class="number">255</span>; i++) { setColor(i, <span class="number">0</span>, <span class="number">255</span>); delay(<span class="number">10</span>); }
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">255</span>; i > <span class="number">0</span>; i--) { setColor(<span class="number">255</span>, <span class="number">0</span>, i); delay(<span class="number">10</span>); }
+}</code></pre></div>
+                </div>
+
+                <!-- SLIDE 7: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🌈</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du kannst jetzt Farben mischen</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Mehrkanal-PWM</h4>
+                                <p>3 PWM gleichzeitig</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>RGB-Farben</h4>
+                                <p>Additive Mischung</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Interaktion</h4>
+                                <p>Mit 3 Potis steuern</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../B06_piezo/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p class="mt-10">B06: Piezo-Summer - Töne und Melodien erzeugen</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">7</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+# Build-Ausgaben (können mit arduino-cli regeneriert werden)
+**/build/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Temporäre Dateien
+*.tmp
+*.bak
+*~
+
+# Node (falls später Astro)
+node_modules/
+
+# Große Dateien / PDFs
+*.pdf
+
+# Private/Interne Dateien
+.claude/
+CLAUDE.md
+arduino_agenda.md
+prd_arduino_python.md

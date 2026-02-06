@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/arduino.avr.uno/challenge2_poti.ino.hex'
+elf = 'build/arduino.avr.uno/challenge2_poti.ino.elf'

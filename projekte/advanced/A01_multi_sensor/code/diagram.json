@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": 0, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht1", "top": -100, "left": -120, "attrs": {} },
+    { "type": "wokwi-lcd1602", "id": "lcd1", "top": -180, "left": 100, "attrs": { "pins": "i2c" } },
+    { "type": "wokwi-led", "id": "led1", "top": 200, "left": -50, "attrs": { "color": "green" } },
+    { "type": "wokwi-led", "id": "led2", "top": 200, "left": 20, "attrs": { "color": "red" } },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 250,
+      "left": -50,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 250,
+      "left": 20,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    }
+  ],
+  "connections": [
+    [ "dht1:VCC", "uno:5V", "red", [ "v48", "h60" ] ],
+    [ "dht1:GND", "uno:GND.1", "black", [ "v105", "h30" ] ],
+    [ "dht1:SDA", "uno:7", "green", [ "v58", "h95" ] ],
+    [ "lcd1:VCC", "uno:5V", "red", [ "v128", "h-40" ] ],
+    [ "lcd1:GND", "uno:GND.2", "black", [ "v185", "h-70" ] ],
+    [ "lcd1:SDA", "uno:A4", "blue", [ "v138", "h10" ] ],
+    [ "lcd1:SCL", "uno:A5", "purple", [ "v148", "h40" ] ],
+    [ "led1:A", "uno:8", "green", [ "v-108", "h80" ] ],
+    [ "led1:C", "r1:1", "black", [ "v0" ] ],
+    [ "r1:2", "uno:GND.3", "black", [ "v20", "h90" ] ],
+    [ "led2:A", "uno:9", "red", [ "v-98", "h55" ] ],
+    [ "led2:C", "r2:1", "black", [ "v0" ] ],
+    [ "r2:2", "uno:GND.3", "black", [ "v20", "h20" ] ]
+  ],
+  "dependencies": {}
+}

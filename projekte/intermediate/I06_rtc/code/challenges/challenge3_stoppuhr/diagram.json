@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "author": "Arduino fuer Einsteiger",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": -96.6, "attrs": {} },
+    { "type": "wokwi-ds1307", "id": "rtc1", "top": -130, "left": 60, "attrs": {} },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": 30, "left": 200, "attrs": { "color": "green", "label": "Start/Stop" } },
+    { "type": "wokwi-pushbutton", "id": "btn2", "top": 30, "left": 280, "attrs": { "color": "red", "label": "Reset" } },
+    { "type": "wokwi-led", "id": "led1", "top": -60, "left": 240, "attrs": { "color": "green" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": -20, "left": 240, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "rtc1:VCC", "uno:5V", "red", [ "v78", "h-100" ] ],
+    [ "rtc1:GND", "uno:GND.1", "black", [ "v135", "h-70" ] ],
+    [ "rtc1:SDA", "uno:A4", "blue", [ "v88", "h-20" ] ],
+    [ "rtc1:SCL", "uno:A5", "green", [ "v98", "h10" ] ],
+    [ "btn1:1.l", "uno:2", "green", [ "v0" ] ],
+    [ "btn1:2.l", "uno:GND.2", "black", [ "v0" ] ],
+    [ "btn2:1.l", "uno:3", "red", [ "v0" ] ],
+    [ "btn2:2.l", "uno:GND.2", "black", [ "v0" ] ],
+    [ "led1:A", "r1:1", "green", [ "v0" ] ],
+    [ "r1:2", "uno:8", "green", [ "v0" ] ],
+    [ "led1:C", "uno:GND.2", "black", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}

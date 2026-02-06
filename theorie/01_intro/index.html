@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>01 Einführung - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🚀</div>
+                        <h1>Arduino für Einsteiger</h1>
+                        <p class="subtitle">Arduino C++ mit dem Wokwi-Simulator</p>
+                        <div class="badge">Modul 1: Einführung</div>
+                        <div class="tech-stack center mt-40">
+                            <div class="tech-badge">Arduino C++</div>
+                            <div class="tech-badge">Arduino Uno</div>
+                            <div class="tech-badge">Wokwi</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Willkommen -->
+                <div class="slide">
+                    <h2>Willkommen!</h2>
+                    <p class="subtitle">Was dich in diesem Kurs erwartet</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🎯</div>
+                            <h4>Ziel des Kurses</h4>
+                            <p>Du lernst, eigene elektronische Projekte zu bauen und mit Arduino C++ zu programmieren - vom blinkenden LED bis zum Oszilloskop.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🧑‍💻</div>
+                            <h4>Für wen?</h4>
+                            <p>Für alle, die Interesse an Elektronik und Programmierung haben. Vorkenntnisse sind nicht erforderlich!</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">⏱️</div>
+                            <h4>Wie viel?</h4>
+                            <p>24 Praxisprojekte in aufsteigender Schwierigkeit. Du bestimmst dein eigenes Tempo.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">💻</div>
+                            <h4>Was brauchst du?</h4>
+                            <p>Nur einen Computer mit Browser! Der Wokwi-Simulator macht echte Hardware optional.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Kursstruktur -->
+                <div class="slide">
+                    <h2>Kursstruktur</h2>
+                    <p class="subtitle">Der Lernpfad im Überblick</p>
+
+                    <div class="grid-2 mt-40">
+                        <div>
+                            <h3>📚 Theorie (5 Module)</h3>
+                            <ul class="mt-20">
+                                <li><strong>Einführung</strong> - Kursübersicht</li>
+                                <li><strong>Mikrocontroller</strong> - Arduino Uno verstehen</li>
+                                <li><strong>Ökosystem</strong> - Arduino IDE und Wokwi</li>
+                                <li><strong>Setup</strong> - Arbeitsumgebung einrichten</li>
+                                <li><strong>Grundlagen</strong> - Elektronik-Basics</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3>🔧 Praxis (24 Projekte)</h3>
+                            <ul class="mt-20">
+                                <li><strong>Beginner</strong> - 8 Einsteigerprojekte</li>
+                                <li><strong>Intermediate</strong> - 8 fortgeschrittene Projekte</li>
+                                <li><strong>Advanced</strong> - 8 komplexe Projekte</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-40">
+                        <h4>💡 Tipp</h4>
+                        <p>Jedes Projekt baut auf den vorherigen auf. Arbeite sie der Reihe nach durch!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Hardware vs Simulator -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">?</div>
+                        <div>
+                            <div class="badge">Entscheidung</div>
+                            <h2 class="no-margin">Echte Hardware oder Simulator?</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>🔌 Echte Hardware</h4>
+                            <ul class="mt-20">
+                                <li>Haptisches Erlebnis</li>
+                                <li>Reale Fehlersuche</li>
+                                <li>Projekte zum Anfassen</li>
+                                <li>Kosten: ca. 30-80€ Starter-Kit</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>💻 Wokwi-Simulator</h4>
+                            <ul class="mt-20">
+                                <li>Kostenlos und sofort verfügbar</li>
+                                <li>Keine Verdrahtungsfehler</li>
+                                <li>Alle Komponenten verfügbar</li>
+                                <li>Ideal zum Lernen</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card card-dark mt-40">
+                        <h4>Unsere Empfehlung</h4>
+                        <p>Starte mit dem Simulator! Wenn du Spaß daran hast, kannst du später Hardware kaufen. Alle Projekte im Kurs funktionieren in Wokwi.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Projektaufbau -->
+                <div class="slide">
+                    <h2>Aufbau jeder Lektion</h2>
+                    <p class="subtitle">Was dich in jedem Projekt erwartet</p>
+
+                    <div class="grid-3 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">📝</div>
+                            <h4>1. Theorie</h4>
+                            <p>Wie funktioniert die Komponente? Welche Konzepte brauchst du?</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🔗</div>
+                            <h4>2. Schaltung</h4>
+                            <p>Verbindungen auf dem Breadboard verstehen und aufbauen.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">💻</div>
+                            <h4>3. Code</h4>
+                            <p>Schrittweise Programmierung mit Erklärungen.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🧪</div>
+                            <h4>4. Testen</h4>
+                            <p>Projekt in Wokwi simulieren und debuggen.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🚀</div>
+                            <h4>5. Erweiterungen</h4>
+                            <p>Ideen zum Weitermachen und Experimentieren.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Projektübersicht Beginner -->
+                <div class="slide">
+                    <h2>Beginner-Projekte</h2>
+                    <p class="subtitle">Deine ersten Schritte</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>B01: LED Blinken</h4>
+                            <p>Das "Hello World" der Mikrocontroller</p>
+                        </div>
+                        <div class="card">
+                            <h4>B02: Ampelschaltung</h4>
+                            <p>Mehrere LEDs mit Timing steuern</p>
+                        </div>
+                        <div class="card">
+                            <h4>B03: Taster</h4>
+                            <p>Eingaben erkennen und entprellen</p>
+                        </div>
+                        <div class="card">
+                            <h4>B04: Potentiometer</h4>
+                            <p>Analoge Werte lesen und verarbeiten</p>
+                        </div>
+                        <div class="card">
+                            <h4>B05: RGB-LED</h4>
+                            <p>Farben mischen mit PWM</p>
+                        </div>
+                        <div class="card">
+                            <h4>B06: Piezo-Summer</h4>
+                            <p>Töne und Melodien erzeugen</p>
+                        </div>
+                        <div class="card">
+                            <h4>B07: LCD Display</h4>
+                            <p>Text auf einem Display anzeigen</p>
+                        </div>
+                        <div class="card">
+                            <h4>B08: Lichtsensor</h4>
+                            <p>Helligkeit messen mit LDR</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Projektübersicht Fortgeschritten -->
+                <div class="slide">
+                    <h2>Fortgeschrittene Projekte</h2>
+                    <p class="subtitle">Intermediate und Advanced</p>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Intermediate (I01-I08)</h3>
+                            <ul class="mt-20">
+                                <li><strong>DHT22</strong> - Temperatur & Feuchtigkeit</li>
+                                <li><strong>Ultraschall</strong> - Entfernungsmessung</li>
+                                <li><strong>Servo</strong> - Motorsteuerung</li>
+                                <li><strong>OLED</strong> - Grafik-Display</li>
+                                <li><strong>NeoPixel</strong> - RGB-LED-Strips</li>
+                                <li><strong>RTC</strong> - Echtzeituhr</li>
+                                <li><strong>Encoder</strong> - Drehregler</li>
+                                <li><strong>IR</strong> - Fernbedienung</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3>Advanced (A01-A08)</h3>
+                            <ul class="mt-20">
+                                <li><strong>Multi-Sensor</strong> - Dashboard</li>
+                                <li><strong>Bewässerung</strong> - Automatisierung</li>
+                                <li><strong>Waage</strong> - Präzisionsmessung</li>
+                                <li><strong>Schrittmotor</strong> - Positionierung</li>
+                                <li><strong>Memory Game</strong> - Gedächtnisspiel</li>
+                                <li><strong>Binary Counter</strong> - Binärsystem lernen</li>
+                                <li><strong>Light Theremin</strong> - Musikinstrument</li>
+                                <li><strong>Oszilloskop</strong> - Messtechnik</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🎯</div>
+                        <h1>Bereit zum Start?</h1>
+                        <p class="subtitle">Du hast alles, was du brauchst</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Keine Vorkenntnisse</h4>
+                                <p>Wir fangen bei Null an</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Keine Hardware</h4>
+                                <p>Wokwi simuliert alles</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Keine Kosten</h4>
+                                <p>Alle Tools sind kostenlos</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../02_mikrocontroller/index.html">
+                            <h3>Nächster Schritt</h3>
+                            <p class="mt-10">Modul 2: Mikrocontroller-Grundlagen - Der Arduino Uno</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Start</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">8</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../presentation_framework/script.js"></script>
+</body>
+</html>

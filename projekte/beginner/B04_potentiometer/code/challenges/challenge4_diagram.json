@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": -96.6, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": -130, "left": -60, "attrs": {} },
+    { "type": "wokwi-lcd1602", "id": "lcd1", "top": -200, "left": 80, "attrs": { "pins": "i2c" } }
+  ],
+  "connections": [
+    [ "pot1:VCC", "uno:5V", "red", [ "v78", "h-80" ] ],
+    [ "pot1:GND", "uno:GND.1", "black", [ "v135", "h-50" ] ],
+    [ "pot1:SIG", "uno:A0", "green", [ "v88", "h-20" ] ],
+    [ "lcd1:VCC", "uno:5V", "red", [ "v148", "h-120" ] ],
+    [ "lcd1:GND", "uno:GND.2", "black", [ "v205", "h-90" ] ],
+    [ "lcd1:SDA", "uno:A4", "blue", [ "v158", "h-10" ] ],
+    [ "lcd1:SCL", "uno:A5", "purple", [ "v168", "h20" ] ]
+  ],
+  "dependencies": {}
+}

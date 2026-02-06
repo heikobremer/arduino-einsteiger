@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": 0, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "soil1", "top": -100, "left": -150, "attrs": { "value": "50" } },
+    { "type": "wokwi-relay-module", "id": "relay1", "top": -100, "left": 180, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": 200, "left": -80, "attrs": { "color": "blue" } },
+    { "type": "wokwi-led", "id": "led2", "top": 200, "left": -20, "attrs": { "color": "red" } },
+    { "type": "wokwi-led", "id": "led3", "top": 200, "left": 40, "attrs": { "color": "green" } },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 250,
+      "left": -80,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 250,
+      "left": -20,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r3",
+      "top": 250,
+      "left": 40,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    }
+  ],
+  "connections": [
+    [ "soil1:VCC", "uno:5V", "red", [ "v48", "h90" ] ],
+    [ "soil1:GND", "uno:GND.1", "black", [ "v105", "h60" ] ],
+    [ "soil1:SIG", "uno:A0", "green", [ "v58", "h120" ] ],
+    [ "relay1:VCC", "uno:5V", "red", [ "v48", "h-120" ] ],
+    [ "relay1:GND", "uno:GND.2", "black", [ "v105", "h-150" ] ],
+    [ "relay1:IN", "uno:7", "orange", [ "v58", "h-115" ] ],
+    [ "led1:A", "uno:8", "blue", [ "v-108", "h100" ] ],
+    [ "led1:C", "r1:1", "black", [ "v0" ] ],
+    [ "r1:2", "uno:GND.3", "black", [ "v20", "h120" ] ],
+    [ "led2:A", "uno:9", "red", [ "v-98", "h65" ] ],
+    [ "led2:C", "r2:1", "black", [ "v0" ] ],
+    [ "r2:2", "uno:GND.3", "black", [ "v20", "h60" ] ],
+    [ "led3:A", "uno:10", "green", [ "v-88", "h30" ] ],
+    [ "led3:C", "r3:1", "black", [ "v0" ] ],
+    [ "r3:2", "uno:GND.3", "black", [ "v20" ] ]
+  ],
+  "dependencies": {}
+}

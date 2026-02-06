@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": -96.6, "attrs": {} },
+    { "type": "wokwi-ky-040", "id": "encoder1", "top": -130, "left": 120, "attrs": {} },
+    { "type": "wokwi-rgb-led", "id": "rgb1", "top": -100, "left": -80, "attrs": { "common": "cathode" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": -50, "left": -120, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r2", "top": -30, "left": -120, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r3", "top": -10, "left": -120, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "encoder1:VCC", "uno:5V", "red", [ "v78", "h-140" ] ],
+    [ "encoder1:GND", "uno:GND.1", "black", [ "v135", "h-110" ] ],
+    [ "encoder1:CLK", "uno:2", "green", [ "v88", "h5" ] ],
+    [ "encoder1:DT", "uno:3", "blue", [ "v98", "h15" ] ],
+    [ "encoder1:SW", "uno:4", "yellow", [ "v108", "h25" ] ],
+    [ "uno:9", "r1:1", "red", [ "v0" ] ],
+    [ "r1:2", "rgb1:R", "red", [ "v0" ] ],
+    [ "uno:10", "r2:1", "green", [ "v0" ] ],
+    [ "r2:2", "rgb1:G", "green", [ "v0" ] ],
+    [ "uno:11", "r3:1", "blue", [ "v0" ] ],
+    [ "r3:2", "rgb1:B", "blue", [ "v0" ] ],
+    [ "rgb1:COM", "uno:GND.2", "black", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}

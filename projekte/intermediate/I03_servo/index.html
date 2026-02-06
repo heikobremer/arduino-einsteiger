@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I03: SG90 Servo - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">⚙️</div>
+                        <h1>SG90 Servo-Motor</h1>
+                        <p class="subtitle">Projekt I03 - Präzise Winkelsteuerung mit PWM</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Intermediate</div>
+                            <div class="tech-badge">Servo</div>
+                            <div class="tech-badge">PWM</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>PWM-Steuerung</strong> - Pulsweite bestimmt den Servo-Winkel</li>
+                        <li><strong>Servo-Library</strong> - Einfache Ansteuerung mit <code>Servo.h</code></li>
+                        <li><strong>Winkelsteuerung</strong> - Präzise Positionierung von 0° bis 180°</li>
+                        <li><strong>Timing-Prinzip</strong> - 50 Hz Signal mit variabler Pulsbreite</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Theorie-Module 1-5, PWM-Grundlagen aus B05, Verständnis von analogWrite()</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Komponenten -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Der SG90 Micro Servo</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">⚙️</div>
+                            <h4>SG90 Servo-Motor</h4>
+                            <p>Kompakter Servo für Hobby-Projekte. Dreht präzise zwischen 0° und 180°. Ideal für kleine Mechanismen!</p>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Specs:</strong> 4.8-6V, Drehmoment 1.8kg/cm</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🔌</div>
+                            <h4>3 Anschluss-Pins</h4>
+                            <ul style="font-size: 14px; margin-top: 10px;">
+                                <li><strong style="color: #cc0000;">Rot (V+)</strong> → 5V Versorgung</li>
+                                <li><strong style="color: #cc6600;">Orange (PWM)</strong> → Steuer-Signal</li>
+                                <li><strong style="color: #333;">Braun (GND)</strong> → Masse</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>PWM-Signal für Servos</h4>
+                        <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 13px;">
+  20ms Periode (50Hz)
+  ├────────────────────────────────────────┤
+
+  1ms Puls = 0°        1.5ms = 90°         2ms Puls = 180°
+  ┌─┐                  ┌──┐                ┌───┐
+  │ │                  │  │                │   │
+──┘ └────────────   ───┘  └──────────   ───┘   └──────────
+        </pre></div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Theorie -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">Wie funktioniert ein Servo?</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>PWM-Timing</h3>
+                            <ul class="mt-20">
+                                <li><strong>Frequenz:</strong> 50 Hz (20ms Periode)</li>
+                                <li><strong>1ms Puls</strong> → Servo auf 0°</li>
+                                <li><strong>1.5ms Puls</strong> → Servo auf 90°</li>
+                                <li><strong>2ms Puls</strong> → Servo auf 180°</li>
+                            </ul>
+
+                            <h3 class="mt-30">Servo.h Library</h3>
+                            <p class="mt-10">Die Library übernimmt das komplizierte Timing. Du gibst nur den Winkel an!</p>
+                        </div>
+                        <div class="card">
+                            <h4>Wichtige Funktionen</h4>
+                            <div class="code-block" style="margin-top: 10px;"><pre><code><span class="comment">// Servo-Objekt erstellen</span>
+Servo myServo;
+
+<span class="comment">// An Pin anschliessen</span>
+myServo.attach(<span class="number">9</span>);
+
+<span class="comment">// Winkel setzen (0-180)</span>
+myServo.write(<span class="number">90</span>);
+
+<span class="comment">// Aktuellen Winkel lesen</span>
+<span class="keyword">int</span> pos = myServo.read();</code></pre></div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-20">
+                        <h4>Warum Pin 9?</h4>
+                        <p>Pin 9 ist PWM-fähig (markiert mit ~). Die Servo-Library nutzt Timer1 für präzises Timing.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Schaltplan -->
+                <div class="slide">
+                    <h2>Schaltplan</h2>
+                    <p class="subtitle">Einfache Verkabelung - nur 3 Drähte!</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Wokwi-Aufbau</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 14px;">
+     Arduino Uno            SG90 Servo
+    ┌─────────────┐        ┌─────────┐
+    │             │        │  ┌───┐  │
+    │  5V ────────┼─red────┼──│ V+│  │
+    │             │        │  ├───┤  │
+    │  Pin 9 ─────┼─orange─┼──│PWM│  │
+    │             │        │  ├───┤  │
+    │  GND ───────┼─brown──┼──│GND│  │
+    │             │        │  └───┘  │
+    └─────────────┘        └─────────┘
+            </pre></div>
+                        </div>
+                        <div class="card card-info">
+                            <h4>Verbindungen</h4>
+                            <ul class="mt-20">
+                                <li><strong style="color: #cc0000;">Rot</strong> → Arduino 5V</li>
+                                <li><strong style="color: #cc6600;">Orange</strong> → Arduino Pin 9</li>
+                                <li><strong style="color: #333;">Braun</strong> → Arduino GND</li>
+                            </ul>
+
+                            <h4 class="mt-30">Hinweis</h4>
+                            <p style="font-size: 14px;">Bei mehreren Servos: Externe 5V-Stromversorgung verwenden! Arduino kann max. 500mA liefern.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Code Schritt 1 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 1: Servo einrichten</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 1: Servo-Objekt und Pin definieren</span>
+
+<span class="keyword">#include</span> <span class="string">&lt;Servo.h&gt;</span>
+
+<span class="keyword">#define</span> SERVO_PIN <span class="number">9</span>   <span class="comment">// PWM-faehiger Pin</span>
+
+Servo servo;           <span class="comment">// Servo-Objekt erstellen</span>
+
+<span class="keyword">void</span> setup() {
+  Serial.begin(<span class="number">9600</span>);
+  servo.attach(SERVO_PIN);  <span class="comment">// Servo an Pin binden</span>
+
+  Serial.println(<span class="string">"Servo bereit!"</span>);
+  servo.write(<span class="number">90</span>);           <span class="comment">// Startposition: Mitte</span>
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="comment">// Noch leer</span>
+}</code></pre></div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Erklärung</h4>
+                            <ul style="font-size: 16px;">
+                                <li><code>#include &lt;Servo.h&gt;</code> - Library einbinden</li>
+                                <li><code>Servo servo;</code> - Objekt erstellen</li>
+                                <li><code>servo.attach(pin)</code> - Pin zuweisen</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Teste es!</h4>
+                            <p style="font-size: 14px;">Der Servo sollte sich zur Mitte (90°) bewegen und dort bleiben.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Code Schritt 2 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 2: Winkel anfahren</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 2: Verschiedene Positionen anfahren</span>
+
+<span class="keyword">#include</span> <span class="string">&lt;Servo.h&gt;</span>
+
+<span class="keyword">#define</span> SERVO_PIN <span class="number">9</span>
+Servo servo;
+
+<span class="keyword">void</span> setup() {
+  Serial.begin(<span class="number">9600</span>);
+  servo.attach(SERVO_PIN);
+}
+
+<span class="keyword">void</span> loop() {
+  servo.write(<span class="number">0</span>);            <span class="comment">// Ganz links</span>
+  Serial.println(<span class="string">"Position: 0 Grad"</span>);
+  delay(<span class="number">1000</span>);
+
+  servo.write(<span class="number">90</span>);           <span class="comment">// Mitte</span>
+  Serial.println(<span class="string">"Position: 90 Grad"</span>);
+  delay(<span class="number">1000</span>);
+
+  servo.write(<span class="number">180</span>);          <span class="comment">// Ganz rechts</span>
+  Serial.println(<span class="string">"Position: 180 Grad"</span>);
+  delay(<span class="number">1000</span>);
+}</code></pre></div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Was passiert?</h4>
+                        <p>Der Servo fährt nacheinander drei Positionen an: Links (0°) → Mitte (90°) → Rechts (180°) und wiederholt das endlos.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Fertiger Code -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Fertiger Code: Sweep</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// I03: SG90 Servo-Motor mit PWM</span>
+<span class="comment">// Praezise Winkelsteuerung von 0 bis 180 Grad</span>
+
+<span class="keyword">#include</span> <span class="string">&lt;Servo.h&gt;</span>
+
+<span class="keyword">#define</span> SERVO_PIN <span class="number">9</span>
+Servo servo;
+
+<span class="keyword">void</span> setup() {
+  Serial.begin(<span class="number">9600</span>);
+  servo.attach(SERVO_PIN);
+  Serial.println(<span class="string">"SG90 Servo-Motor Steuerung"</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="comment">// Von 0 bis 180 Grad</span>
+  <span class="keyword">for</span> (<span class="keyword">int</span> angle = <span class="number">0</span>; angle <= <span class="number">180</span>; angle += <span class="number">10</span>) {
+    servo.write(angle);
+    Serial.print(<span class="string">"Winkel: "</span>);
+    Serial.println(angle);
+    delay(<span class="number">300</span>);
+  }
+  delay(<span class="number">1000</span>);
+
+  <span class="comment">// Von 180 zurueck zu 0 Grad</span>
+  <span class="keyword">for</span> (<span class="keyword">int</span> angle = <span class="number">180</span>; angle >= <span class="number">0</span>; angle -= <span class="number">10</span>) {
+    servo.write(angle);
+    Serial.print(<span class="string">"Winkel: "</span>);
+    Serial.println(angle);
+    delay(<span class="number">300</span>);
+  }
+  delay(<span class="number">1000</span>);
+}</code></pre></div>
+                </div>
+
+                <!-- SLIDE 9: Wokwi Demo -->
+                <div class="slide">
+                    <h2>Ausprobieren</h2>
+                    <p class="subtitle">Simulation in Wokwi</p>
+
+                    <div class="center mt-40">
+                        <div class="card card-dark">
+                            <h3>Wokwi Projekt</h3>
+                            <p class="mt-20">Erstelle ein neues Projekt mit Arduino Uno:</p>
+                            <div class="mt-30">
+                                <a href="https://wokwi.com/projects/new/arduino-uno" target="_blank" style="color: #0071e3; font-size: 20px; text-decoration: none;">
+                                    Neues Arduino-Projekt in Wokwi →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-40">
+                        <h4>So testest du</h4>
+                        <ul>
+                            <li>Suche "servo" in der Komponenten-Liste und füge ihn hinzu</li>
+                            <li>Verbinde: V+ → 5V, PWM → Pin 9, GND → GND</li>
+                            <li>Kopiere den Code und klicke auf Play</li>
+                            <li>Beobachte die Servo-Bewegung im Simulator!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Challenges -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Challenges</div>
+                            <h2 class="no-margin">Erweiterungen</h2>
+                        </div>
+                    </div>
+
+                    <p class="subtitle">Probiere diese Aufgaben aus</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🎚️</div>
+                            <h4>Challenge 1: Poti-Steuerung</h4>
+                            <p>Potentiometer steuert den Servo-Winkel. Drehe am Poti = Servo folgt!</p>
+                            <p style="font-size: 12px; color: #666; margin-top: 8px;">→ challenge1_poti.ino</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🔄</div>
+                            <h4>Challenge 2: Smooth Sweep</h4>
+                            <p>Langsames, sanftes Hin- und Herschwenken mit einstellbarer Geschwindigkeit.</p>
+                            <p style="font-size: 12px; color: #666; margin-top: 8px;">→ challenge2_sweep.ino</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🕹️</div>
+                            <h4>Challenge 3: Taster-Steuerung</h4>
+                            <p>2 Taster: Links/Rechts drehen in 10°-Schritten. Manuelle Kontrolle!</p>
+                            <p style="font-size: 12px; color: #666; margin-top: 8px;">→ challenge3_taster.ino</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">📡</div>
+                            <h4>Challenge 4: Radar</h4>
+                            <p>Servo als Radar: Ultraschall misst Entfernung bei verschiedenen Winkeln.</p>
+                            <p style="font-size: 12px; color: #666; margin-top: 8px;">→ challenge4_ultraschall.ino</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">⚙️</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du kannst jetzt Servos präzise steuern</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Servo.h</h4>
+                                <p>Library eingebunden und genutzt</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>PWM-Timing</h4>
+                                <p>50Hz, 1-2ms Pulsbreite verstanden</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Winkel 0-180°</h4>
+                                <p>Präzise Positionierung gemeistert</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../I04_oled/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p class="mt-10">I04: OLED-Display - Grafiken und Text auf kleinem Bildschirm</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

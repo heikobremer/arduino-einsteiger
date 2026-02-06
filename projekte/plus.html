@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plus Projekte - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../presentation_framework/styles.css">
+    <style>
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .project-card {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 24px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: block;
+        }
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .project-card h4 {
+            margin: 10px 0 6px 0;
+            color: #1d1d1f;
+            font-size: 18px;
+        }
+        .project-card p {
+            font-size: 14px;
+            color: #515154;
+            margin: 0;
+        }
+        .project-card .emoji {
+            font-size: 36px;
+        }
+        .difficulty {
+            display: inline-block;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: #e2d9f3;
+            color: #4c2889;
+            margin-top: 10px;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #0071e3;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .header-badge {
+            background: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container" style="height: auto; min-height: 90vh;">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper" style="padding-bottom: 40px;">
+
+                <a href="index.html" class="back-link">← Zurück zur Projektübersicht</a>
+
+                <div class="header-badge">Plus</div>
+                <h1>Plus-Projekte</h1>
+                <p class="subtitle">Multi-Funktions-Projekte mit LCD Keypad Shield und mehr</p>
+
+                <div class="project-grid">
+                    <a href="plus/P01_keypad_demo/index.html" class="project-card">
+                        <div class="emoji">🎛️</div>
+                        <h4>P01 LCD Keypad Demo</h4>
+                        <p>Funktionsdemo für das LCD Keypad Shield mit strukturiertem Code.</p>
+                        <span class="difficulty">Plus</span>
+                    </a>
+                    <a href="plus/P02_multiclock/index.html" class="project-card">
+                        <div class="emoji">⏰</div>
+                        <h4>P02 Multiclock</h4>
+                        <p>Uhr, Stoppuhr, Alarm und Timer in einem Gerät.</p>
+                        <span class="difficulty">Plus</span>
+                    </a>
+                    <a href="plus/P03_zeitanzeigen/index.html" class="project-card">
+                        <div class="emoji">🌡️</div>
+                        <h4>P03 Klimastation</h4>
+                        <p>TM1637-Uhr mit DHT22 und NeoPixel-Statusanzeige.</p>
+                        <span class="difficulty">Plus</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

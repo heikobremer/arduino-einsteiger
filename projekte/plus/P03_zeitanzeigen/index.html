@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P03: Klimastation - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🌡️</div>
+                        <h1>Klimastation</h1>
+                        <p class="subtitle">Projekt P03 - Uhrzeit + Temperatur + Humidity</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Plus</div>
+                            <div class="tech-badge">TM1637</div>
+                            <div class="tech-badge">DHT22</div>
+                            <div class="tech-badge">NeoPixel</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div><h2 class="no-margin">Projektübersicht</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Visuelle Klimaanzeige</h3>
+                        <ul>
+                            <li><strong>TM1637 Display</strong> - Echtzeit-Uhr (HH:MM)</li>
+                            <li><strong>DHT22 Sensor</strong> - Temperatur und Luftfeuchtigkeit</li>
+                            <li><strong>NeoPixel-Streifen 1</strong> - Temperatur-Balkenanzeige</li>
+                            <li><strong>NeoPixel-Streifen 2</strong> - Humidity-Balkenanzeige</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Konzept</h3>
+                        <p>Intuitive Farbskala: Rot (zu niedrig) → Gelb → Grün (optimal) → Gelb → Rot (zu hoch)</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div><h2 class="no-margin">Komponenten</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Hardware</h3>
+                        <ul>
+                            <li><strong>TM1637</strong> - 4-Digit 7-Segment Display (CLK: D2, DIO: D3)</li>
+                            <li><strong>DS1307</strong> - Echtzeituhr mit I2C (A4, A5)</li>
+                            <li><strong>DHT22</strong> - Temperatur/Humidity Sensor (D4)</li>
+                            <li><strong>10x NeoPixel</strong> - Temperatur-Anzeige (D5)</li>
+                            <li><strong>10x NeoPixel</strong> - Humidity-Anzeige (D6)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div><h2 class="no-margin">NeoPixel-Farbskala</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Temperatur (15°C - 30°C)</h3>
+                        <p style="font-family: monospace; font-size: 16px;">
+                            🔴🟠🟡🟢🟢🟢🟢🟡🟠🔴<br>
+                            15° 17° 19° 21° 23° 25° 27° 29° (je 1.5°C/LED)
+                        </p>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Luftfeuchtigkeit (30% - 70%)</h3>
+                        <p style="font-family: monospace; font-size: 16px;">
+                            🔴🟠🟡🟢🟢🟢🟢🟡🟠🔴<br>
+                            30% 34% 38% 42% 50% 54% 58% 62% (je 4%/LED)
+                        </p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Code - Initialisierung</h2>
+                    <div class="code-block"><pre><code><span class="keyword">#include</span> <span class="string">&lt;TM1637Display.h&gt;</span>
+<span class="keyword">#include</span> <span class="string">&lt;RTClib.h&gt;</span>
+<span class="keyword">#include</span> <span class="string">&lt;DHT.h&gt;</span>
+<span class="keyword">#include</span> <span class="string">&lt;FastLED.h&gt;</span>
+
+<span class="comment">// TM1637 Display</span>
+<span class="keyword">const int</span> PIN_CLK = <span class="number">2</span>;
+<span class="keyword">const int</span> PIN_DIO = <span class="number">3</span>;
+TM1637Display display(PIN_CLK, PIN_DIO);
+
+<span class="comment">// NeoPixel Streifen</span>
+<span class="keyword">const int</span> NUM_LEDS = <span class="number">10</span>;
+CRGB ledsTemp[NUM_LEDS];   <span class="comment">// Pin 5</span>
+CRGB ledsHumid[NUM_LEDS];  <span class="comment">// Pin 6</span>
+
+<span class="comment">// Sensoren</span>
+DHT dht(<span class="number">4</span>, DHT22);
+RTC_DS1307 rtc;</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <h2>Code - Farbberechnung</h2>
+                    <div class="code-block"><pre><code><span class="comment">// Farbe basierend auf Position (0-9) in der Skala</span>
+CRGB getScaleColor(<span class="keyword">int</span> position) {
+    <span class="comment">// Mitte (4,5) = Grün, Ränder (0,9) = Rot</span>
+    <span class="keyword">int</span> distFromCenter = abs(position - <span class="number">4</span>);
+
+    <span class="keyword">switch</span> (distFromCenter) {
+        <span class="keyword">case</span> <span class="number">0</span>: <span class="keyword">return</span> CRGB::Green;     <span class="comment">// Optimal</span>
+        <span class="keyword">case</span> <span class="number">1</span>: <span class="keyword">return</span> CRGB::GreenYellow;
+        <span class="keyword">case</span> <span class="number">2</span>: <span class="keyword">return</span> CRGB::Yellow;
+        <span class="keyword">case</span> <span class="number">3</span>: <span class="keyword">return</span> CRGB::Orange;
+        <span class="keyword">default</span>: <span class="keyword">return</span> CRGB::Red;    <span class="comment">// Zu extrem</span>
+    }
+}
+
+<span class="comment">// Wert auf Position (0-9) mappen</span>
+<span class="keyword">int</span> mapToScale(<span class="keyword">float</span> value, <span class="keyword">float</span> min, <span class="keyword">float</span> max) {
+    <span class="keyword">int</span> pos = map(value, min, max, <span class="number">0</span>, <span class="number">9</span>);
+    <span class="keyword">return</span> constrain(pos, <span class="number">0</span>, <span class="number">9</span>);
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <h2>Code - LED-Anzeige</h2>
+                    <div class="code-block"><pre><code><span class="keyword">void</span> updateTempLeds(<span class="keyword">float</span> temp) {
+    <span class="keyword">int</span> activePos = mapToScale(temp, <span class="number">15.0</span>, <span class="number">30.0</span>);
+
+    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < NUM_LEDS; i++) {
+        <span class="keyword">if</span> (i <= activePos) {
+            ledsTemp[i] = getScaleColor(i);
+        } <span class="keyword">else</span> {
+            ledsTemp[i] = CRGB::Black;
+        }
+    }
+    FastLED.show();
+}
+
+<span class="keyword">void</span> updateHumidLeds(<span class="keyword">float</span> humid) {
+    <span class="keyword">int</span> activePos = mapToScale(humid, <span class="number">30.0</span>, <span class="number">70.0</span>);
+
+    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < NUM_LEDS; i++) {
+        <span class="keyword">if</span> (i <= activePos) {
+            ledsHumid[i] = getScaleColor(i);
+        } <span class="keyword">else</span> {
+            ledsHumid[i] = CRGB::Black;
+        }
+    }
+    FastLED.show();
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <h2>Code - Hauptschleife</h2>
+                    <div class="code-block"><pre><code><span class="keyword">void</span> loop() {
+    <span class="comment">// Uhrzeit auf TM1637 anzeigen</span>
+    DateTime now = rtc.now();
+    <span class="keyword">int</span> displayTime = now.hour() * <span class="number">100</span> + now.minute();
+    display.showNumberDecEx(displayTime, <span class="number">0b01000000</span>,
+                            <span class="keyword">true</span>);  <span class="comment">// Doppelpunkt an</span>
+
+    <span class="comment">// Alle 2 Sekunden Sensor lesen</span>
+    <span class="keyword">static unsigned long</span> lastRead = <span class="number">0</span>;
+    <span class="keyword">if</span> (millis() - lastRead > <span class="number">2000</span>) {
+        lastRead = millis();
+
+        <span class="keyword">float</span> temp = dht.readTemperature();
+        <span class="keyword">float</span> humid = dht.readHumidity();
+
+        <span class="keyword">if</span> (!isnan(temp) && !isnan(humid)) {
+            updateTempLeds(temp);
+            updateHumidLeds(humid);
+        }
+    }
+    delay(<span class="number">500</span>);  <span class="comment">// Doppelpunkt-Blinken</span>
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div><h2 class="no-margin">TM1637 Display</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Vorteile gegenüber LCD</h3>
+                        <ul>
+                            <li><strong>Nur 2 Pins</strong> - CLK und DIO</li>
+                            <li><strong>Gut lesbar</strong> - Große 7-Segment-Ziffern</li>
+                            <li><strong>Doppelpunkt</strong> - Ideal für Uhrzeitanzeige</li>
+                            <li><strong>Einfache Library</strong> - TM1637Display.h</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Wichtige Funktionen</h3>
+                        <p>showNumberDec(num, leading_zeros)<br>
+                        showNumberDecEx(num, dots, leading_zeros)</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">5</div>
+                        <div><h2 class="no-margin">Wokwi-Simulation</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Komponenten im Simulator</h3>
+                        <ul>
+                            <li>wokwi-tm1637-7segment (4 Digits)</li>
+                            <li>wokwi-ds1307 (RTC mit I2C)</li>
+                            <li>wokwi-dht22 (Temperatur/Humidity)</li>
+                            <li>2x 10 wokwi-neopixel (verkabelt)</li>
+                        </ul>
+                    </div>
+                    <div class="card card-dark mt-20">
+                        <h3>Testen</h3>
+                        <p>DHT22 im Simulator anklicken um Werte zu ändern!</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🌡️</div>
+                        <h1>Geschafft!</h1>
+                        <p class="mt-30">Du hast eine visuelle Klimastation gebaut!</p>
+                        <div class="card card-dark mt-50">
+                            <h3>Erweiterungsideen</h3>
+                            <p>Datum-Anzeige, Min/Max-Speicherung, Alarm bei Extremwerten</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="controls">
+                <div class="navigation"><a href="../../plus.html">Plus</a></div>
+                <div class="controls-center">
+                    <span class="navigation">&larr; &rarr;</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

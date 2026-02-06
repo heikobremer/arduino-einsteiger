@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A07: Light Theremin - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#127932;</div>
+                        <h1>Light Theremin</h1>
+                        <p class="subtitle">Projekt A07 - Lichtgesteuertes Musikinstrument</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Advanced</div>
+                            <div class="tech-badge">LDR</div>
+                            <div class="tech-badge">Piezo</div>
+                            <div class="tech-badge">tone()</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div><h2 class="no-margin">Was du lernst</h2></div>
+                    </div>
+                    <ul class="mt-40">
+                        <li><strong>Fotowiderstand (LDR)</strong> - Lichtstärke messen</li>
+                        <li><strong>tone() Funktion</strong> - Frequenzen erzeugen</li>
+                        <li><strong>map() Funktion</strong> - Wertebereiche umrechnen</li>
+                        <li><strong>Kalibrierung</strong> - Sensor automatisch einmessen</li>
+                    </ul>
+                    <div class="card card-dark mt-30">
+                        <h3>Komponenten</h3>
+                        <p>Arduino Uno, LDR-Modul, Piezo-Summer, Potentiometer, LED</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div><h2 class="no-margin">Schaltung</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Pin-Belegung</h3>
+                        <ul>
+                            <li><strong>A0</strong> - LDR (Licht -> Tonhöhe)</li>
+                            <li><strong>A1</strong> - Potentiometer (Tonbereich)</li>
+                            <li><strong>D9</strong> - Piezo-Summer (PWM)</li>
+                            <li><strong>D8</strong> - LED (Aktivitätsanzeige)</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Spielprinzip</h3>
+                        <p>Bewege deine Hand über den Lichtsensor - je mehr Licht, desto höher der Ton!</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Der Code</h2>
+                    <div class="code-block"><pre><code><span class="keyword">const int</span> LDR_PIN = A0;
+<span class="keyword">const int</span> POTI_PIN = A1;
+<span class="keyword">const int</span> PIEZO_PIN = <span class="number">9</span>;
+
+<span class="keyword">void</span> loop() {
+  <span class="keyword">int</span> ldrValue = analogRead(LDR_PIN);
+  <span class="keyword">int</span> potiValue = analogRead(POTI_PIN);
+
+  <span class="comment">// Tonbereich mit Poti einstellen</span>
+  <span class="keyword">int</span> maxFreq = map(potiValue, <span class="number">0</span>, <span class="number">1023</span>,
+                     <span class="number">500</span>, <span class="number">2000</span>);
+
+  <span class="comment">// Licht in Frequenz umwandeln</span>
+  <span class="keyword">int</span> freq = map(ldrValue, <span class="number">0</span>, <span class="number">1023</span>,
+                 <span class="number">100</span>, maxFreq);
+
+  tone(PIEZO_PIN, freq);
+  delay(<span class="number">10</span>);
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div><h2 class="no-margin">Kalibrierung</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-30">
+                        <h3>Warum kalibrieren?</h3>
+                        <p>Je nach Raumbeleuchtung variiert der LDR-Wertebereich stark. Automatische Kalibrierung findet Min/Max.</p>
+                    </div>
+                    <div class="code-block mt-20"><pre><code><span class="keyword">void</span> calibrate() {
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < <span class="number">100</span>; i++) {
+    <span class="keyword">int</span> ldr = analogRead(LDR_PIN);
+    <span class="keyword">if</span> (ldr < ldrMin) ldrMin = ldr;
+    <span class="keyword">if</span> (ldr > ldrMax) ldrMax = ldr;
+    delay(<span class="number">30</span>);
+  }
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div><h2 class="no-margin">Signalglättung</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-30">
+                        <h3>Gleitender Durchschnitt</h3>
+                        <p>Reduziert Rauschen durch Mittelung mehrerer Messwerte</p>
+                    </div>
+                    <div class="code-block mt-20"><pre><code><span class="keyword">int</span> values[<span class="number">5</span>];
+<span class="keyword">int</span> index = <span class="number">0</span>;
+
+<span class="keyword">int</span> getSmoothed() {
+  values[index] = analogRead(LDR_PIN);
+  index = (index + <span class="number">1</span>) % <span class="number">5</span>;
+
+  <span class="keyword">long</span> sum = <span class="number">0</span>;
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < <span class="number">5</span>; i++) {
+    sum += values[i];
+  }
+  <span class="keyword">return</span> sum / <span class="number">5</span>;
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">5</div>
+                        <div><h2 class="no-margin">Erweiterungen</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-30">
+                        <h3>Ideen</h3>
+                        <ul>
+                            <li>Tonleiter erzwingen (nur bestimmte Noten)</li>
+                            <li>Zweiter LDR für Lautstärke</li>
+                            <li>Button für Ton an/aus (Staccato)</li>
+                            <li>OLED-Display mit Frequenzanzeige</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#127932;</div>
+                        <h1>Geschafft!</h1>
+                        <p class="mt-30">Du hast ein Licht-Theremin gebaut!</p>
+                        <div class="card card-dark mt-50" data-next="../A08_oszilloskop/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p>A08: Mini-Oszilloskop</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="controls">
+                <div class="navigation"><a href="../../advanced.html">Advanced</a></div>
+                <div class="controls-center">
+                    <span class="navigation">&larr; &rarr;</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">8</span></div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

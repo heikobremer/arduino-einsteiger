@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I02: Ultraschall-Sensor - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">📏</div>
+                        <h1>Ultraschall-Sensor</h1>
+                        <p class="subtitle">Projekt I02 - Entfernung messen mit Schallwellen</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Intermediate</div>
+                            <div class="tech-badge">HC-SR04</div>
+                            <div class="tech-badge">Ultraschall</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>Trigger-Signal senden</strong> - 10us Ultraschall-Impuls aussenden</li>
+                        <li><strong>Echo-Messung</strong> - Laufzeit des reflektierten Signals messen</li>
+                        <li><strong>pulseIn() Funktion</strong> - Pulsdauer in Mikrosekunden erfassen</li>
+                        <li><strong>Entfernung berechnen</strong> - Schallgeschwindigkeit und Weg-Zeit-Formel</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Grundlagen der digitalen Ein-/Ausgabe, Verstaendnis von Funktionen und Variablen</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Komponenten -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Was du brauchst</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">📡</div>
+                            <h4>HC-SR04 Ultraschall-Sensor</h4>
+                            <p>Sendet Ultraschall-Impulse (40kHz) und misst die Zeit bis zum Echo. Damit laesst sich die Entfernung zu Objekten bestimmen.</p>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Messbereich:</strong> 2cm - 400cm</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🔌</div>
+                            <h4>Die 4 Pins</h4>
+                            <ul style="font-size: 14px;">
+                                <li><strong>VCC</strong> - Stromversorgung (5V)</li>
+                                <li><strong>TRIG</strong> - Trigger-Eingang (Pin 6)</li>
+                                <li><strong>ECHO</strong> - Echo-Ausgang (Pin 7)</li>
+                                <li><strong>GND</strong> - Masse</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Hinweis</h4>
+                        <p>Der HC-SR04 arbeitet mit 5V-Logik und ist perfekt fuer den Arduino Uno geeignet. Keine zusaetzlichen Bauteile noetig!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Theorie -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">Wie funktioniert der Sensor?</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Das Prinzip</h3>
+                            <ul class="mt-20">
+                                <li>Trigger-Puls loest Ultraschall aus</li>
+                                <li>Schall breitet sich aus (343 m/s)</li>
+                                <li>Schall trifft auf Objekt und wird reflektiert</li>
+                                <li>Echo wird vom Sensor empfangen</li>
+                            </ul>
+
+                            <h3 class="mt-30">Die Berechnung</h3>
+                            <p class="mt-10">Schallgeschwindigkeit: 343 m/s = 0.0343 cm/us</p>
+                            <p>Das sind <strong>29.1 us pro cm</strong></p>
+                            <p class="mt-10">Entfernung = (Zeit / 2) / 29.1</p>
+                        </div>
+                        <div class="card">
+                            <h4>Zeitdiagramm</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 13px;">
+  TRIGGER:
+  ───┐     ┌───────────
+     │     │
+     └─────┘ (10us Puls)
+
+  ECHO:
+  ───────┐           ┌───
+         │           │
+         └───────────┘
+         |<-- Zeit -->|
+
+  Zeit = Hin + Zurueck
+  → Teilen durch 2!
+            </pre></div>
+                            <p class="mt-20" style="font-size: 14px;"><strong>Messbereich:</strong> 2cm bis 400cm</p>
+                            <p style="font-size: 14px;"><strong>Genauigkeit:</strong> ca. 3mm</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Schaltplan -->
+                <div class="slide">
+                    <h2>Schaltplan</h2>
+                    <p class="subtitle">Verbindungen zum Arduino</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Wokwi-Aufbau</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 14px;">
+     Arduino Uno          HC-SR04
+    ┌───────────┐      ┌──────────┐
+    │           │      │  ┌──┐    │
+    │  5V ──────┼──────┼─ VCC     │
+    │           │      │          │
+    │  Pin 6 ───┼──────┼─ TRIG    │
+    │           │      │          │
+    │  Pin 7 ───┼──────┼─ ECHO    │
+    │           │      │          │
+    │  GND ─────┼──────┼─ GND     │
+    │           │      │  └──┘    │
+    └───────────┘      └──────────┘
+            </pre></div>
+                        </div>
+                        <div class="card card-info">
+                            <h4>Verbindungen</h4>
+                            <ul class="mt-20">
+                                <li><strong>VCC</strong> → Arduino 5V</li>
+                                <li><strong>TRIG</strong> → Arduino Pin 6</li>
+                                <li><strong>ECHO</strong> → Arduino Pin 7</li>
+                                <li><strong>GND</strong> → Arduino GND</li>
+                            </ul>
+
+                            <h4 class="mt-30">In Wokwi</h4>
+                            <ol style="font-size: 14px;">
+                                <li>Suche nach "ultrasonic"</li>
+                                <li>Waehle HC-SR04</li>
+                                <li>Verbinde die 4 Pins</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Code Schritt 1 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 1: Pin-Setup</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 1: Pin-Definitionen und Setup</span>
+
+<span class="keyword">#define</span> TRIGGER_PIN <span class="number">6</span>  <span class="comment">// Trigger an Pin 6</span>
+<span class="keyword">#define</span> ECHO_PIN <span class="number">7</span>     <span class="comment">// Echo an Pin 7</span>
+
+<span class="keyword">void</span> setup() {
+  Serial.begin(<span class="number">9600</span>);
+
+  <span class="comment">// Trigger ist Ausgang (wir senden)</span>
+  pinMode(TRIGGER_PIN, OUTPUT);
+
+  <span class="comment">// Echo ist Eingang (wir empfangen)</span>
+  pinMode(ECHO_PIN, INPUT);
+
+  Serial.println(<span class="string">"HC-SR04 Ultraschall-Sensor"</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="comment">// Noch leer</span>
+}</code></pre></div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Erklaerung</h4>
+                            <ul style="font-size: 16px;">
+                                <li><code>#define</code> - Konstante ohne Speicher</li>
+                                <li><code>TRIGGER</code> ist OUTPUT (senden)</li>
+                                <li><code>ECHO</code> ist INPUT (empfangen)</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Warum #define?</h4>
+                            <p style="font-size: 14px;">Praeprozessor ersetzt den Text vor dem Kompilieren. Spart Speicher im Vergleich zu <code>const int</code>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Code Schritt 2 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 2: Trigger-Signal senden</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 2: Trigger-Signal erzeugen</span>
+
+<span class="keyword">float</span> measureDistance() {
+  <span class="comment">// Trigger auf LOW setzen (sauberer Start)</span>
+  digitalWrite(TRIGGER_PIN, LOW);
+  delayMicroseconds(<span class="number">2</span>);
+
+  <span class="comment">// 10 Mikrosekunden HIGH-Puls senden</span>
+  digitalWrite(TRIGGER_PIN, HIGH);
+  delayMicroseconds(<span class="number">10</span>);
+  digitalWrite(TRIGGER_PIN, LOW);
+
+  <span class="comment">// Echo messen (kommt als naechstes...)</span>
+  <span class="keyword">return</span> <span class="number">0</span>;
+}</code></pre></div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Das Trigger-Signal</h4>
+                        <p>Der HC-SR04 benoetigt einen <strong>10 Mikrosekunden</strong> langen HIGH-Puls am TRIG-Pin.
+                        Danach sendet er automatisch 8 Ultraschall-Impulse bei 40kHz aus.</p>
+                    </div>
+
+                    <div class="card mt-20">
+                        <h4>delayMicroseconds()</h4>
+                        <p style="font-size: 14px;"><code>delay()</code> arbeitet in Millisekunden (1/1000 Sekunde).
+                        <code>delayMicroseconds()</code> arbeitet in Mikrosekunden (1/1.000.000 Sekunde) - viel praeziser!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Code Schritt 3 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 3: Echo messen und berechnen</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 3: Echo-Dauer messen und Entfernung berechnen</span>
+
+<span class="keyword">float</span> measureDistance() {
+  <span class="comment">// Trigger-Signal senden</span>
+  digitalWrite(TRIGGER_PIN, LOW);
+  delayMicroseconds(<span class="number">2</span>);
+  digitalWrite(TRIGGER_PIN, HIGH);
+  delayMicroseconds(<span class="number">10</span>);
+  digitalWrite(TRIGGER_PIN, LOW);
+
+  <span class="comment">// Echo-Puls messen (Timeout: 30ms = ca. 5m)</span>
+  <span class="keyword">long</span> duration = pulseIn(ECHO_PIN, HIGH, <span class="number">30000</span>);
+
+  <span class="keyword">if</span> (duration == <span class="number">0</span>) {
+    <span class="keyword">return</span> <span class="number">-1</span>;  <span class="comment">// Timeout oder Fehler</span>
+  }
+
+  <span class="comment">// Entfernung = (Zeit / 2) / 29.1 us/cm</span>
+  <span class="keyword">float</span> distance = (duration / <span class="number">2.0</span>) / <span class="number">29.1</span>;
+  <span class="keyword">return</span> distance;
+}</code></pre></div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>pulseIn() erklaert</h4>
+                            <ul style="font-size: 14px;">
+                                <li><strong>Pin</strong> - Welcher Pin wird gemessen</li>
+                                <li><strong>HIGH</strong> - Warte auf HIGH, miss Dauer</li>
+                                <li><strong>30000</strong> - Timeout in Mikrosekunden</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Die Formel</h4>
+                            <p style="font-size: 14px;">Schall braucht <strong>29.1us pro cm</strong>. Die gemessene Zeit ist Hin + Zurueck, daher teilen wir durch 2.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: Fertiger Code -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Fertiger Code</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// I02: HC-SR04 Ultraschall-Entfernungsmesser</span>
+<span class="keyword">#define</span> TRIGGER_PIN <span class="number">6</span>
+<span class="keyword">#define</span> ECHO_PIN <span class="number">7</span>
+
+<span class="keyword">void</span> setup() {
+  Serial.begin(<span class="number">9600</span>);
+  pinMode(TRIGGER_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  Serial.println(<span class="string">"HC-SR04 Ultraschall-Sensor"</span>);
+}
+
+<span class="keyword">float</span> measureDistance() {
+  digitalWrite(TRIGGER_PIN, LOW);
+  delayMicroseconds(<span class="number">2</span>);
+  digitalWrite(TRIGGER_PIN, HIGH);
+  delayMicroseconds(<span class="number">10</span>);
+  digitalWrite(TRIGGER_PIN, LOW);
+  <span class="keyword">long</span> duration = pulseIn(ECHO_PIN, HIGH, <span class="number">30000</span>);
+  <span class="keyword">if</span> (duration == <span class="number">0</span>) <span class="keyword">return</span> <span class="number">-1</span>;
+  <span class="keyword">return</span> (duration / <span class="number">2.0</span>) / <span class="number">29.1</span>;
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="keyword">float</span> dist = measureDistance();
+  <span class="keyword">if</span> (dist > <span class="number">0</span>) {
+    Serial.print(<span class="string">"Entfernung: "</span>);
+    Serial.print(dist, <span class="number">1</span>);
+    Serial.println(<span class="string">" cm"</span>);
+  } <span class="keyword">else</span> {
+    Serial.println(<span class="string">"Messfehler"</span>);
+  }
+  delay(<span class="number">500</span>);
+}</code></pre></div>
+                </div>
+
+                <!-- SLIDE 10: Wokwi Demo -->
+                <div class="slide">
+                    <h2>Ausprobieren</h2>
+                    <p class="subtitle">Simulation in Wokwi</p>
+
+                    <div class="center mt-40">
+                        <div class="card card-dark">
+                            <h3>Wokwi Projekt</h3>
+                            <p class="mt-20">Erstelle ein neues Projekt mit Arduino Uno:</p>
+                            <div class="mt-30">
+                                <a href="https://wokwi.com/projects/new/arduino-uno" target="_blank" style="color: #0071e3; font-size: 20px; text-decoration: none;">
+                                    Neues Arduino-Projekt in Wokwi →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-40">
+                        <h4>So testest du</h4>
+                        <ul>
+                            <li>Fuege einen HC-SR04 Sensor hinzu (suche nach "ultrasonic")</li>
+                            <li>Verbinde VCC→5V, GND→GND, TRIG→Pin 6, ECHO→Pin 7</li>
+                            <li>Kopiere den Code in die sketch.ino</li>
+                            <li>Klicke auf Play und beobachte den Serial Monitor!</li>
+                            <li>In Wokwi: Klicke auf den Sensor und ziehe den Abstandsregler</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Challenges -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Challenges</div>
+                            <h2 class="no-margin">Erweiterungen</h2>
+                        </div>
+                    </div>
+
+                    <p class="subtitle">Probiere diese Aufgaben aus</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">💡</div>
+                            <h4>Challenge 1: Warn-LED</h4>
+                            <p>Fuege eine LED hinzu, die bei Entfernung unter 20cm leuchtet.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🔊</div>
+                            <h4>Challenge 2: Piezo-Warnung</h4>
+                            <p>Ein Buzzer piept schneller, je naeher ein Objekt kommt (wie ein Einparksensor).</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">📊</div>
+                            <h4>Challenge 3: Mittelwert</h4>
+                            <p>Miss 5x und berechne den Durchschnitt fuer stabilere Werte.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🚦</div>
+                            <h4>Challenge 4: Ampel</h4>
+                            <p>3 LEDs (gruen/gelb/rot) zeigen Entfernungszonen an: &gt;50cm, 20-50cm, &lt;20cm.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 12: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">📏</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du kannst jetzt Entfernungen messen</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Trigger-Signal</h4>
+                                <p>10us Puls zum Sensor senden</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>pulseIn()</h4>
+                                <p>Echo-Dauer in Mikrosekunden</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Berechnung</h4>
+                                <p>Schallgeschwindigkeit 343 m/s</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../I03_servo/index.html">
+                            <h3>Naechstes Projekt</h3>
+                            <p class="mt-10">I03: Servo-Motor - Praezise Winkelsteuerung mit PWM</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">12</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

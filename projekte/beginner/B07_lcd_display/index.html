@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B07: LCD 1602 Display - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">📺</div>
+                        <h1>LCD 1602 Display</h1>
+                        <p class="subtitle">Projekt B07 - Text anzeigen mit I2C</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Beginner</div>
+                            <div class="tech-badge">I2C</div>
+                            <div class="tech-badge">LCD 16x2</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>I2C-Kommunikation</strong> - Das wichtigste Protokoll für Sensoren und Displays</li>
+                        <li><strong>Bibliotheken einbinden</strong> - LiquidCrystal_I2C nutzen</li>
+                        <li><strong>Text formatieren</strong> - Cursor positionieren, Text ausgeben</li>
+                        <li><strong>I2C-Adressen</strong> - Geräteadresse verstehen</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Grundlagen aus B01-B06 verstanden</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Komponenten -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Was du brauchst</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">📺</div>
+                            <h4>LCD 1602 mit I2C-Backpack</h4>
+                            <p>Ein 16x2 Zeichen LCD mit angelötetem I2C-Adapter (PCF8574). Nur 4 Kabel statt 16!</p>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Adresse:</strong> 0x27 oder 0x3F</p>
+                        </div>
+                        <div class="card">
+                            <h4>Nur 4 Verbindungen</h4>
+                            <ul class="mt-20">
+                                <li><strong>VCC</strong> → 5V</li>
+                                <li><strong>GND</strong> → GND</li>
+                                <li><strong>SDA</strong> → A4</li>
+                                <li><strong>SCL</strong> → A5</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>I2C beim Arduino Uno</h4>
+                        <p>Die I2C-Pins sind fest: <strong>A4 = SDA</strong> (Daten), <strong>A5 = SCL</strong> (Clock)</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: I2C Scanner -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Vorbereitung</div>
+                            <h2 class="no-margin">I2C-Adresse finden</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// I2C-Scanner: Findet die LCD-Adresse</span>
+
+<span class="keyword">#include</span> &lt;Wire.h&gt;
+
+<span class="keyword">void</span> setup() {
+  Wire.begin();
+  Serial.begin(<span class="number">9600</span>);
+  Serial.println(<span class="string">"I2C Scanner..."</span>);
+
+  <span class="keyword">for</span> (<span class="keyword">byte</span> addr = <span class="number">1</span>; addr < <span class="number">127</span>; addr++) {
+    Wire.beginTransmission(addr);
+    <span class="keyword">if</span> (Wire.endTransmission() == <span class="number">0</span>) {
+      Serial.print(<span class="string">"Gefunden: 0x"</span>);
+      Serial.println(addr, HEX);
+    }
+  }
+}
+
+<span class="keyword">void</span> loop() { }</code></pre></div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Typische Adressen</h4>
+                        <p><strong>0x27</strong> (39) - PCF8574 | <strong>0x3F</strong> (63) - PCF8574A</p>
+                        <p class="mt-10">In Wokwi: Das LCD1602 I2C nutzt standardmäßig 0x27.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: LCD Bibliothek -->
+                <div class="slide">
+                    <h2>Bibliothek einbinden</h2>
+                    <p class="subtitle">LiquidCrystal_I2C installieren</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>In der Arduino IDE</h4>
+                            <ol class="mt-10" style="font-size: 16px;">
+                                <li>Sketch → Bibliothek einbinden → Bibliotheken verwalten</li>
+                                <li>Suche nach "LiquidCrystal I2C"</li>
+                                <li>Version von Frank de Brabander installieren</li>
+                            </ol>
+                            <p class="mt-20" style="font-size: 14px;">In Wokwi ist die Bibliothek bereits verfügbar!</p>
+                        </div>
+                        <div class="card">
+                            <h4>Wichtige Funktionen</h4>
+                            <ul class="mt-10" style="font-size: 16px;">
+                                <li><code>lcd.init()</code> - LCD initialisieren</li>
+                                <li><code>lcd.backlight()</code> - Beleuchtung an</li>
+                                <li><code>lcd.print("Text")</code> - Text ausgeben</li>
+                                <li><code>lcd.setCursor(x, y)</code> - Cursor setzen</li>
+                                <li><code>lcd.clear()</code> - Display löschen</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Code -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Text auf LCD anzeigen</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// B07: LCD 1602 mit I2C</span>
+
+<span class="keyword">#include</span> &lt;Wire.h&gt;
+<span class="keyword">#include</span> &lt;LiquidCrystal_I2C.h&gt;
+
+<span class="comment">// LCD: Adresse 0x27, 16 Spalten, 2 Zeilen</span>
+LiquidCrystal_I2C lcd(<span class="number">0x27</span>, <span class="number">16</span>, <span class="number">2</span>);
+
+<span class="keyword">void</span> setup() {
+  lcd.init();          <span class="comment">// LCD initialisieren</span>
+  lcd.backlight();     <span class="comment">// Hintergrundbeleuchtung an</span>
+
+  lcd.setCursor(<span class="number">0</span>, <span class="number">0</span>);  <span class="comment">// Zeile 1</span>
+  lcd.print(<span class="string">"Hello, World!"</span>);
+
+  lcd.setCursor(<span class="number">0</span>, <span class="number">1</span>);  <span class="comment">// Zeile 2</span>
+  lcd.print(<span class="string">"Arduino LCD"</span>);
+}
+
+<span class="keyword">void</span> loop() { }</code></pre></div>
+                </div>
+
+                <!-- SLIDE 7: Dynamischer Text -->
+                <div class="slide">
+                    <h2>Dynamischer Text</h2>
+                    <p class="subtitle">Zähler und Live-Updates</p>
+
+                    <div class="code-block"><pre><code><span class="comment">// Zaehler auf LCD anzeigen</span>
+
+<span class="keyword">#include</span> &lt;Wire.h&gt;
+<span class="keyword">#include</span> &lt;LiquidCrystal_I2C.h&gt;
+
+LiquidCrystal_I2C lcd(<span class="number">0x27</span>, <span class="number">16</span>, <span class="number">2</span>);
+<span class="keyword">int</span> zaehler = <span class="number">0</span>;
+
+<span class="keyword">void</span> setup() {
+  lcd.init();
+  lcd.backlight();
+  lcd.print(<span class="string">"Zaehler:"</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  lcd.setCursor(<span class="number">0</span>, <span class="number">1</span>);
+  lcd.print(zaehler);
+  lcd.print(<span class="string">" Sek.   "</span>);  <span class="comment">// Leerzeichen ueberschreiben</span>
+  zaehler++;
+  delay(<span class="number">1000</span>);
+}</code></pre></div>
+
+                    <div class="card card-info mt-20">
+                        <h4>Tipp: Überschreiben</h4>
+                        <p>Füge Leerzeichen am Ende hinzu, um alte Zeichen zu überschreiben, statt <code>lcd.clear()</code> zu nutzen (verhindert Flackern).</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">📺</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du kannst jetzt Text auf LCDs anzeigen</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>I2C</h4>
+                                <p>Protokoll verstanden</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Bibliotheken</h4>
+                                <p>Module einbinden</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>LCD-Steuerung</h4>
+                                <p>Text und Cursor</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../B08_lichtsensor/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p class="mt-10">B08: Lichtsensor (LDR) - Analoge Sensoren verstehen</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">8</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

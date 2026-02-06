@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P02: Multiclock - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">⏰</div>
+                        <h1>Multiclock</h1>
+                        <p class="subtitle">Projekt P02 - Uhr, Stoppuhr, Alarm und Timer</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Plus</div>
+                            <div class="tech-badge">DS1307 RTC</div>
+                            <div class="tech-badge">LCD Keypad</div>
+                            <div class="tech-badge">State Machine</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div><h2 class="no-margin">Projektübersicht</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>4 Modi in einem Gerät</h3>
+                        <ul>
+                            <li><strong>Uhr</strong> - Echtzeit mit DS1307, einstellbar</li>
+                            <li><strong>Stoppuhr</strong> - Start/Stop/Reset</li>
+                            <li><strong>Alarm</strong> - Weckzeit einstellen, rote LED aktiv</li>
+                            <li><strong>Timer</strong> - Countdown, gelbe LED aktiv</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Navigation</h3>
+                        <p>LEFT/RIGHT: Modus wechseln | UP/DOWN: Werte ändern | SELECT: Aktion</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div><h2 class="no-margin">Komponenten</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Hardware</h3>
+                        <ul>
+                            <li><strong>Arduino Uno</strong> - Hauptprozessor</li>
+                            <li><strong>LCD Keypad Shield</strong> - Display + 5 Tasten</li>
+                            <li><strong>DS1307 RTC</strong> - Echtzeituhr mit Batterie</li>
+                            <li><strong>Rote LED</strong> - Alarm aktiv Anzeige</li>
+                            <li><strong>Gelbe LED</strong> - Timer aktiv Anzeige</li>
+                            <li><strong>Piezo Buzzer</strong> - Akustischer Alarm</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div><h2 class="no-margin">State Machine</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Zustandsbasierte Programmierung</h3>
+                        <ul>
+                            <li><strong>MODE_CLOCK</strong> - Zeitanzeige, Einstellmodus</li>
+                            <li><strong>MODE_STOPWATCH</strong> - Stoppuhr-Logik</li>
+                            <li><strong>MODE_ALARM</strong> - Alarmzeit, An/Aus</li>
+                            <li><strong>MODE_TIMER</strong> - Countdown-Funktion</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Vorteil</h3>
+                        <p>Klare Trennung der Funktionen, einfache Erweiterung!</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Code - Struktur & Modi</h2>
+                    <div class="code-block"><pre><code><span class="keyword">#include</span> <span class="string">&lt;LiquidCrystal.h&gt;</span>
+<span class="keyword">#include</span> <span class="string">&lt;Wire.h&gt;</span>
+<span class="keyword">#include</span> <span class="string">&lt;RTClib.h&gt;</span>
+
+<span class="comment">// Betriebsmodi</span>
+<span class="keyword">enum</span> Mode {
+    MODE_CLOCK,      <span class="comment">// Uhrzeit anzeigen</span>
+    MODE_STOPWATCH,  <span class="comment">// Stoppuhr</span>
+    MODE_ALARM,      <span class="comment">// Alarm einstellen</span>
+    MODE_TIMER       <span class="comment">// Countdown Timer</span>
+};
+
+<span class="comment">// Pin-Definitionen</span>
+<span class="keyword">const int</span> PIN_LED_ALARM = <span class="number">2</span>;   <span class="comment">// Rote LED</span>
+<span class="keyword">const int</span> PIN_LED_TIMER = <span class="number">3</span>;   <span class="comment">// Gelbe LED</span>
+<span class="keyword">const int</span> PIN_BUZZER = <span class="number">10</span>;     <span class="comment">// Piezo</span>
+
+Mode currentMode = MODE_CLOCK;
+RTC_DS1307 rtc;</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <h2>Code - Stoppuhr</h2>
+                    <div class="code-block"><pre><code><span class="comment">// Stoppuhr-Variablen</span>
+<span class="keyword">unsigned long</span> stopwatchStart = <span class="number">0</span>;
+<span class="keyword">unsigned long</span> stopwatchElapsed = <span class="number">0</span>;
+<span class="keyword">bool</span> stopwatchRunning = <span class="keyword">false</span>;
+
+<span class="keyword">void</span> updateStopwatch() {
+    <span class="keyword">if</span> (stopwatchRunning) {
+        stopwatchElapsed = millis() - stopwatchStart;
+    }
+    <span class="comment">// Zeit in MM:SS.hh formatieren</span>
+    <span class="keyword">int</span> mins = stopwatchElapsed / <span class="number">60000</span>;
+    <span class="keyword">int</span> secs = (stopwatchElapsed / <span class="number">1000</span>) % <span class="number">60</span>;
+    <span class="keyword">int</span> hund = (stopwatchElapsed / <span class="number">10</span>) % <span class="number">100</span>;
+
+    lcd.setCursor(<span class="number">0</span>, <span class="number">1</span>);
+    <span class="keyword">if</span> (mins < <span class="number">10</span>) lcd.print(<span class="string">"0"</span>);
+    lcd.print(mins); lcd.print(<span class="string">":"</span>);
+    <span class="keyword">if</span> (secs < <span class="number">10</span>) lcd.print(<span class="string">"0"</span>);
+    lcd.print(secs); lcd.print(<span class="string">"."</span>);
+    <span class="keyword">if</span> (hund < <span class="number">10</span>) lcd.print(<span class="string">"0"</span>);
+    lcd.print(hund);
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <h2>Code - Alarm & Timer</h2>
+                    <div class="code-block"><pre><code><span class="comment">// Alarm-Variablen</span>
+<span class="keyword">int</span> alarmHour = <span class="number">7</span>, alarmMinute = <span class="number">0</span>;
+<span class="keyword">bool</span> alarmEnabled = <span class="keyword">false</span>;
+
+<span class="comment">// Timer-Variablen</span>
+<span class="keyword">int</span> timerMinutes = <span class="number">5</span>;
+<span class="keyword">unsigned long</span> timerEnd = <span class="number">0</span>;
+<span class="keyword">bool</span> timerRunning = <span class="keyword">false</span>;
+
+<span class="keyword">void</span> checkAlarm(DateTime now) {
+    <span class="keyword">if</span> (alarmEnabled &&
+        now.hour() == alarmHour &&
+        now.minute() == alarmMinute &&
+        now.second() == <span class="number">0</span>) {
+        triggerAlarm();
+    }
+}
+
+<span class="keyword">void</span> checkTimer() {
+    <span class="keyword">if</span> (timerRunning && millis() >= timerEnd) {
+        timerRunning = <span class="keyword">false</span>;
+        triggerAlarm();
+    }
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <h2>Code - Tastensteuerung</h2>
+                    <div class="code-block"><pre><code><span class="keyword">void</span> handleButtons() {
+    Button btn = readButton();
+    <span class="keyword">if</span> (btn == BTN_NONE) <span class="keyword">return</span>;
+
+    <span class="keyword">switch</span> (currentMode) {
+        <span class="keyword">case</span> MODE_CLOCK:
+            <span class="keyword">if</span> (btn == BTN_LEFT)  currentMode = MODE_TIMER;
+            <span class="keyword">if</span> (btn == BTN_RIGHT) currentMode = MODE_STOPWATCH;
+            <span class="keyword">if</span> (btn == BTN_SELECT) enterSetTime();
+            <span class="keyword">break</span>;
+
+        <span class="keyword">case</span> MODE_STOPWATCH:
+            <span class="keyword">if</span> (btn == BTN_SELECT) toggleStopwatch();
+            <span class="keyword">if</span> (btn == BTN_DOWN)   resetStopwatch();
+            <span class="keyword">if</span> (btn == BTN_RIGHT)  currentMode = MODE_ALARM;
+            <span class="keyword">break</span>;
+
+        <span class="keyword">case</span> MODE_ALARM:
+            <span class="keyword">if</span> (btn == BTN_UP)   alarmMinute++;
+            <span class="keyword">if</span> (btn == BTN_DOWN) alarmMinute--;
+            <span class="keyword">if</span> (btn == BTN_SELECT) alarmEnabled = !alarmEnabled;
+            <span class="keyword">break</span>;
+        <span class="comment">// ... Timer ähnlich</span>
+    }
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div><h2 class="no-margin">LED-Anzeigen</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Visuelle Status-Anzeige</h3>
+                        <ul>
+                            <li><strong>Rote LED</strong> - Leuchtet wenn Alarm aktiviert</li>
+                            <li><strong>Gelbe LED</strong> - Leuchtet während Timer läuft</li>
+                            <li><strong>Buzzer</strong> - Signalton bei Alarm/Timer-Ende</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Im Code</h3>
+                        <p>digitalWrite(PIN_LED_ALARM, alarmEnabled);<br>
+                        digitalWrite(PIN_LED_TIMER, timerRunning);</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">5</div>
+                        <div><h2 class="no-margin">Bedienung</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Tasten-Funktionen</h3>
+                        <ul>
+                            <li><strong>LEFT/RIGHT</strong> - Zwischen Modi wechseln</li>
+                            <li><strong>UP/DOWN</strong> - Werte erhöhen/verringern</li>
+                            <li><strong>SELECT</strong> - Aktion ausführen (Start/Stop/Ein/Aus)</li>
+                        </ul>
+                    </div>
+                    <div class="card card-dark mt-20">
+                        <h3>Modi-Reihenfolge</h3>
+                        <p>CLOCK ↔ STOPWATCH ↔ ALARM ↔ TIMER ↔ CLOCK</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">⏰</div>
+                        <h1>Geschafft!</h1>
+                        <p class="mt-30">Du hast eine multifunktionale Uhr gebaut!</p>
+                        <div class="card card-dark mt-50" data-next="../P03_zeitanzeigen/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p>P03: Klimastation mit TM1637 und NeoPixels</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="controls">
+                <div class="navigation"><a href="../../plus.html">Plus</a></div>
+                <div class="controls-center">
+                    <span class="navigation">&larr; &rarr;</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 250, "left": 50, "attrs": {} },
+    { "type": "wokwi-lcd1602", "id": "lcd1", "top": -50, "left": 0, "attrs": { "pins": "i2c" } },
+    { "type": "wokwi-ds1307", "id": "rtc1", "top": -50, "left": 250, "attrs": {} },
+    { "type": "wokwi-led", "id": "led_alarm", "top": 50, "left": 320, "attrs": { "color": "red" } },
+    { "type": "wokwi-led", "id": "led_timer", "top": 50, "left": 360, "attrs": { "color": "yellow" } },
+    { "type": "wokwi-buzzer", "id": "buzzer1", "top": 110, "left": 320, "attrs": {} },
+    { "type": "wokwi-resistor", "id": "r_alarm", "top": 90, "left": 320, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r_timer", "top": 90, "left": 360, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-pushbutton", "id": "btn_right", "top": 120, "left": -130, "attrs": { "color": "green", "label": "RIGHT" } },
+    { "type": "wokwi-pushbutton", "id": "btn_up", "top": 120, "left": -70, "attrs": { "color": "blue", "label": "UP" } },
+    { "type": "wokwi-pushbutton", "id": "btn_down", "top": 120, "left": -10, "attrs": { "color": "blue", "label": "DOWN" } },
+    { "type": "wokwi-pushbutton", "id": "btn_left", "top": 120, "left": 50, "attrs": { "color": "blue", "label": "LEFT" } },
+    { "type": "wokwi-pushbutton", "id": "btn_select", "top": 120, "left": 110, "attrs": { "color": "red", "label": "SELECT" } }
+  ],
+  "connections": [
+    [ "lcd1:GND", "uno:GND.1", "black", [ "v0" ] ],
+    [ "lcd1:VCC", "uno:5V", "red", [ "v0" ] ],
+    [ "lcd1:SDA", "uno:A4", "green", [ "v0" ] ],
+    [ "lcd1:SCL", "uno:A5", "green", [ "v0" ] ],
+
+    [ "rtc1:GND", "uno:GND.1", "black", [ "v0" ] ],
+    [ "rtc1:VCC", "uno:5V", "red", [ "v0" ] ],
+    [ "rtc1:SDA", "uno:A4", "blue", [ "v0" ] ],
+    [ "rtc1:SCL", "uno:A5", "blue", [ "v0" ] ],
+
+    [ "led_alarm:A", "r_alarm:1", "red", [ "v0" ] ],
+    [ "r_alarm:2", "uno:7", "red", [ "v0" ] ],
+    [ "led_alarm:C", "uno:GND.2", "black", [ "v0" ] ],
+
+    [ "led_timer:A", "r_timer:1", "yellow", [ "v0" ] ],
+    [ "r_timer:2", "uno:8", "yellow", [ "v0" ] ],
+    [ "led_timer:C", "uno:GND.2", "black", [ "v0" ] ],
+
+    [ "buzzer1:1", "uno:9", "orange", [ "v0" ] ],
+    [ "buzzer1:2", "uno:GND.2", "black", [ "v0" ] ],
+
+    [ "btn_right:1.l", "uno:GND.3", "black", [ "v0" ] ],
+    [ "btn_right:2.l", "uno:2", "orange", [ "v0" ] ],
+
+    [ "btn_up:1.l", "uno:GND.3", "black", [ "v0" ] ],
+    [ "btn_up:2.l", "uno:3", "orange", [ "v0" ] ],
+
+    [ "btn_down:1.l", "uno:GND.3", "black", [ "v0" ] ],
+    [ "btn_down:2.l", "uno:4", "orange", [ "v0" ] ],
+
+    [ "btn_left:1.l", "uno:GND.3", "black", [ "v0" ] ],
+    [ "btn_left:2.l", "uno:5", "orange", [ "v0" ] ],
+
+    [ "btn_select:1.l", "uno:GND.3", "black", [ "v0" ] ],
+    [ "btn_select:2.l", "uno:6", "orange", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}

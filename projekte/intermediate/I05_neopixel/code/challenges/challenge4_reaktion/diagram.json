@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": -96.6, "attrs": {} },
+    { "type": "wokwi-neopixel-ring", "id": "ring1", "top": -130, "left": 80, "attrs": { "pixels": "8" } },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": -80, "left": -150, "attrs": { "color": "green" } }
+  ],
+  "connections": [
+    [ "ring1:VCC", "uno:5V", "red", [ "v78", "h-120" ] ],
+    [ "ring1:GND", "uno:GND.1", "black", [ "v135", "h-90" ] ],
+    [ "ring1:DIN", "uno:7", "green", [ "v88", "h-35" ] ],
+    [ "btn1:1.l", "uno:2", "blue", [ "v60", "h80" ] ],
+    [ "btn1:2.l", "uno:GND.2", "black", [ "v80", "h60" ] ]
+  ],
+  "dependencies": {}
+}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projekte - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../presentation_framework/styles.css">
+    <style>
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-top: 40px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .category-card {
+            background: #f5f5f7;
+            border-radius: 20px;
+            padding: 32px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: block;
+            text-align: center;
+        }
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+        }
+        .category-card .emoji {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+        .category-card h3 {
+            margin: 12px 0 8px 0;
+            color: #1d1d1f;
+            font-size: 22px;
+        }
+        .category-card p {
+            font-size: 14px;
+            color: #515154;
+            margin: 0;
+        }
+        .category-card .count {
+            display: inline-block;
+            background: rgba(0,0,0,0.08);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-top: 12px;
+            font-weight: 500;
+        }
+        .category-card.beginner {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        }
+        .category-card.beginner .count { background: rgba(40, 167, 69, 0.2); color: #155724; }
+        .category-card.intermediate {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+        }
+        .category-card.intermediate .count { background: rgba(255, 193, 7, 0.3); color: #856404; }
+        .category-card.advanced {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        }
+        .category-card.advanced .count { background: rgba(220, 53, 69, 0.2); color: #721c24; }
+        .category-card.plus {
+            background: linear-gradient(135deg, #e2d9f3 0%, #d4c4ed 100%);
+        }
+        .category-card.plus .count { background: rgba(128, 90, 213, 0.2); color: #4c2889; }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #0071e3;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container" style="height: auto; min-height: 90vh;">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper" style="padding-bottom: 40px;">
+
+                <a href="../index.html" class="back-link">← Zurück zur Startseite</a>
+
+                <div class="center">
+                    <div class="emoji" style="font-size: 48px;">📦</div>
+                    <h1>Praxisprojekte</h1>
+                    <p class="subtitle">27 Projekte in 4 Kategorien</p>
+                </div>
+
+                <div class="category-grid">
+                    <a href="beginner.html" class="category-card beginner">
+                        <div class="emoji">💡</div>
+                        <h3>Beginner</h3>
+                        <p>Grundlagen: LEDs, Taster, einfache Sensoren</p>
+                        <span class="count">8 Projekte</span>
+                    </a>
+                    <a href="intermediate.html" class="category-card intermediate">
+                        <div class="emoji">🔧</div>
+                        <h3>Intermediate</h3>
+                        <p>Komplexere Sensoren, Displays, Motoren</p>
+                        <span class="count">8 Projekte</span>
+                    </a>
+                    <a href="advanced.html" class="category-card advanced">
+                        <div class="emoji">🎯</div>
+                        <h3>Advanced</h3>
+                        <p>Kombinierte Systeme, Spiele, Automatisierung</p>
+                        <span class="count">8 Projekte</span>
+                    </a>
+                    <a href="plus.html" class="category-card plus">
+                        <div class="emoji">🚀</div>
+                        <h3>Plus</h3>
+                        <p>LCD Keypad Shield, Multi-Funktions-Projekte</p>
+                        <span class="count">3 Projekte</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

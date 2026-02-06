@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I04: SSD1306 OLED Display - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">📺</div>
+                        <h1>OLED Display</h1>
+                        <p class="subtitle">Projekt I04 - Grafik und Text mit SSD1306</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Intermediate</div>
+                            <div class="tech-badge">SSD1306</div>
+                            <div class="tech-badge">I2C</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>I2C-Kommunikation</strong> - Zwei-Draht-Bus mit SDA und SCL verstehen</li>
+                        <li><strong>Grafik-Library</strong> - Adafruit GFX fuer Zeichenfunktionen nutzen</li>
+                        <li><strong>Text-Ausgabe</strong> - Schriftgroessen, Cursor und Textformatierung</li>
+                        <li><strong>Formen zeichnen</strong> - Rechtecke, Linien und geometrische Figuren</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Beginner-Projekte B01-B08 abgeschlossen, I2C-Grundlagen aus B07 (LCD) hilfreich</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Komponenten -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Was du brauchst</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">📺</div>
+                            <h4>SSD1306 OLED Display</h4>
+                            <p>Selbstleuchtendes OLED-Display ohne Hintergrundbeleuchtung. Hoher Kontrast und weiter Blickwinkel.</p>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Aufloesung:</strong> 128 x 64 Pixel</p>
+                            <p style="font-size: 14px;"><strong>Schnittstelle:</strong> I2C (4 Pins)</p>
+                            <p style="font-size: 14px;"><strong>Farbe:</strong> Weiss auf Schwarz (monochrom)</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">📌</div>
+                            <h4>SSD1306 Pinbelegung</h4>
+                            <ul style="font-size: 14px;" class="mt-10">
+                                <li><strong>GND</strong> - Masse</li>
+                                <li><strong>VCC</strong> - Versorgung 3.3V-5V</li>
+                                <li><strong>SCL</strong> - I2C Clock (Arduino A5)</li>
+                                <li><strong>SDA</strong> - I2C Data (Arduino A4)</li>
+                            </ul>
+                            <p class="mt-10" style="font-size: 14px;"><strong>I2C-Adresse:</strong> 0x3C (Standard)</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>OLED vs LCD</h4>
+                        <p>OLED-Displays brauchen keine Hintergrundbeleuchtung - jedes Pixel leuchtet selbst. Das ergibt echtes Schwarz und hohen Kontrast, verbraucht aber mehr Strom bei viel weissem Inhalt.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Theorie I2C -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">Das I2C-Protokoll</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Wie funktioniert I2C?</h3>
+                            <ul class="mt-20">
+                                <li><strong>SDA</strong> (Serial Data) - Datenleitung</li>
+                                <li><strong>SCL</strong> (Serial Clock) - Taktleitung</li>
+                                <li>Master-Slave-Architektur (Arduino = Master)</li>
+                                <li>Jedes Geraet hat eine eindeutige 7-Bit-Adresse</li>
+                            </ul>
+
+                            <h3 class="mt-30">Adressierung</h3>
+                            <p class="mt-10">Der SSD1306 hoert auf Adresse <strong>0x3C</strong>. Mehrere I2C-Geraete koennen am selben Bus haengen!</p>
+                        </div>
+                        <div class="card">
+                            <h4>I2C Bus-Diagramm</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 12px;">
+Arduino Uno        SSD1306
+┌─────────┐       ┌─────────┐
+│         │       │         │
+│  A4 ────┼──SDA──┼── SDA   │
+│         │       │         │
+│  A5 ────┼──SCL──┼── SCL   │
+│         │       │         │
+│  5V ────┼──VCC──┼── VCC   │
+│         │       │         │
+│  GND ───┼──GND──┼── GND   │
+└─────────┘       └─────────┘
+            </pre></div>
+                            <p class="mt-20" style="font-size: 14px;"><strong>Geschwindigkeit:</strong> Standard 100 kHz, Fast 400 kHz</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Schaltplan -->
+                <div class="slide">
+                    <h2>Schaltplan</h2>
+                    <p class="subtitle">Verbindungen zum Arduino</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Wokwi-Aufbau</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 14px;">
+  Arduino Uno          SSD1306 OLED
+ ┌───────────┐        ┌──────────────┐
+ │           │        │   ┌──────┐   │
+ │  5V ──────┼────────┼───┤ VCC  │   │
+ │           │        │   └──────┘   │
+ │  GND ─────┼────────┼───┤ GND  │   │
+ │           │        │   └──────┘   │
+ │  A4 ──────┼────────┼───┤ SDA  │   │
+ │           │        │   └──────┘   │
+ │  A5 ──────┼────────┼───┤ SCL  │   │
+ │           │        │   └──────┘   │
+ └───────────┘        └──────────────┘
+            </pre></div>
+                        </div>
+                        <div class="card card-info">
+                            <h4>Wichtige Verbindungen</h4>
+                            <ul class="mt-20">
+                                <li><strong>OLED VCC</strong> → Arduino 5V</li>
+                                <li><strong>OLED GND</strong> → Arduino GND</li>
+                                <li><strong>OLED SDA</strong> → Arduino A4</li>
+                                <li><strong>OLED SCL</strong> → Arduino A5</li>
+                            </ul>
+
+                            <h4 class="mt-30">Hinweis</h4>
+                            <p style="font-size: 14px;">A4 und A5 sind die festen I2C-Pins des Arduino Uno. Bei anderen Boards koennen diese Pins abweichen.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Code Schritt 1 - Library Init -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 1: Library initialisieren</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 1: Libraries einbinden und Display initialisieren</span>
+
+<span class="keyword">#include</span> <span class="string">&lt;Wire.h&gt;</span>           <span class="comment">// I2C-Kommunikation</span>
+<span class="keyword">#include</span> <span class="string">&lt;Adafruit_GFX.h&gt;</span>   <span class="comment">// Grafik-Grundfunktionen</span>
+<span class="keyword">#include</span> <span class="string">&lt;Adafruit_SSD1306.h&gt;</span>
+
+<span class="comment">// Display-Konfiguration</span>
+<span class="keyword">#define</span> SCREEN_WIDTH  <span class="number">128</span>   <span class="comment">// Breite in Pixel</span>
+<span class="keyword">#define</span> SCREEN_HEIGHT <span class="number">64</span>    <span class="comment">// Hoehe in Pixel</span>
+<span class="keyword">#define</span> OLED_RESET    -<span class="number">1</span>    <span class="comment">// Kein Reset-Pin</span>
+<span class="keyword">#define</span> OLED_ADDR     <span class="number">0x3C</span>  <span class="comment">// I2C-Adresse</span>
+
+<span class="comment">// Display-Objekt erstellen</span>
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);</code></pre></div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Erklaerung</h4>
+                            <ul style="font-size: 14px;">
+                                <li><code>Wire.h</code> - Arduino I2C-Bibliothek</li>
+                                <li><code>Adafruit_GFX.h</code> - Zeichenfunktionen</li>
+                                <li><code>Adafruit_SSD1306.h</code> - Display-Treiber</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Display-Objekt</h4>
+                            <p style="font-size: 14px;">Der Konstruktor bekommt Breite, Hoehe, Wire-Objekt und Reset-Pin. -1 bedeutet: kein Hardware-Reset.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Code Schritt 2 - Text Demo -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 2: Text ausgeben</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="keyword">void</span> setup() {
+    <span class="comment">// Display starten (mit I2C-Adresse)</span>
+    <span class="keyword">if</span> (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR)) {
+        Serial.println(<span class="string">"SSD1306 nicht gefunden!"</span>);
+        <span class="keyword">while</span> (<span class="keyword">true</span>);  <span class="comment">// Anhalten bei Fehler</span>
+    }
+
+    display.clearDisplay();           <span class="comment">// Bildschirm loeschen</span>
+    display.setTextSize(<span class="number">1</span>);            <span class="comment">// Schriftgroesse (1-4)</span>
+    display.setTextColor(SSD1306_WHITE);
+
+    display.setCursor(<span class="number">20</span>, <span class="number">10</span>);         <span class="comment">// Position X=20, Y=10</span>
+    display.println(<span class="string">"Hallo Welt!"</span>);
+
+    display.setCursor(<span class="number">20</span>, <span class="number">30</span>);
+    display.setTextSize(<span class="number">2</span>);            <span class="comment">// Groessere Schrift</span>
+    display.println(<span class="string">"Arduino"</span>);
+
+    display.display();                <span class="comment">// Buffer zum Display senden!</span>
+}</code></pre></div>
+
+                    <div class="card card-info mt-20">
+                        <h4>Wichtig: display.display()</h4>
+                        <p>Alle Zeichenbefehle schreiben nur in einen Speicherpuffer. Erst <code>display.display()</code> uebertraegt den Inhalt zum OLED!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Code Schritt 3 - Formen Demo -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 3: Formen zeichnen</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="keyword">void</span> demoShapes() {
+    display.clearDisplay();
+
+    <span class="comment">// Rechteck (nur Rahmen)</span>
+    display.drawRect(<span class="number">0</span>, <span class="number">0</span>, <span class="number">128</span>, <span class="number">64</span>, SSD1306_WHITE);
+
+    <span class="comment">// Gefuelltes Rechteck</span>
+    display.fillRect(<span class="number">10</span>, <span class="number">10</span>, <span class="number">30</span>, <span class="number">20</span>, SSD1306_WHITE);
+
+    <span class="comment">// Linie von (50,10) nach (120,50)</span>
+    display.drawLine(<span class="number">50</span>, <span class="number">10</span>, <span class="number">120</span>, <span class="number">50</span>, SSD1306_WHITE);
+
+    <span class="comment">// Horizontale und vertikale Linien (schneller)</span>
+    display.drawFastHLine(<span class="number">50</span>, <span class="number">30</span>, <span class="number">70</span>, SSD1306_WHITE);
+    display.drawFastVLine(<span class="number">85</span>, <span class="number">10</span>, <span class="number">40</span>, SSD1306_WHITE);
+
+    display.display();  <span class="comment">// Nicht vergessen!</span>
+}</code></pre></div>
+
+                    <div class="grid-2 mt-20">
+                        <div class="card">
+                            <h4>Rechteck-Funktionen</h4>
+                            <ul style="font-size: 14px;">
+                                <li><code>drawRect(x, y, w, h, color)</code> - Rahmen</li>
+                                <li><code>fillRect(x, y, w, h, color)</code> - Gefuellt</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Linien-Funktionen</h4>
+                            <ul style="font-size: 14px;">
+                                <li><code>drawLine(x0, y0, x1, y1, color)</code></li>
+                                <li><code>drawFastHLine(x, y, len, color)</code></li>
+                                <li><code>drawFastVLine(x, y, len, color)</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: Wokwi Demo -->
+                <div class="slide">
+                    <h2>Ausprobieren</h2>
+                    <p class="subtitle">Simulation in Wokwi</p>
+
+                    <div class="center mt-40">
+                        <div class="card card-dark">
+                            <h3>Wokwi Projekt</h3>
+                            <p class="mt-20">Erstelle ein neues Projekt mit Arduino Uno und SSD1306:</p>
+                            <div class="mt-30">
+                                <a href="https://wokwi.com/projects/new/arduino-uno" target="_blank" style="color: #0071e3; font-size: 20px; text-decoration: none;">
+                                    Neues Arduino-Projekt in Wokwi
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-40">
+                        <h4>So testest du</h4>
+                        <ul>
+                            <li>Fuege ein SSD1306 hinzu (Suche: "ssd1306")</li>
+                            <li>Verbinde: VCC → 5V, GND → GND, SDA → A4, SCL → A5</li>
+                            <li>Kopiere den Code in die sketch.ino</li>
+                            <li>Klicke auf Play - das Display zeigt Text und Grafik</li>
+                            <li><strong>Tipp:</strong> Experimentiere mit setTextSize() und Zeichenfunktionen!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Challenges -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Challenges</div>
+                            <h2 class="no-margin">Erweiterungen</h2>
+                        </div>
+                    </div>
+
+                    <p class="subtitle">Probiere diese Aufgaben aus</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🕐</div>
+                            <h4>Challenge 1: Digitale Uhr</h4>
+                            <p>Grosse Zeitanzeige mit millis() - Stunden, Minuten und Sekunden</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">📊</div>
+                            <h4>Challenge 2: Poti-Balkendiagramm</h4>
+                            <p>Balkendiagramm das den Potentiometer-Wert visualisiert</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🎮</div>
+                            <h4>Challenge 3: Pong-Spiel</h4>
+                            <p>Einfaches Pong mit 2 Tastern fuer Auf/Ab-Bewegung</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🔵</div>
+                            <h4>Challenge 4: Bouncing Ball</h4>
+                            <p>Ball-Animation die an den Raendern abprallt</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">📺</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du beherrschst jetzt das OLED-Display</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">🔌</div>
+                                <h4>I2C-Bus</h4>
+                                <p>SDA/SCL Kommunikation verstanden</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">📝</div>
+                                <h4>Text-Ausgabe</h4>
+                                <p>Schriftgroessen und Cursor gesetzt</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">📐</div>
+                                <h4>Grafik</h4>
+                                <p>Rechtecke und Linien gezeichnet</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../I05_neopixel/index.html">
+                            <h3>Naechstes Projekt</h3>
+                            <p class="mt-10">I05: NeoPixel RGB-LEDs - Adressierbare LEDs mit FastLED steuern</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">&larr; &rarr;</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

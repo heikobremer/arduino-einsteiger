@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A08: Mini-Oszilloskop - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#128200;</div>
+                        <h1>Mini-Oszilloskop</h1>
+                        <p class="subtitle">Projekt A08 - Signale visualisieren mit Serial Plotter</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Advanced</div>
+                            <div class="tech-badge">ADC</div>
+                            <div class="tech-badge">Sampling</div>
+                            <div class="tech-badge">Trigger</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div><h2 class="no-margin">Was du lernst</h2></div>
+                    </div>
+                    <ul class="mt-40">
+                        <li><strong>ADC-Sampling</strong> - Schnelle Analog-Digital-Wandlung</li>
+                        <li><strong>Serial Plotter</strong> - Echtzeit-Signaldarstellung</li>
+                        <li><strong>Trigger-Funktion</strong> - Stabiles Bild durch Synchronisation</li>
+                        <li><strong>Zeitbasis</strong> - Sample-Rate anpassen</li>
+                    </ul>
+                    <div class="card card-dark mt-30">
+                        <h3>Komponenten</h3>
+                        <p>Arduino Uno, 2 Potentiometer, 2 Taster, Widerstand 1k</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div><h2 class="no-margin">Schaltung</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Pin-Belegung</h3>
+                        <ul>
+                            <li><strong>A0</strong> - Signaleingang (0-5V)</li>
+                            <li><strong>A1</strong> - Potentiometer (Zeitbasis)</li>
+                            <li><strong>D2</strong> - Taster (Trigger AN/AUS)</li>
+                            <li><strong>D3</strong> - Taster (Modus)</li>
+                            <li><strong>D9</strong> - PWM-Testsignal (über 1k an A0)</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Serial Plotter öffnen</h3>
+                        <p>Arduino IDE: Werkzeuge > Serieller Plotter (115200 Baud)</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Der Code</h2>
+                    <div class="code-block"><pre><code><span class="keyword">const int</span> SIGNAL = A0;
+<span class="keyword">const int</span> SAMPLES = <span class="number">128</span>;
+<span class="keyword">int</span> daten[SAMPLES];
+
+<span class="keyword">void</span> setup() {
+  Serial.begin(<span class="number">115200</span>);
+  analogWrite(<span class="number">9</span>, <span class="number">128</span>);  <span class="comment">// Testsignal</span>
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="comment">// Samples aufnehmen</span>
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < SAMPLES; i++) {
+    daten[i] = analogRead(SIGNAL);
+    delayMicroseconds(<span class="number">100</span>);
+  }
+
+  <span class="comment">// An Serial Plotter senden</span>
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < SAMPLES; i++) {
+    Serial.println(daten[i]);
+  }
+  delay(<span class="number">10</span>);
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div><h2 class="no-margin">Modi & Trigger</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-30">
+                        <h3>Anzeige-Modi</h3>
+                        <ul>
+                            <li><strong>NORMAL</strong> - Kontinuierliches Sampling</li>
+                            <li><strong>HOLD</strong> - Bild einfrieren</li>
+                            <li><strong>AUTO</strong> - Trigger ignorieren</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Trigger-Funktion</h3>
+                        <p>Wartet auf steigende Flanke durch Trigger-Level für stabiles Bild</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div><h2 class="no-margin">Frequenzmessung</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-30">
+                        <h3>Nulldurchgangszählung</h3>
+                        <ol>
+                            <li>Mittelwert der Samples berechnen</li>
+                            <li>Durchgänge durch Mittelwert zählen</li>
+                            <li>Frequenz = (Kreuzungen / 2) / Messzeit</li>
+                        </ol>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Limitierungen</h3>
+                        <p>Arduino ADC: max. ~9600 Samples/s, für Signale bis ca. 1kHz geeignet</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#128200;</div>
+                        <h1>Geschafft!</h1>
+                        <p class="mt-30">Alle Advanced-Projekte abgeschlossen!</p>
+                        <div class="card card-dark mt-50" data-next="../../plus/P01_keypad_demo/index.html">
+                            <h3>Weiter geht's mit IoT</h3>
+                            <p>IoT01: WLAN-Thermometer mit ESP32</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="controls">
+                <div class="navigation"><a href="../../advanced.html">Advanced</a></div>
+                <div class="controls-center">
+                    <span class="navigation">&larr; &rarr;</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">7</span></div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

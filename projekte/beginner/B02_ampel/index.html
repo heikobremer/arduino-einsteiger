@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B02: Ampelschaltung - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🚦</div>
+                        <h1>Ampelschaltung</h1>
+                        <p class="subtitle">Projekt B02 - Mehrere LEDs mit Timing steuern</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Beginner</div>
+                            <div class="tech-badge">3x LED</div>
+                            <div class="tech-badge">3x 220Ω</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>Mehrere Ausgänge steuern</strong> - Drei LEDs gleichzeitig verwalten</li>
+                        <li><strong>Zustandsautomat</strong> - Sequenz von Zuständen durchlaufen</li>
+                        <li><strong>Timing-Sequenzen</strong> - Unterschiedliche Wartezeiten programmieren</li>
+                        <li><strong>Funktionen</strong> - Code in Funktionen organisieren</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Projekt B01 (LED Blinken) abgeschlossen</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Komponenten -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Was du brauchst</p>
+
+                    <div class="grid-3 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🔴</div>
+                            <h4>Rote LED</h4>
+                            <p>Für "Stop" - Längste Leuchtdauer</p>
+                            <p class="mt-10" style="font-size: 14px;">Pin 7</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🟡</div>
+                            <h4>Gelbe LED</h4>
+                            <p>Für "Achtung" - Kurze Leuchtdauer</p>
+                            <p class="mt-10" style="font-size: 14px;">Pin 6</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🟢</div>
+                            <h4>Grüne LED</h4>
+                            <p>Für "Fahren" - Mittlere Leuchtdauer</p>
+                            <p class="mt-10" style="font-size: 14px;">Pin 5</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Zusätzlich benötigt</h4>
+                        <p>3x Widerstand 220Ω (einer pro LED)</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Theorie -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">Die deutsche Ampelschaltung</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Ampelphasen</h3>
+                            <ol class="mt-20">
+                                <li><strong>Rot</strong> (3 Sekunden) - Stop</li>
+                                <li><strong>Rot + Gelb</strong> (1 Sekunde) - Vorbereiten</li>
+                                <li><strong>Grün</strong> (3 Sekunden) - Fahren</li>
+                                <li><strong>Gelb</strong> (1 Sekunde) - Bremsen</li>
+                                <li>Zurück zu Rot...</li>
+                            </ol>
+
+                            <h3 class="mt-30">Zustandsautomat</h3>
+                            <p class="mt-10">Jeder Zustand hat:</p>
+                            <ul style="font-size: 16px;">
+                                <li>Aktive LEDs (welche leuchten)</li>
+                                <li>Dauer (wie lange)</li>
+                                <li>Nachfolger (nächster Zustand)</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Zustandsdiagramm</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 14px;">
+    ┌─────────────────┐
+    │   ROT (3s)      │
+    └────────┬────────┘
+             ↓
+    ┌─────────────────┐
+    │ ROT+GELB (1s)   │
+    └────────┬────────┘
+             ↓
+    ┌─────────────────┐
+    │   GRÜN (3s)     │
+    └────────┬────────┘
+             ↓
+    ┌─────────────────┐
+    │   GELB (1s)     │
+    └────────┬────────┘
+             │
+             └──────────→ zurück zu ROT
+            </pre></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Schaltplan -->
+                <div class="slide">
+                    <h2>Schaltplan</h2>
+                    <p class="subtitle">Drei LEDs parallel anschließen</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Verbindungen</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 14px;">
+  Pin 7 ──[220Ω]──🔴── GND
+  Pin 6 ──[220Ω]──🟡── GND
+  Pin 5 ──[220Ω]──🟢── GND
+            </pre></div>
+                            <p class="mt-20" style="font-size: 14px;">Jede LED hat ihren eigenen Pin und Vorwiderstand, aber alle teilen sich GND.</p>
+                        </div>
+                        <div class="card card-info">
+                            <h4>Pin-Belegung</h4>
+                            <ul class="mt-20">
+                                <li><strong>Pin 7</strong> → Rot</li>
+                                <li><strong>Pin 6</strong> → Gelb</li>
+                                <li><strong>Pin 5</strong> → Grün</li>
+                                <li><strong>GND</strong> → Alle Kathoden</li>
+                            </ul>
+
+                            <h4 class="mt-30">Tipp</h4>
+                            <p style="font-size: 14px;">Ordne die LEDs vertikal an wie eine echte Ampel: Rot oben, Gelb Mitte, Grün unten.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Code Schritt 1 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 1: LEDs initialisieren</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 1: Alle drei LEDs konfigurieren</span>
+
+<span class="keyword">const int</span> LED_ROT = <span class="number">7</span>;
+<span class="keyword">const int</span> LED_GELB = <span class="number">6</span>;
+<span class="keyword">const int</span> LED_GRUEN = <span class="number">5</span>;
+
+<span class="keyword">void</span> setup() {
+  pinMode(LED_ROT, OUTPUT);
+  pinMode(LED_GELB, OUTPUT);
+  pinMode(LED_GRUEN, OUTPUT);
+
+  <span class="comment">// Test: Alle LEDs nacheinander einschalten</span>
+  digitalWrite(LED_ROT, HIGH);
+  delay(<span class="number">1000</span>);
+  digitalWrite(LED_GELB, HIGH);
+  delay(<span class="number">1000</span>);
+  digitalWrite(LED_GRUEN, HIGH);
+  delay(<span class="number">1000</span>);
+
+  <span class="comment">// Alle aus</span>
+  digitalWrite(LED_ROT, LOW);
+  digitalWrite(LED_GELB, LOW);
+  digitalWrite(LED_GRUEN, LOW);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="comment">// Noch leer</span>
+}</code></pre></div>
+
+                    <div class="card card-info mt-20">
+                        <h4>Teste es!</h4>
+                        <p>Die LEDs sollten nacheinander angehen und dann alle ausgehen.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Code Schritt 2 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 2: Hilfsfunktion erstellen</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 2: Funktion zum Setzen der Ampel</span>
+
+<span class="keyword">const int</span> LED_ROT = <span class="number">7</span>;
+<span class="keyword">const int</span> LED_GELB = <span class="number">6</span>;
+<span class="keyword">const int</span> LED_GRUEN = <span class="number">5</span>;
+
+<span class="comment">// Hilfsfunktion: Setzt den Zustand aller drei LEDs</span>
+<span class="keyword">void</span> ampel(<span class="keyword">int</span> rot, <span class="keyword">int</span> gelb, <span class="keyword">int</span> gruen) {
+  digitalWrite(LED_ROT, rot);
+  digitalWrite(LED_GELB, gelb);
+  digitalWrite(LED_GRUEN, gruen);
+}
+
+<span class="keyword">void</span> setup() {
+  pinMode(LED_ROT, OUTPUT);
+  pinMode(LED_GELB, OUTPUT);
+  pinMode(LED_GRUEN, OUTPUT);
+
+  <span class="comment">// Test der Funktion</span>
+  ampel(HIGH, LOW, LOW);   <span class="comment">// Nur Rot</span>
+  delay(<span class="number">1000</span>);
+  ampel(HIGH, HIGH, LOW);  <span class="comment">// Rot + Gelb</span>
+  delay(<span class="number">1000</span>);
+  ampel(LOW, LOW, HIGH);   <span class="comment">// Nur Gruen</span>
+  delay(<span class="number">1000</span>);
+  ampel(LOW, LOW, LOW);    <span class="comment">// Alle aus</span>
+}
+
+<span class="keyword">void</span> loop() { }</code></pre></div>
+
+                    <div class="card card-info mt-20">
+                        <h4>Warum Funktionen?</h4>
+                        <p>Eine Funktion macht den Code übersichtlicher und wiederverwendbar. <code>ampel(HIGH, LOW, LOW)</code> ist lesbarer als drei einzelne <code>digitalWrite()</code>-Aufrufe.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Code Schritt 3 (Fertig) -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 3: Komplette Ampelschaltung</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Fertige Version: Ampelschaltung</span>
+
+<span class="keyword">const int</span> LED_ROT = <span class="number">7</span>;
+<span class="keyword">const int</span> LED_GELB = <span class="number">6</span>;
+<span class="keyword">const int</span> LED_GRUEN = <span class="number">5</span>;
+
+<span class="keyword">void</span> ampel(<span class="keyword">int</span> rot, <span class="keyword">int</span> gelb, <span class="keyword">int</span> gruen) {
+  digitalWrite(LED_ROT, rot);
+  digitalWrite(LED_GELB, gelb);
+  digitalWrite(LED_GRUEN, gruen);
+}
+
+<span class="keyword">void</span> setup() {
+  pinMode(LED_ROT, OUTPUT);
+  pinMode(LED_GELB, OUTPUT);
+  pinMode(LED_GRUEN, OUTPUT);
+  Serial.begin(<span class="number">9600</span>);
+  Serial.println(<span class="string">"Ampelschaltung gestartet!"</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  ampel(HIGH, LOW, LOW);   <span class="comment">// Rot</span>
+  delay(<span class="number">3000</span>);
+  ampel(HIGH, HIGH, LOW);  <span class="comment">// Rot + Gelb</span>
+  delay(<span class="number">1000</span>);
+  ampel(LOW, LOW, HIGH);   <span class="comment">// Gruen</span>
+  delay(<span class="number">3000</span>);
+  ampel(LOW, HIGH, LOW);   <span class="comment">// Gelb</span>
+  delay(<span class="number">1000</span>);
+}</code></pre></div>
+                </div>
+
+                <!-- SLIDE 9: Wokwi Demo -->
+                <div class="slide">
+                    <h2>Ausprobieren</h2>
+                    <p class="subtitle">Simulation in Wokwi</p>
+
+                    <div class="center mt-40">
+                        <div class="card card-dark">
+                            <h3>Wokwi Projekt</h3>
+                            <p class="mt-20">Füge drei LEDs (rot, gelb, grün) und drei Widerstände hinzu:</p>
+                            <div class="mt-30">
+                                <a href="https://wokwi.com/projects/new/arduino-uno" target="_blank" style="color: #0071e3; font-size: 20px; text-decoration: none;">
+                                    Neues Arduino-Projekt in Wokwi →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-40">
+                        <h4>So testest du</h4>
+                        <ul>
+                            <li>Füge 3 LEDs hinzu und setze die Farben (Rechtsklick → Bearbeiten)</li>
+                            <li>Füge 3 Widerstände (220Ω) hinzu</li>
+                            <li>Verbinde Pin 7→Rot, Pin 6→Gelb, Pin 5→Grün</li>
+                            <li>Alle Kathoden → GND</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Erweiterungen -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Challenges</div>
+                            <h2 class="no-margin">Erweiterungen</h2>
+                        </div>
+                    </div>
+
+                    <p class="subtitle">Probiere diese Aufgaben aus</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🚶</div>
+                            <h4>Challenge 1: Fußgängerampel</h4>
+                            <p>Füge einen Taster hinzu. Wenn gedrückt, wechselt die Ampel nach einer Verzögerung auf Grün für Fußgänger.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🌙</div>
+                            <h4>Challenge 2: Nachtmodus</h4>
+                            <p>Lass nur Gelb blinken (0.5s an, 0.5s aus) als Nachtmodus.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🚗</div>
+                            <h4>Challenge 3: Kreuzung</h4>
+                            <p>Baue zwei Ampeln, die synchronisiert sind (wenn eine Rot ist, ist die andere Grün).</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">⏱️</div>
+                            <h4>Challenge 4: Countdown</h4>
+                            <p>Zeige auf dem seriellen Monitor, wie viele Sekunden noch bis zum nächsten Wechsel.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🚦</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du hast eine funktionierende Ampel gebaut</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Mehrere LEDs</h4>
+                                <p>Drei Ausgänge parallel</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Zustandsautomat</h4>
+                                <p>Sequenz von Zuständen</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Funktionen</h4>
+                                <p>Code organisieren</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../B03_taster/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p class="mt-10">B03: Taster und Entprellung - Eingaben verarbeiten</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

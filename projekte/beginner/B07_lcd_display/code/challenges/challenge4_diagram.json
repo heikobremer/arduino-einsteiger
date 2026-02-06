@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": -96.6, "attrs": {} },
+    { "type": "wokwi-lcd1602", "id": "lcd1", "top": -200, "left": 60, "attrs": { "pins": "i2c" } },
+    { "type": "wokwi-pushbutton", "id": "btn_hoch", "top": -80, "left": -120, "attrs": { "color": "blue", "label": "HOCH" } },
+    { "type": "wokwi-pushbutton", "id": "btn_runter", "top": -80, "left": -60, "attrs": { "color": "red", "label": "RUNTER" } }
+  ],
+  "connections": [
+    [ "lcd1:GND", "uno:GND.1", "black", [ "v205", "h-70" ] ],
+    [ "lcd1:VCC", "uno:5V", "red", [ "v195", "h-115" ] ],
+    [ "lcd1:SDA", "uno:A4", "blue", [ "v185", "h0" ] ],
+    [ "lcd1:SCL", "uno:A5", "green", [ "v175", "h30" ] ],
+    [ "btn_hoch:1.l", "uno:2", "blue", [ "v-48", "h42" ] ],
+    [ "btn_hoch:2.l", "uno:GND.2", "black", [ "v85", "h90" ] ],
+    [ "btn_runter:1.l", "uno:3", "orange", [ "v-58", "h62" ] ],
+    [ "btn_runter:2.l", "uno:GND.3", "black", [ "v75", "h130" ] ]
+  ],
+  "dependencies": {}
+}

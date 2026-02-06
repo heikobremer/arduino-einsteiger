@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B04: Potentiometer - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🎛️</div>
+                        <h1>Potentiometer</h1>
+                        <p class="subtitle">Projekt B04 - Analoge Werte lesen und LED dimmen</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Beginner</div>
+                            <div class="tech-badge">ADC</div>
+                            <div class="tech-badge">PWM</div>
+                            <div class="tech-badge">Poti 10kΩ</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>ADC (Analog-Digital-Converter)</strong> - Analoge Spannung als Zahl lesen</li>
+                        <li><strong>PWM (Pulse Width Modulation)</strong> - LED stufenlos dimmen</li>
+                        <li><strong>Werte mappen</strong> - ADC-Bereich auf PWM-Bereich umrechnen</li>
+                        <li><strong>Potentiometer</strong> - Variabler Spannungsteiler</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Projekte B01-B03 abgeschlossen, Grundlagen-Modul (PWM) verstanden</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Komponenten -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Was du brauchst</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🎛️</div>
+                            <h4>Potentiometer 10kΩ</h4>
+                            <p>Ein variabler Widerstand mit drei Anschlüssen. Durch Drehen ändert sich die Spannung am mittleren Pin (Schleifer).</p>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Anschlüsse:</strong> VCC, Schleifer (Signal), GND</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">💡</div>
+                            <h4>LED + 220Ω Widerstand</h4>
+                            <p>Die LED wird über PWM gedimmt - ihre Helligkeit folgt der Poti-Position.</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>ADC-Pins beim Arduino</h4>
+                        <p>Die analogen Eingänge A0-A5 können analoge Werte lesen! Wir nutzen A0.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Theorie -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">ADC und PWM verstehen</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>ADC - Analog zu Digital</h4>
+                            <p class="mt-10">Der ADC wandelt eine Spannung (0-5V) in eine Zahl um.</p>
+                            <ul class="mt-10" style="font-size: 16px;">
+                                <li><strong>0V</strong> → 0</li>
+                                <li><strong>2.5V</strong> → 512</li>
+                                <li><strong>5V</strong> → 1023</li>
+                            </ul>
+                            <div class="code-block mt-20"><pre><code><span class="keyword">int</span> wert = analogRead(A0);
+<span class="comment">// Ergibt 0 bis 1023</span></code></pre></div>
+                        </div>
+                        <div class="card">
+                            <h4>PWM - Digital zu "Analog"</h4>
+                            <p class="mt-10">PWM schaltet schnell ein/aus. Der Duty Cycle bestimmt die "Helligkeit".</p>
+                            <ul class="mt-10" style="font-size: 16px;">
+                                <li><strong>0</strong> → LED aus</li>
+                                <li><strong>127</strong> → halbe Helligkeit</li>
+                                <li><strong>255</strong> → volle Helligkeit</li>
+                            </ul>
+                            <div class="code-block mt-20"><pre><code>analogWrite(pin, <span class="number">127</span>);
+<span class="comment">// PWM-Wert 0-255</span></code></pre></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Schaltplan -->
+                <div class="slide">
+                    <h2>Schaltplan</h2>
+                    <p class="subtitle">Poti und LED anschließen</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Verbindungen</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 14px;">
+  Potentiometer:
+  Pin 1 (VCC)      → 5V
+  Pin 2 (Schleifer) → A0
+  Pin 3 (GND)      → GND
+
+  LED:
+  Pin 9 ──[220Ω]──LED──GND
+            </pre></div>
+                        </div>
+                        <div class="card card-info">
+                            <h4>Wichtig</h4>
+                            <ul class="mt-20">
+                                <li>Poti an <strong>5V</strong></li>
+                                <li>Mittlerer Pin (Schleifer) → A0</li>
+                                <li>LED an <strong>Pin 9</strong> (PWM-fähig!)</li>
+                            </ul>
+
+                            <h4 class="mt-20">PWM-Pins beim Arduino Uno</h4>
+                            <p style="font-size: 14px;">Nur Pins 3, 5, 6, 9, 10, 11 können PWM!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Code Schritt 1 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 1: Poti-Wert lesen</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 1: Potentiometer-Wert auslesen</span>
+
+<span class="keyword">const int</span> POTI_PIN = A0;
+
+<span class="keyword">void</span> setup() {
+  Serial.begin(<span class="number">9600</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="keyword">int</span> wert = analogRead(POTI_PIN);  <span class="comment">// 0 bis 1023</span>
+  Serial.print(<span class="string">"Poti-Wert: "</span>);
+  Serial.println(wert);
+  delay(<span class="number">100</span>);
+}</code></pre></div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Teste es!</h4>
+                        <p>Drehe am Poti und beobachte die Werte in der Konsole. Sie sollten von 0 bis 1023 reichen.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Code Schritt 2 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 2: LED mit PWM steuern</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 2: PWM für LED einrichten</span>
+
+<span class="keyword">const int</span> POTI_PIN = A0;
+<span class="keyword">const int</span> LED_PIN = <span class="number">9</span>;  <span class="comment">// PWM-faehiger Pin!</span>
+
+<span class="keyword">void</span> setup() {
+  pinMode(LED_PIN, OUTPUT);
+  Serial.begin(<span class="number">9600</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="keyword">int</span> wert = analogRead(POTI_PIN);  <span class="comment">// 0-1023</span>
+
+  <span class="comment">// map() rechnet den Wert um: 0-1023 → 0-255</span>
+  <span class="keyword">int</span> helligkeit = map(wert, <span class="number">0</span>, <span class="number">1023</span>, <span class="number">0</span>, <span class="number">255</span>);
+
+  analogWrite(LED_PIN, helligkeit);
+  Serial.print(<span class="string">"Helligkeit: "</span>);
+  Serial.println(helligkeit);
+  delay(<span class="number">50</span>);
+}</code></pre></div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Die map()-Funktion</h4>
+                        <p><code>map(wert, vonMin, vonMax, zuMin, zuMax)</code> rechnet einen Wertebereich in einen anderen um. Perfekt für ADC→PWM!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Code Schritt 3 (Fertig) -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 3: Mit Prozentanzeige</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Fertige Version: Poti steuert LED-Helligkeit</span>
+
+<span class="keyword">const int</span> POTI_PIN = A0;
+<span class="keyword">const int</span> LED_PIN = <span class="number">9</span>;
+
+<span class="keyword">void</span> setup() {
+  pinMode(LED_PIN, OUTPUT);
+  Serial.begin(<span class="number">9600</span>);
+  Serial.println(<span class="string">"Drehe am Potentiometer!"</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="keyword">int</span> wert = analogRead(POTI_PIN);
+  <span class="keyword">int</span> helligkeit = map(wert, <span class="number">0</span>, <span class="number">1023</span>, <span class="number">0</span>, <span class="number">255</span>);
+
+  analogWrite(LED_PIN, helligkeit);
+
+  <span class="comment">// Prozent berechnen</span>
+  <span class="keyword">int</span> prozent = wert * <span class="number">100</span> / <span class="number">1023</span>;
+  Serial.print(<span class="string">"Helligkeit: "</span>);
+  Serial.print(prozent);
+  Serial.println(<span class="string">"%"</span>);
+
+  delay(<span class="number">100</span>);
+}</code></pre></div>
+
+                    <div class="card card-info mt-20">
+                        <h4>Ergebnis</h4>
+                        <p>Die LED-Helligkeit folgt stufenlos der Poti-Position. In der Konsole siehst du die Helligkeit in Prozent.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: Wokwi Demo -->
+                <div class="slide">
+                    <h2>Ausprobieren</h2>
+                    <p class="subtitle">Simulation in Wokwi</p>
+
+                    <div class="center mt-40">
+                        <div class="card card-dark">
+                            <h3>Wokwi Projekt</h3>
+                            <p class="mt-20">Füge ein Potentiometer und eine LED hinzu:</p>
+                            <div class="mt-30">
+                                <a href="https://wokwi.com/projects/new/arduino-uno" target="_blank" style="color: #0071e3; font-size: 20px; text-decoration: none;">
+                                    Neues Arduino-Projekt in Wokwi →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-40">
+                        <h4>In Wokwi</h4>
+                        <p>Suche nach "potentiometer" und ziehe es in die Simulation. Klicke auf den Knopf und ziehe um zu drehen!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Erweiterungen -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Challenges</div>
+                            <h2 class="no-margin">Erweiterungen</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">📊</div>
+                            <h4>Challenge 1: Bargraph</h4>
+                            <p>Nutze 5 LEDs als Füllstandsanzeige (wie ein VU-Meter).</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🎚️</div>
+                            <h4>Challenge 2: Stufen</h4>
+                            <p>Teile den Bereich in 5 Stufen. LED blinkt je nach Stufe unterschiedlich schnell.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🔊</div>
+                            <h4>Challenge 3: Tonhöhe</h4>
+                            <p>Nutze einen Piezo und ändere die Tonhöhe mit dem Poti.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">📺</div>
+                            <h4>Challenge 4: Display</h4>
+                            <p>Zeige den Prozentwert auf einem LCD Display an.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🎛️</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du kannst jetzt analoge Werte verarbeiten</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>ADC</h4>
+                                <p>Analoge Werte lesen</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>PWM</h4>
+                                <p>LED stufenlos dimmen</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>map()</h4>
+                                <p>Wertebereiche umrechnen</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../B05_rgb_led/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p class="mt-10">B05: RGB-LED Farbmischer - Drei Kanäle mit PWM steuern</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

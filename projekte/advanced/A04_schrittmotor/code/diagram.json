@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": 0, "attrs": {} },
+    { "type": "wokwi-stepper-motor", "id": "stepper1", "top": -150, "left": 150, "attrs": { "size": "28BYJ-48" } },
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": 200, "left": -120, "attrs": {} },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": 200, "left": 60, "attrs": { "color": "green", "label": "DIR" } }
+  ],
+  "connections": [
+    [ "stepper1:A-", "uno:8", "orange", [ "v98", "h-80" ] ],
+    [ "stepper1:A+", "uno:9", "yellow", [ "v108", "h-90" ] ],
+    [ "stepper1:B+", "uno:10", "green", [ "v118", "h-100" ] ],
+    [ "stepper1:B-", "uno:11", "blue", [ "v128", "h-110" ] ],
+    [ "pot1:VCC", "uno:5V", "red", [ "v-52", "h60" ] ],
+    [ "pot1:GND", "uno:GND.1", "black", [ "v-108", "h30" ] ],
+    [ "pot1:SIG", "uno:A0", "purple", [ "v-62", "h90" ] ],
+    [ "btn1:1.l", "uno:2", "cyan", [ "v-108", "h10" ] ],
+    [ "btn1:2.l", "uno:GND.2", "black", [ "v-118", "h-20" ] ]
+  ],
+  "dependencies": {}
+}

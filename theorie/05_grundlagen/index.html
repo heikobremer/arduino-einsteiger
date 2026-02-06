@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>05 Elektronik-Grundlagen - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">⚡</div>
+                        <h1>Elektronik-Grundlagen</h1>
+                        <p class="subtitle">Das Wichtigste für deine Projekte</p>
+                        <div class="badge">Modul 5</div>
+                        <div class="tech-stack center mt-40">
+                            <div class="tech-badge">Spannung</div>
+                            <div class="tech-badge">Strom</div>
+                            <div class="tech-badge">Widerstand</div>
+                            <div class="tech-badge">PWM</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Grundgrößen -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Basics</div>
+                            <h2 class="no-margin">Die drei Grundgrößen</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-3 mt-30">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">⚡</div>
+                            <h4>Spannung (U)</h4>
+                            <p class="mt-10"><strong>Einheit:</strong> Volt (V)</p>
+                            <p class="mt-10">Der "Druck" der Elektronen. Wie der Wasserdruck in einer Leitung.</p>
+                            <p class="mt-10" style="font-size: 14px;">Arduino Uno: 5V</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🌊</div>
+                            <h4>Strom (I)</h4>
+                            <p class="mt-10"><strong>Einheit:</strong> Ampere (A)</p>
+                            <p class="mt-10">Die "Menge" der fließenden Elektronen pro Zeit.</p>
+                            <p class="mt-10" style="font-size: 14px;">Typisch: mA (Milliampere)</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🚧</div>
+                            <h4>Widerstand (R)</h4>
+                            <p class="mt-10"><strong>Einheit:</strong> Ohm (Ω)</p>
+                            <p class="mt-10">Der "Engpass" der den Stromfluss begrenzt.</p>
+                            <p class="mt-10" style="font-size: 14px;">Typisch: 220Ω, 10kΩ</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>🌊 Die Wasser-Analogie</h4>
+                        <p>Stell dir einen Gartenschlauch vor: Die <strong>Spannung</strong> ist der Wasserdruck, der <strong>Strom</strong> ist die Wassermenge pro Sekunde, und der <strong>Widerstand</strong> ist wie ein Knick im Schlauch.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Ohmsches Gesetz -->
+                <div class="slide">
+                    <h2>Das Ohmsche Gesetz</h2>
+                    <p class="subtitle">Die wichtigste Formel der Elektronik</p>
+
+                    <div class="center mt-40">
+                        <div class="card card-dark" style="display: inline-block; padding: 40px 80px;">
+                            <h1 style="color: white; font-size: 72px;">U = R × I</h1>
+                        </div>
+                    </div>
+
+                    <div class="grid-3 mt-40">
+                        <div class="card">
+                            <h4>Spannung berechnen</h4>
+                            <p class="mt-10" style="font-size: 20px;"><strong>U = R × I</strong></p>
+                            <p class="mt-10">Beispiel: 220Ω × 0.02A = <strong>4.4V</strong></p>
+                        </div>
+                        <div class="card">
+                            <h4>Strom berechnen</h4>
+                            <p class="mt-10" style="font-size: 20px;"><strong>I = U / R</strong></p>
+                            <p class="mt-10">Beispiel: 5V / 220Ω = <strong>22.7mA</strong></p>
+                        </div>
+                        <div class="card">
+                            <h4>Widerstand berechnen</h4>
+                            <p class="mt-10" style="font-size: 20px;"><strong>R = U / I</strong></p>
+                            <p class="mt-10">Beispiel: 5V / 0.02A = <strong>250Ω</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>💡 Merkhilfe: URI</h4>
+                        <p>Denke an "URI" - Spannung (U) = Widerstand (R) mal Strom (I)</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: LED Vorwiderstand -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Praxis</div>
+                            <h2 class="no-margin">LED-Vorwiderstand berechnen</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Warum ein Widerstand?</h3>
+                            <p class="mt-10">Eine LED braucht einen bestimmten Strom (typisch 20mA). Ohne Widerstand würde zu viel Strom fließen und die LED zerstören!</p>
+
+                            <h3 class="mt-30">Die Formel</h3>
+                            <div class="card card-dark mt-10">
+                                <p style="font-size: 24px; color: white;">R = (U<sub>supply</sub> - U<sub>LED</sub>) / I<sub>LED</sub></p>
+                            </div>
+
+                            <h3 class="mt-30">Typische LED-Spannungen</h3>
+                            <ul class="mt-10" style="font-size: 16px;">
+                                <li><strong>Rot:</strong> ~2.0V</li>
+                                <li><strong>Gelb:</strong> ~2.1V</li>
+                                <li><strong>Grün:</strong> ~2.2V</li>
+                                <li><strong>Blau/Weiß:</strong> ~3.2V</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Beispielrechnung (Arduino Uno)</h4>
+                            <p class="mt-10"><strong>Gegeben:</strong></p>
+                            <ul style="font-size: 16px;">
+                                <li>Versorgung: 5V</li>
+                                <li>Rote LED: 2.0V</li>
+                                <li>Gewünschter Strom: 20mA</li>
+                            </ul>
+
+                            <p class="mt-20"><strong>Rechnung:</strong></p>
+                            <p style="font-size: 16px;">R = (5V - 2.0V) / 0.02A</p>
+                            <p style="font-size: 16px;">R = 3V / 0.02A</p>
+                            <p style="font-size: 16px;">R = <strong>150Ω</strong></p>
+
+                            <p class="mt-20"><strong>Ergebnis:</strong></p>
+                            <p style="font-size: 16px;">Nächster Normwert: <strong>150Ω</strong> oder <strong>220Ω</strong></p>
+                            <p style="font-size: 14px;">(Größer ist sicher, LED leuchtet nur etwas dunkler)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Breadboard -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Hardware</div>
+                            <h2 class="no-margin">Das Breadboard</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Aufbau verstehen</h3>
+                            <ul class="mt-20">
+                                <li><strong>Stromschienen</strong> (+ und -) verlaufen längs am Rand</li>
+                                <li><strong>Steckfelder</strong> in der Mitte sind quer verbunden (5er-Gruppen)</li>
+                                <li><strong>Mittelsteg</strong> trennt die beiden Hälften</li>
+                            </ul>
+
+                            <h3 class="mt-30">Regeln</h3>
+                            <ul class="mt-10">
+                                <li>Komponenten über den Mittelsteg setzen</li>
+                                <li>Kurze Verbindungen bevorzugen</li>
+                                <li>Farbcode: Rot = +5V, Schwarz = GND</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Verbindungen im Breadboard</h4>
+                            <div class="code-block" style="margin-top: 10px; background: #f5f5f7; color: #1d1d1f;"><pre style="font-family: monospace; font-size: 14px;">
+  + - - - - - - - - - - - +
+  |                       | ← Stromschiene (+5V)
+  + - - - - - - - - - - - +
+  |                       | ← Stromschiene (GND)
+  + - - - - - - - - - - - +
+
+  A B C D E   F G H I J
+  ═════════   ═════════
+  │ │ │ │ │   │ │ │ │ │ ← Reihe 1
+  │ │ │ │ │   │ │ │ │ │ ← Reihe 2
+  │ │ │ │ │   │ │ │ │ │ ← Reihe 3
+  ...         ...
+
+  ↑ Diese 5 Löcher sind verbunden
+            </pre></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Digital vs Analog -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Signale</div>
+                            <h2 class="no-margin">Digital vs. Analog</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Digital</h4>
+                            <p class="mt-10">Nur zwei Zustände:</p>
+                            <ul class="mt-10">
+                                <li><strong>HIGH</strong> (1) = 5V</li>
+                                <li><strong>LOW</strong> (0) = 0V</li>
+                            </ul>
+                            <p class="mt-20"><strong>Beispiele:</strong></p>
+                            <ul style="font-size: 16px;">
+                                <li>LED an/aus</li>
+                                <li>Taster gedrückt/nicht gedrückt</li>
+                                <li>Relais schalten</li>
+                            </ul>
+                            <div class="code-block mt-20"><pre><code>pinMode(<span class="number">7</span>, OUTPUT);
+digitalWrite(<span class="number">7</span>, HIGH); <span class="comment">// AN</span>
+digitalWrite(<span class="number">7</span>, LOW);  <span class="comment">// AUS</span></code></pre></div>
+                        </div>
+                        <div class="card">
+                            <h4>Analog</h4>
+                            <p class="mt-10">Kontinuierlicher Wertebereich:</p>
+                            <ul class="mt-10">
+                                <li>0V bis 5V stufenlos</li>
+                                <li>ADC wandelt in Zahl (0-1023)</li>
+                            </ul>
+                            <p class="mt-20"><strong>Beispiele:</strong></p>
+                            <ul style="font-size: 16px;">
+                                <li>Potentiometer-Position</li>
+                                <li>Lichtsensor (LDR)</li>
+                                <li>Temperatur (NTC)</li>
+                            </ul>
+                            <div class="code-block mt-20"><pre><code><span class="keyword">int</span> wert = analogRead(A0);
+<span class="comment">// Gibt 0-1023 zurück</span>
+<span class="comment">// 0 = 0V, 1023 = 5V</span></code></pre></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: PWM -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">5</div>
+                        <div>
+                            <div class="badge">Signale</div>
+                            <h2 class="no-margin">PWM - Pseudo-Analog</h2>
+                        </div>
+                    </div>
+
+                    <p class="subtitle">Pulse Width Modulation</p>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Wie funktioniert PWM?</h3>
+                            <p class="mt-10">Ein digitales Signal (0 oder 1) wird sehr schnell ein- und ausgeschaltet. Der <strong>Duty Cycle</strong> bestimmt, wie lange es "an" ist.</p>
+
+                            <ul class="mt-20">
+                                <li><strong>0% Duty (0):</strong> Immer aus</li>
+                                <li><strong>50% Duty (127):</strong> Halb an, halb aus</li>
+                                <li><strong>100% Duty (255):</strong> Immer an</li>
+                            </ul>
+
+                            <h3 class="mt-30">Anwendungen</h3>
+                            <ul class="mt-10">
+                                <li>LED dimmen</li>
+                                <li>Motor-Geschwindigkeit</li>
+                                <li>Servo-Position</li>
+                                <li>Töne erzeugen</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>PWM in Arduino C++</h4>
+                            <div class="code-block mt-20"><pre><code><span class="comment">// PWM nur auf Pins mit ~</span>
+<span class="comment">// D3, D5, D6, D9, D10, D11</span>
+
+<span class="keyword">const int</span> LED = <span class="number">9</span>; <span class="comment">// PWM-Pin</span>
+
+<span class="keyword">void</span> setup() {
+  pinMode(LED, OUTPUT);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="comment">// LED von dunkel nach hell</span>
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt;= <span class="number">255</span>; i++) {
+    analogWrite(LED, i);
+    delay(<span class="number">10</span>);
+  }
+}</code></pre></div>
+                            <p class="mt-10" style="font-size: 14px;"><strong>analogWrite(pin, 0-255)</strong> - 8-bit PWM</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Spannungsteiler -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">6</div>
+                        <div>
+                            <div class="badge">Schaltung</div>
+                            <h2 class="no-margin">Der Spannungsteiler</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Was ist das?</h3>
+                            <p class="mt-10">Zwei Widerstände in Reihe teilen eine Spannung. Die Ausgangsspannung hängt vom Verhältnis der Widerstände ab.</p>
+
+                            <div class="card card-dark mt-30">
+                                <p style="font-size: 20px; color: white;">U<sub>out</sub> = U<sub>in</sub> × R2 / (R1 + R2)</p>
+                            </div>
+
+                            <h3 class="mt-30">Anwendungen</h3>
+                            <ul class="mt-10">
+                                <li><strong>LDR-Schaltung</strong> - Licht messen</li>
+                                <li><strong>NTC-Sensor</strong> - Temperatur messen</li>
+                                <li><strong>Level-Shifting</strong> - 5V → 3.3V</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Schaltplan</h4>
+                            <div class="code-block" style="margin-top: 10px; background: #f5f5f7; color: #1d1d1f;"><pre style="font-family: monospace; font-size: 14px;">
+     5V
+       │
+      [R1]  ← Widerstand 1
+       │
+       ├──────► A0 (Messung)
+       │
+      [R2]  ← Widerstand 2
+       │
+      GND
+            </pre></div>
+
+                            <h4 class="mt-20">Beispiel: LDR</h4>
+                            <p style="font-size: 14px;">R1 = LDR (variabel, z.B. 1kΩ-100kΩ)</p>
+                            <p style="font-size: 14px;">R2 = 10kΩ (fest)</p>
+                            <p class="mt-10" style="font-size: 14px;">Bei viel Licht: LDR klein → U<sub>out</sub> hoch</p>
+                            <p style="font-size: 14px;">Bei wenig Licht: LDR groß → U<sub>out</sub> niedrig</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: Pull-up/Pull-down -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">7</div>
+                        <div>
+                            <div class="badge">Schaltung</div>
+                            <h2 class="no-margin">Pull-up und Pull-down Widerstände</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Pull-up (HIGH wenn offen)</h4>
+                            <div class="code-block" style="margin-top: 10px; background: #f5f5f7; color: #1d1d1f;"><pre style="font-family: monospace; font-size: 14px;">
+   5V
+     │
+    [R]  ← Pull-up (10kΩ)
+     │
+     ├──► Pin 7 (liest HIGH)
+     │
+    [/]  ← Taster
+     │
+    GND
+            </pre></div>
+                            <p class="mt-10" style="font-size: 14px;">Taster offen: Pin = HIGH (5V)</p>
+                            <p style="font-size: 14px;">Taster gedrückt: Pin = LOW (0V)</p>
+                        </div>
+                        <div class="card">
+                            <h4>Pull-down (LOW wenn offen)</h4>
+                            <div class="code-block" style="margin-top: 10px; background: #f5f5f7; color: #1d1d1f;"><pre style="font-family: monospace; font-size: 14px;">
+   5V
+     │
+    [/]  ← Taster
+     │
+     ├──► Pin 7 (liest LOW)
+     │
+    [R]  ← Pull-down (10kΩ)
+     │
+    GND
+            </pre></div>
+                            <p class="mt-10" style="font-size: 14px;">Taster offen: Pin = LOW (0V)</p>
+                            <p style="font-size: 14px;">Taster gedrückt: Pin = HIGH (5V)</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>💡 Arduino hat interne Pull-ups!</h4>
+                        <div class="code-block mt-10"><pre><code><span class="comment">// Interner Pull-up (kein externer Widerstand nötig!)</span>
+pinMode(<span class="number">7</span>, INPUT_PULLUP);
+
+<span class="comment">// Taster lesen (LOW = gedrückt bei Pull-up!)</span>
+<span class="keyword">if</span> (digitalRead(<span class="number">7</span>) == LOW) {
+  <span class="comment">// Taster wurde gedrückt</span>
+}</code></pre></div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Wichtige Werte -->
+                <div class="slide">
+                    <h2>Wichtige Werte zum Merken</h2>
+                    <p class="subtitle">Schnellreferenz für deine Arduino-Projekte</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Spannungen</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>Arduino Uno GPIO:</strong> 5V</li>
+                                <li><strong>Arduino Uno 3.3V Pin:</strong> 3.3V</li>
+                                <li><strong>Rote LED:</strong> ~2.0V</li>
+                                <li><strong>Blaue/Weiße LED:</strong> ~3.2V</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Ströme</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>Standard-LED:</strong> 20mA</li>
+                                <li><strong>GPIO max (Arduino):</strong> 40mA</li>
+                                <li><strong>Gesamt max (5V):</strong> 200mA</li>
+                                <li><strong>Servo:</strong> 100-500mA</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Widerstände</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>LED-Vorwiderstand:</strong> 220Ω</li>
+                                <li><strong>Pull-up/Pull-down:</strong> 10kΩ</li>
+                                <li><strong>Spannungsteiler:</strong> 10kΩ</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>ADC / PWM</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>analogRead():</strong> 0-1023 (10-bit)</li>
+                                <li><strong>analogWrite():</strong> 0-255 (8-bit)</li>
+                                <li><strong>ADC Eingang:</strong> 0-5V</li>
+                                <li><strong>PWM Pins:</strong> D3,D5,D6,D9,D10,D11</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">⚡</div>
+                        <h1>Grundlagen gemeistert!</h1>
+                        <p class="subtitle">Du bist bereit für die Praxis</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Ohmsches Gesetz</h4>
+                                <p>U = R × I verstanden</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Digital & Analog</h4>
+                                <p>Signaltypen unterscheiden</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>PWM</h4>
+                                <p>LEDs dimmen, Servos steuern</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../../projekte/beginner/B01_led_blink/index.html">
+                            <h3>Jetzt geht's los!</h3>
+                            <p class="mt-10">Starte mit deinem ersten Projekt: LED Blinken</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Start</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../presentation_framework/script.js"></script>
+</body>
+</html>

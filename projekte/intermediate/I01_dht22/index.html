@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I01: DHT22 Temperatur & Feuchtigkeit - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🌡️</div>
+                        <h1>DHT22 Sensor</h1>
+                        <p class="subtitle">Projekt I01 - Temperatur & Luftfeuchtigkeit messen</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Intermediate</div>
+                            <div class="tech-badge">DHT22</div>
+                            <div class="tech-badge">1-Wire</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>DHT-Protokoll</strong> - Digitale Sensoren mit eigenem Timing verstehen</li>
+                        <li><strong>Bibliotheken nutzen</strong> - Die DHT.h Library einbinden und verwenden</li>
+                        <li><strong>Datenformatierung</strong> - Messwerte formatiert ausgeben</li>
+                        <li><strong>float-Variablen</strong> - Dezimalzahlen speichern und verarbeiten</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Beginner-Projekte B01-B08 abgeschlossen, Grundlagen der seriellen Kommunikation bekannt</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Komponenten -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Was du brauchst</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🌡️</div>
+                            <h4>DHT22 Sensor</h4>
+                            <p>Digitaler Sensor fuer Temperatur und relative Luftfeuchtigkeit. Liefert kalibrierte Werte ueber ein eigenes Protokoll.</p>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Messbereich:</strong> -40 bis +80 Grad C, 0-100% RH</p>
+                            <p style="font-size: 14px;"><strong>Genauigkeit:</strong> +/- 0.5 Grad C, +/- 2-5% RH</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">📌</div>
+                            <h4>DHT22 Pinbelegung</h4>
+                            <ul style="font-size: 14px;" class="mt-10">
+                                <li><strong>Pin 1 (VCC)</strong> - Versorgung 3.3V-5V</li>
+                                <li><strong>Pin 2 (SDA/DATA)</strong> - Datenleitung</li>
+                                <li><strong>Pin 3</strong> - Nicht belegt (NC)</li>
+                                <li><strong>Pin 4 (GND)</strong> - Masse</li>
+                            </ul>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Hinweis:</strong> In Wokwi hat der DHT22 nur 3 Pins (VCC, SDA, GND)</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>DHT22 vs DHT11</h4>
+                        <p>Der DHT22 ist genauer (+/- 0.5 Grad C statt +/- 2 Grad C) und hat einen groesseren Messbereich als der guenstigere DHT11.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Theorie -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">Das 1-Wire Protokoll</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Wie funktioniert es?</h3>
+                            <ul class="mt-20">
+                                <li>Kommunikation ueber eine einzelne Datenleitung</li>
+                                <li>Bidirektional: Arduino sendet Startimpuls, Sensor antwortet</li>
+                                <li>Timing-basiert: Signallaengen kodieren 0 und 1</li>
+                                <li>40 Bit Daten pro Abfrage (16 Bit Feuchte + 16 Bit Temp + 8 Bit Checksum)</li>
+                            </ul>
+
+                            <h3 class="mt-30">Timing-Anforderungen</h3>
+                            <p class="mt-10">Der DHT22 benoetigt mindestens <strong>2 Sekunden</strong> zwischen Messungen fuer stabile Werte.</p>
+                        </div>
+                        <div class="card">
+                            <h4>Timing-Diagramm</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 12px;">
+Arduino         DHT22
+   │               │
+   │──── START ───→│  (18ms LOW)
+   │               │
+   │←── RESPONSE ──│  (80us LOW + 80us HIGH)
+   │               │
+   │←── 40 BITS ───│  (Bit 0: 26-28us HIGH)
+   │               │  (Bit 1: 70us HIGH)
+   │               │
+   ▼               ▼
+            </pre></div>
+                            <p class="mt-20" style="font-size: 14px;"><strong>Genauigkeit:</strong> +/- 0.5 Grad C</p>
+                            <p style="font-size: 14px;"><strong>Aufloesung:</strong> 0.1 Grad C / 0.1% RH</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Schaltplan -->
+                <div class="slide">
+                    <h2>Schaltplan</h2>
+                    <p class="subtitle">Verbindungen zum Arduino</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Wokwi-Aufbau</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 14px;">
+    Arduino Uno           DHT22
+   ┌───────────┐        ┌───────┐
+   │           │        │ ┌───┐ │
+   │  5V ──────┼────────┼─┤VCC│ │
+   │           │        │ └───┘ │
+   │  Pin 7 ───┼────────┼─┤SDA│ │
+   │           │        │ └───┘ │
+   │  GND ─────┼────────┼─┤GND│ │
+   │           │        │ └───┘ │
+   └───────────┘        └───────┘
+            </pre></div>
+                        </div>
+                        <div class="card card-info">
+                            <h4>Wichtige Verbindungen</h4>
+                            <ul class="mt-20">
+                                <li><strong>DHT22 VCC</strong> → Arduino 5V</li>
+                                <li><strong>DHT22 SDA</strong> → Arduino Pin 7</li>
+                                <li><strong>DHT22 GND</strong> → Arduino GND</li>
+                            </ul>
+
+                            <h4 class="mt-30">Pull-Up Widerstand</h4>
+                            <p style="font-size: 14px;">Bei echter Hardware: 10k Ohm zwischen SDA und VCC. In Wokwi nicht noetig - der interne Pull-Up reicht.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Code Schritt 1 - Library -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 1: Library einbinden</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 1: DHT-Library einbinden</span>
+
+<span class="keyword">#include</span> <span class="string">&lt;DHT.h&gt;</span>
+
+<span class="comment">// Sensor-Konfiguration</span>
+<span class="keyword">#define</span> DHT_PIN <span class="number">7</span>        <span class="comment">// Datenpin</span>
+<span class="keyword">#define</span> DHT_TYPE DHT22   <span class="comment">// Sensortyp</span>
+
+<span class="comment">// DHT-Objekt erstellen</span>
+DHT dht(DHT_PIN, DHT_TYPE);
+
+<span class="keyword">void</span> setup() {
+  <span class="comment">// Wird gleich gefuellt...</span>
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="comment">// Wird gleich gefuellt...</span>
+}</code></pre></div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Erklaerung</h4>
+                            <ul style="font-size: 16px;">
+                                <li><code>#include &lt;DHT.h&gt;</code> - Bindet die Bibliothek ein</li>
+                                <li><code>#define</code> - Konstanten fuer Pin und Typ</li>
+                                <li><code>DHT dht(...)</code> - Erstellt das Sensor-Objekt</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Warum Libraries?</h4>
+                            <p style="font-size: 14px;">Die DHT-Library kuemmert sich um das komplizierte Timing-Protokoll. Du kannst einfach <code>readTemperature()</code> aufrufen!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Code Schritt 2 - Setup -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 2: Setup</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 2: Setup-Funktion</span>
+
+<span class="keyword">#include</span> <span class="string">&lt;DHT.h&gt;</span>
+
+<span class="keyword">#define</span> DHT_PIN <span class="number">7</span>
+<span class="keyword">#define</span> DHT_TYPE DHT22
+
+DHT dht(DHT_PIN, DHT_TYPE);
+
+<span class="keyword">void</span> setup() {
+  Serial.begin(<span class="number">9600</span>);      <span class="comment">// Serielle Kommunikation starten</span>
+  dht.begin();              <span class="comment">// DHT-Sensor initialisieren</span>
+
+  Serial.println(<span class="string">"DHT22 Temperatur & Feuchtigkeit"</span>);
+  Serial.println(<span class="string">"------------------------------"</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="comment">// Kommt im naechsten Schritt...</span>
+}</code></pre></div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Was passiert im Setup?</h4>
+                        <p><code>Serial.begin(9600)</code> startet die serielle Ausgabe. <code>dht.begin()</code> initialisiert den Sensor und konfiguriert den Pin.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Code Schritt 3 - Loop -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 3: Loop mit Fehlerpruefung</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="keyword">void</span> loop() {
+  <span class="comment">// DHT22 braucht min. 2 Sekunden zwischen Messungen</span>
+  delay(<span class="number">2000</span>);
+
+  <span class="comment">// Messwerte lesen (float = Dezimalzahl)</span>
+  <span class="keyword">float</span> temp = dht.readTemperature();
+  <span class="keyword">float</span> hum = dht.readHumidity();
+
+  <span class="comment">// Pruefen ob Messung erfolgreich</span>
+  <span class="keyword">if</span> (isnan(temp) || isnan(hum)) {
+    Serial.println(<span class="string">"Fehler beim Lesen des DHT22!"</span>);
+    <span class="keyword">return</span>;  <span class="comment">// Loop abbrechen, neu starten</span>
+  }
+
+  <span class="comment">// Ausgabe der Messwerte</span>
+  Serial.print(<span class="string">"Temperatur: "</span>);
+  Serial.print(temp, <span class="number">1</span>);  <span class="comment">// 1 Dezimalstelle</span>
+  Serial.print(<span class="string">" C | Feuchtigkeit: "</span>);
+  Serial.print(hum, <span class="number">1</span>);
+  Serial.println(<span class="string">" %"</span>);
+}</code></pre></div>
+
+                    <div class="grid-2 mt-20">
+                        <div class="card">
+                            <h4>float-Variablen</h4>
+                            <p style="font-size: 14px;">Speichern Dezimalzahlen wie 23.5 oder 65.8. <code>Serial.print(temp, 1)</code> gibt eine Nachkommastelle aus.</p>
+                        </div>
+                        <div class="card">
+                            <h4>isnan() Pruefung</h4>
+                            <p style="font-size: 14px;">"Is Not A Number" - prueft ob die Messung fehlgeschlagen ist. Wichtig fuer robuste Programme!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: Wokwi Demo -->
+                <div class="slide">
+                    <h2>Ausprobieren</h2>
+                    <p class="subtitle">Simulation in Wokwi</p>
+
+                    <div class="center mt-40">
+                        <div class="card card-dark">
+                            <h3>Wokwi Projekt</h3>
+                            <p class="mt-20">Erstelle ein neues Projekt mit Arduino Uno und DHT22:</p>
+                            <div class="mt-30">
+                                <a href="https://wokwi.com/projects/new/arduino-uno" target="_blank" style="color: #0071e3; font-size: 20px; text-decoration: none;">
+                                    Neues Arduino-Projekt in Wokwi
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-40">
+                        <h4>So testest du</h4>
+                        <ul>
+                            <li>Fuege einen DHT22 hinzu (Suche: "dht22")</li>
+                            <li>Verbinde: VCC → 5V, SDA → Pin 7, GND → GND</li>
+                            <li>Kopiere den Code in die sketch.ino</li>
+                            <li>Klicke auf Play - im Serial Monitor erscheinen die Werte</li>
+                            <li><strong>Tipp:</strong> Klicke auf den DHT22 um Temperatur/Feuchte zu aendern!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Challenges -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Challenges</div>
+                            <h2 class="no-margin">Erweiterungen</h2>
+                        </div>
+                    </div>
+
+                    <p class="subtitle">Probiere diese Aufgaben aus</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🌡️</div>
+                            <h4>Challenge 1: Hitzewarnung</h4>
+                            <p>LED an Pin 8 leuchtet bei Temperatur ueber 30 Grad C</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">❄️</div>
+                            <h4>Challenge 2: Temperatur-Ampel</h4>
+                            <p>3 LEDs: Blau (kalt &lt;18 Grad), Gruen (optimal 18-25 Grad), Rot (warm &gt;25 Grad)</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">📊</div>
+                            <h4>Challenge 3: Min/Max Speicher</h4>
+                            <p>Speichere die hoechste und niedrigste gemessene Temperatur</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🔊</div>
+                            <h4>Challenge 4: Feuchte-Alarm</h4>
+                            <p>Buzzer piept wenn Luftfeuchtigkeit unter 30% oder ueber 70% faellt</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🌡️</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du hast deinen ersten Umweltsensor programmiert</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">📚</div>
+                                <h4>DHT.h Library</h4>
+                                <p>Externe Bibliotheken eingebunden</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">🔢</div>
+                                <h4>float-Variablen</h4>
+                                <p>Dezimalzahlen verarbeitet</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">⚠️</div>
+                                <h4>Fehlerpruefung</h4>
+                                <p>isnan() fuer robuste Programme</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../I02_ultraschall/index.html">
+                            <h3>Naechstes Projekt</h3>
+                            <p class="mt-10">I02: Ultraschall-Entfernungsmesser - Distanzen messen mit dem HC-SR04</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

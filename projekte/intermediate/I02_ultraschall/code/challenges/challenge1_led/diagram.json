@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": -96.6, "attrs": {} },
+    { "type": "wokwi-hc-sr04", "id": "ultrasonic1", "top": -130, "left": 80, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": -100, "left": -180, "attrs": { "color": "green" } },
+    { "type": "wokwi-led", "id": "led2", "top": -100, "left": -150, "attrs": { "color": "green" } },
+    { "type": "wokwi-led", "id": "led3", "top": -100, "left": -120, "attrs": { "color": "yellow" } },
+    { "type": "wokwi-led", "id": "led4", "top": -100, "left": -90, "attrs": { "color": "orange" } },
+    { "type": "wokwi-led", "id": "led5", "top": -100, "left": -60, "attrs": { "color": "red" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": -40, "left": -188, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r2", "top": -40, "left": -158, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r3", "top": -40, "left": -128, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r4", "top": -40, "left": -98, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r5", "top": -40, "left": -68, "rotate": 90, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "ultrasonic1:VCC", "uno:5V", "red", [ "v78", "h-120" ] ],
+    [ "ultrasonic1:TRIG", "uno:6", "orange", [ "v88", "h-55" ] ],
+    [ "ultrasonic1:ECHO", "uno:7", "yellow", [ "v98", "h-35" ] ],
+    [ "ultrasonic1:GND", "uno:GND.1", "black", [ "v135", "h-90" ] ],
+    [ "led1:C", "r1:1", "black", [] ],
+    [ "led2:C", "r2:1", "black", [] ],
+    [ "led3:C", "r3:1", "black", [] ],
+    [ "led4:C", "r4:1", "black", [] ],
+    [ "led5:C", "r5:1", "black", [] ],
+    [ "r1:2", "uno:GND.2", "black", [ "v48", "h42" ] ],
+    [ "r2:2", "uno:GND.2", "black", [ "v48", "h72" ] ],
+    [ "r3:2", "uno:GND.2", "black", [ "v48", "h102" ] ],
+    [ "r4:2", "uno:GND.2", "black", [ "v48", "h132" ] ],
+    [ "r5:2", "uno:GND.2", "black", [ "v48", "h162" ] ],
+    [ "led1:A", "uno:8", "green", [ "v-20", "h42", "v158" ] ],
+    [ "led2:A", "uno:9", "green", [ "v-25", "h62", "v163" ] ],
+    [ "led3:A", "uno:10", "yellow", [ "v-30", "h82", "v168" ] ],
+    [ "led4:A", "uno:11", "orange", [ "v-35", "h102", "v173" ] ],
+    [ "led5:A", "uno:12", "red", [ "v-40", "h122", "v178" ] ]
+  ],
+  "dependencies": {}
+}

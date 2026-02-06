@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Präsentation - Template</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <!-- Optional: Logo -->
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+            
+            <div class="slide-content-wrapper">
+                
+                <!-- =============================================
+                     SLIDE 1: Title Slide
+                     ============================================= -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🎯</div>
+                        <h1>Präsentations-Titel</h1>
+                        <p class="subtitle">Untertitel oder Beschreibung<br>Zweizeilig möglich</p>
+                        <div class="badge">Version 1.0</div>
+                        <p class="content mt-40">
+                            Einleitender Text oder zusätzliche Informationen<br>
+                            <strong>Keywords • Themen • Highlights</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- =============================================
+                     SLIDE 2: Overview with Cards
+                     ============================================= -->
+                <div class="slide">
+                    <h2>Überblick</h2>
+                    <p class="subtitle">Was Sie erwartet</p>
+                    
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">📊</div>
+                            <h4>Thema 1</h4>
+                            <p>Beschreibung des ersten Themas mit relevanten Details und Informationen.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🔧</div>
+                            <h4>Thema 2</h4>
+                            <p>Beschreibung des zweiten Themas mit wichtigen Punkten.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🚀</div>
+                            <h4>Thema 3</h4>
+                            <p>Beschreibung des dritten Themas mit Fokus auf Umsetzung.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">✅</div>
+                            <h4>Thema 4</h4>
+                            <p>Beschreibung des vierten Themas mit Ergebnissen.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =============================================
+                     SLIDE 3: Phase/Chapter Header
+                     ============================================= -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Kapitel 1</div>
+                            <h2 class="no-margin">Kapitel-Titel</h2>
+                        </div>
+                    </div>
+                    
+                    <p class="subtitle">Untertitel des Kapitels</p>
+                    
+                    <h3 class="mt-40">🎯 Ziele</h3>
+                    <ul>
+                        <li><strong>Ziel 1:</strong> Detaillierte Beschreibung</li>
+                        <li><strong>Ziel 2:</strong> Weitere wichtige Punkte</li>
+                        <li><strong>Ziel 3:</strong> Zu erreichende Meilensteine</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>💡 Wichtiger Hinweis</h4>
+                        <p>Wichtige Information oder Warnung, die hervorgehoben werden soll.</p>
+                    </div>
+                </div>
+
+                <!-- =============================================
+                     SLIDE 4: List Content
+                     ============================================= -->
+                <div class="slide">
+                    <h2>Listen und Aufzählungen</h2>
+                    <p class="subtitle">Strukturierte Informationen</p>
+                    
+                    <ul class="mt-40">
+                        <li><strong>Punkt 1:</strong> Erste wichtige Information</li>
+                        <li><strong>Punkt 2:</strong> Zweite relevante Information</li>
+                        <li><strong>Punkt 3:</strong> Dritte entscheidende Information</li>
+                        <li><strong>Punkt 4:</strong> Vierte bedeutende Information</li>
+                        <li><strong>Punkt 5:</strong> Fünfte essenzielle Information</li>
+                    </ul>
+
+                    <h3 class="mt-40">✅ Vorteile</h3>
+                    <ul>
+                        <li>Vorteil Nummer eins mit Erklärung</li>
+                        <li>Vorteil Nummer zwei mit Details</li>
+                        <li>Vorteil Nummer drei mit Kontext</li>
+                    </ul>
+                </div>
+
+                <!-- =============================================
+                     SLIDE 5: Code Example
+                     ============================================= -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div><h2 class="no-margin">Code-Beispiele</h2></div>
+                    </div>
+                    
+                    <p class="subtitle">Technische Implementierung</p>
+                    
+                    <div class="code-block"><pre><code><span class="comment">// Beispiel-Code mit Syntax-Highlighting</span>
+<span class="keyword">function</span> example() {
+    <span class="keyword">const</span> message = <span class="string">"Hello World"</span>;
+    console.log(message);
+    
+    <span class="comment">// Weitere Logik</span>
+    <span class="keyword">return</span> <span class="keyword">true</span>;
+}</code></pre></div>
+
+                    <p class="content mt-20">
+                        <strong>Erklärung:</strong> Beschreibung des Code-Beispiels und seiner Funktionsweise.
+                    </p>
+
+                    <ul class="mt-30">
+                        <li>Verwendung von <code>const</code> für Konstanten</li>
+                        <li>Funktionsdeklaration mit <code>function</code></li>
+                        <li>Return-Statement am Ende</li>
+                    </ul>
+                </div>
+
+                <!-- =============================================
+                     SLIDE 6: Two-Column Layout
+                     ============================================= -->
+                <div class="slide">
+                    <h2>Zweispalten-Layout</h2>
+                    <p class="subtitle">Vergleich oder Gegenüberstellung</p>
+                    
+                    <div class="grid-2">
+                        <div>
+                            <h3>Linke Seite</h3>
+                            <ul class="mt-20">
+                                <li>Punkt A mit Erklärung</li>
+                                <li>Punkt B mit Details</li>
+                                <li>Punkt C mit Kontext</li>
+                                <li>Punkt D mit Informationen</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3>Rechte Seite</h3>
+                            <ul class="mt-20">
+                                <li>Gegenpunkt oder Alternative</li>
+                                <li>Weitere Option oder Vergleich</li>
+                                <li>Dritte Möglichkeit</li>
+                                <li>Vierte Variante</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card card-neutral mt-40">
+                        <h4>📝 Zusammenfassung</h4>
+                        <p>Fazit oder wichtige Erkenntnisse aus dem Vergleich.</p>
+                    </div>
+                </div>
+
+                <!-- =============================================
+                     SLIDE 7: Three-Column Grid
+                     ============================================= -->
+                <div class="slide">
+                    <h2>Drei-Spalten-Layout</h2>
+                    <p class="subtitle">Mehrere Kategorien oder Bereiche</p>
+                    
+                    <div class="grid-3 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">⚙️</div>
+                            <h4>Kategorie A</h4>
+                            <p>Beschreibung der ersten Kategorie mit relevanten Informationen.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">📱</div>
+                            <h4>Kategorie B</h4>
+                            <p>Beschreibung der zweiten Kategorie mit wichtigen Details.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">💻</div>
+                            <h4>Kategorie C</h4>
+                            <p>Beschreibung der dritten Kategorie mit essentiellen Punkten.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =============================================
+                     SLIDE 8: Tech Stack / Badges
+                     ============================================= -->
+                <div class="slide">
+                    <h2>Technologie-Stack</h2>
+                    <p class="subtitle">Verwendete Tools und Frameworks</p>
+                    
+                    <div class="mt-50">
+                        <h3>Frontend</h3>
+                        <div class="tech-stack">
+                            <div class="tech-badge">HTML5</div>
+                            <div class="tech-badge">CSS3</div>
+                            <div class="tech-badge">JavaScript</div>
+                            <div class="tech-badge">TypeScript</div>
+                        </div>
+
+                        <h3 class="mt-40">Backend</h3>
+                        <div class="tech-stack">
+                            <div class="tech-badge">Node.js</div>
+                            <div class="tech-badge">Express</div>
+                            <div class="tech-badge">PostgreSQL</div>
+                            <div class="tech-badge">Redis</div>
+                        </div>
+
+                        <h3 class="mt-40">DevOps</h3>
+                        <div class="tech-stack">
+                            <div class="tech-badge">Docker</div>
+                            <div class="tech-badge">Kubernetes</div>
+                            <div class="tech-badge">GitHub Actions</div>
+                            <div class="tech-badge">AWS</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =============================================
+                     SLIDE 9: Mixed Content
+                     ============================================= -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div><h2 class="no-margin">Gemischte Inhalte</h2></div>
+                    </div>
+                    
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <h4>Szenario 1</h4>
+                            <div class="code-block"><pre><code><span class="keyword">const</span> example = <span class="string">"A"</span>;
+<span class="comment">// Kommentar</span></code></pre></div>
+                        </div>
+                        <div class="card">
+                            <h4>Szenario 2</h4>
+                            <div class="code-block"><pre><code><span class="keyword">const</span> example = <span class="string">"B"</span>;
+<span class="comment">// Anderer Fall</span></code></pre></div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>🔍 Vergleich</h4>
+                        <p>Beide Szenarien zeigen unterschiedliche Ansätze für dasselbe Problem.</p>
+                    </div>
+                </div>
+
+                <!-- =============================================
+                     SLIDE 10: Final Summary
+                     ============================================= -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🎉</div>
+                        <h1>Zusammenfassung</h1>
+                        <p class="subtitle">Wichtigste Erkenntnisse</p>
+                        
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Punkt 1</h4>
+                                <p>Erste wichtige Erkenntnis</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Punkt 2</h4>
+                                <p>Zweite wichtige Erkenntnis</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Punkt 3</h4>
+                                <p>Dritte wichtige Erkenntnis</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50">
+                            <h3>Vielen Dank!</h3>
+                            <div class="tech-stack" style="justify-content: center; margin-top: 20px;">
+                                <div class="tech-badge">Präsentation</div>
+                                <div class="tech-badge">2026</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="mailto:mail@SQLmore.de">mail@SQLmore.de</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">10</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

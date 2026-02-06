@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": -96.6, "attrs": {} },
+    { "type": "wokwi-ky-040", "id": "encoder1", "top": -130, "left": 120, "attrs": {} },
+    { "type": "wokwi-servo", "id": "servo1", "top": -100, "left": -100, "attrs": {} }
+  ],
+  "connections": [
+    [ "encoder1:VCC", "uno:5V", "red", [ "v78", "h-140" ] ],
+    [ "encoder1:GND", "uno:GND.1", "black", [ "v135", "h-110" ] ],
+    [ "encoder1:CLK", "uno:2", "green", [ "v88", "h5" ] ],
+    [ "encoder1:DT", "uno:3", "blue", [ "v98", "h15" ] ],
+    [ "encoder1:SW", "uno:4", "yellow", [ "v108", "h25" ] ],
+    [ "servo1:V+", "uno:5V", "red", [ "v48", "h-80" ] ],
+    [ "servo1:PWM", "uno:9", "orange", [ "v58", "h-45" ] ],
+    [ "servo1:GND", "uno:GND.2", "black", [ "v105", "h-60" ] ]
+  ],
+  "dependencies": {}
+}

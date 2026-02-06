@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B01: LED Blinken - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">💡</div>
+                        <h1>LED Blinken</h1>
+                        <p class="subtitle">Projekt B01 - Das "Hello World" der Mikrocontroller</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Beginner</div>
+                            <div class="tech-badge">LED</div>
+                            <div class="tech-badge">220Ω</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>Pins als Ausgang</strong> - Mit <code>pinMode()</code> konfigurieren</li>
+                        <li><strong>Digital schreiben</strong> - Mit <code>digitalWrite()</code> HIGH/LOW setzen</li>
+                        <li><strong>Zeitsteuerung</strong> - Mit <code>delay()</code> Pausen einbauen</li>
+                        <li><strong>Arduino-Struktur</strong> - <code>setup()</code> und <code>loop()</code> verstehen</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Theorie-Module 1-5 abgeschlossen, Wokwi-Account eingerichtet</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Komponenten -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Was du brauchst</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">💡</div>
+                            <h4>LED (Leuchtdiode)</h4>
+                            <p>Wandelt Strom in Licht um. Hat eine Anode (+, langes Bein) und Kathode (-, kurzes Bein). Leuchtet nur bei richtiger Polung!</p>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Typisch:</strong> 2V Spannung, 20mA Strom</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">📏</div>
+                            <h4>Widerstand 220Ω</h4>
+                            <p>Begrenzt den Strom zur LED. Ohne Widerstand würde die LED durchbrennen!</p>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Farbcode:</strong> Rot-Rot-Braun oder Rot-Rot-Schwarz-Schwarz</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>💡 In Wokwi</h4>
+                        <p>Wokwi-LEDs haben einen eingebauten Widerstand. Trotzdem lernst du hier die richtige Schaltung für echte Hardware!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Theorie -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">Wie funktioniert eine LED?</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Die LED</h3>
+                            <ul class="mt-20">
+                                <li>LED = Light Emitting Diode</li>
+                                <li>Lässt Strom nur in eine Richtung durch</li>
+                                <li><strong>Anode (+)</strong> → langes Bein, zur +Spannung</li>
+                                <li><strong>Kathode (-)</strong> → kurzes Bein, zu GND</li>
+                            </ul>
+
+                            <h3 class="mt-30">Der Vorwiderstand</h3>
+                            <p class="mt-10">R = (5V - 2V) / 20mA = 150Ω</p>
+                            <p>Wir verwenden 220Ω (sicherer, LED leuchtet etwas dunkler)</p>
+                        </div>
+                        <div class="card">
+                            <h4>Schaltungslogik</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace;">
+  Pin 7 (HIGH = 5V)
+      │
+     [R] 220Ω
+      │
+      ▼
+     LED (Anode +)
+      │
+     LED (Kathode -)
+      │
+     GND
+            </pre></div>
+                            <p class="mt-20" style="font-size: 14px;"><strong>Pin HIGH:</strong> Strom fließt → LED leuchtet</p>
+                            <p style="font-size: 14px;"><strong>Pin LOW:</strong> Kein Strom → LED aus</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Schaltplan -->
+                <div class="slide">
+                    <h2>Schaltplan</h2>
+                    <p class="subtitle">Verbindungen auf dem Breadboard</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Wokwi-Aufbau</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 14px;">
+     Arduino Uno
+    ┌─────────────────┐
+    │                 │
+    │  Pin 7 ────┐    │
+    │            │    │
+    │  GND ──┐   │    │
+    │        │   │    │
+    └────────┼───┼────┘
+             │   │
+             │   └──[R 220Ω]──┐
+             │                │
+             │         LED Anode (+)
+             │                │
+             └────── LED Kathode (-)
+            </pre></div>
+                        </div>
+                        <div class="card card-info">
+                            <h4>Wichtige Verbindungen</h4>
+                            <ul class="mt-20">
+                                <li><strong>Arduino Pin 7</strong> → Widerstand</li>
+                                <li><strong>Widerstand</strong> → LED Anode (+)</li>
+                                <li><strong>LED Kathode (-)</strong> → Arduino GND</li>
+                            </ul>
+
+                            <h4 class="mt-30">In Wokwi</h4>
+                            <ol style="font-size: 14px;">
+                                <li>LED hinzufügen (+)</li>
+                                <li>Resistor hinzufügen</li>
+                                <li>Klicke auf Pin → Ziehe zum Ziel</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Code Schritt 1 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 1: Pin-Setup</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 1: LED-Pin konfigurieren</span>
+
+<span class="keyword">const int</span> LED_PIN = <span class="number">7</span>;  <span class="comment">// LED an Pin 7</span>
+
+<span class="keyword">void</span> setup() {
+  <span class="comment">// Pin als Ausgang konfigurieren</span>
+  pinMode(LED_PIN, OUTPUT);
+
+  <span class="comment">// Test: LED einschalten</span>
+  digitalWrite(LED_PIN, HIGH);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="comment">// Noch leer</span>
+}</code></pre></div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Erklärung</h4>
+                            <ul style="font-size: 16px;">
+                                <li><code>const int LED_PIN = 7</code> - Konstante für Pin-Nummer</li>
+                                <li><code>pinMode(pin, OUTPUT)</code> - Pin als Ausgang</li>
+                                <li><code>digitalWrite(pin, HIGH)</code> - Pin auf 5V</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Teste es!</h4>
+                            <p style="font-size: 14px;">Führe diesen Code aus. Die LED sollte dauerhaft leuchten. <code>HIGH</code> setzt den Pin auf 5V.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Code Schritt 2 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 2: Blinken mit delay()</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 2: LED blinken lassen</span>
+
+<span class="keyword">const int</span> LED_PIN = <span class="number">7</span>;
+
+<span class="keyword">void</span> setup() {
+  pinMode(LED_PIN, OUTPUT);
+  Serial.begin(<span class="number">9600</span>);
+  Serial.println(<span class="string">"LED Blink-Programm gestartet!"</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  digitalWrite(LED_PIN, HIGH);  <span class="comment">// LED an</span>
+  delay(<span class="number">500</span>);                   <span class="comment">// 500ms = 0.5s warten</span>
+
+  digitalWrite(LED_PIN, LOW);   <span class="comment">// LED aus</span>
+  delay(<span class="number">500</span>);                   <span class="comment">// 500ms warten</span>
+}</code></pre></div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Was passiert?</h4>
+                        <p>Die <code>loop()</code>-Funktion wird endlos wiederholt. Die LED geht an (0.5s) → aus (0.5s) → an ... und so weiter!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Fertiger Code -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Fertiger Code</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// B01: LED Blinken - Fertige Version</span>
+<span class="comment">// Das "Hello World" der Mikrocontroller</span>
+
+<span class="keyword">const int</span> LED_PIN = <span class="number">7</span>;  <span class="comment">// LED an Pin 7</span>
+
+<span class="keyword">void</span> setup() {
+  pinMode(LED_PIN, OUTPUT);
+  Serial.begin(<span class="number">9600</span>);
+  Serial.println(<span class="string">"LED Blink-Programm gestartet!"</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  digitalWrite(LED_PIN, HIGH);  <span class="comment">// LED einschalten</span>
+  delay(<span class="number">500</span>);                   <span class="comment">// 0.5 Sekunden warten</span>
+
+  digitalWrite(LED_PIN, LOW);   <span class="comment">// LED ausschalten</span>
+  delay(<span class="number">500</span>);                   <span class="comment">// 0.5 Sekunden warten</span>
+}</code></pre></div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>setup() vs loop()</h4>
+                            <ul style="font-size: 16px;">
+                                <li><code>setup()</code> - Läuft einmal beim Start</li>
+                                <li><code>loop()</code> - Wiederholt sich endlos</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>delay(ms)</h4>
+                            <ul style="font-size: 16px;">
+                                <li>Pause in Millisekunden</li>
+                                <li>1000ms = 1 Sekunde</li>
+                                <li>500ms = 0.5 Sekunden</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: Wokwi Demo -->
+                <div class="slide">
+                    <h2>Ausprobieren</h2>
+                    <p class="subtitle">Simulation in Wokwi</p>
+
+                    <div class="center mt-40">
+                        <div class="card card-dark">
+                            <h3>Wokwi Projekt</h3>
+                            <p class="mt-20">Erstelle ein neues Projekt mit Arduino Uno:</p>
+                            <div class="mt-30">
+                                <a href="https://wokwi.com/projects/new/arduino-uno" target="_blank" style="color: #0071e3; font-size: 20px; text-decoration: none;">
+                                    Neues Arduino-Projekt in Wokwi →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-40">
+                        <h4>So testest du</h4>
+                        <ul>
+                            <li>Füge eine LED und einen Widerstand hinzu</li>
+                            <li>Verbinde Pin 7 → Widerstand → LED → GND</li>
+                            <li>Kopiere den Code in die sketch.ino</li>
+                            <li>Klicke auf Play und beobachte die LED!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Erweiterungen -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Challenges</div>
+                            <h2 class="no-margin">Erweiterungen</h2>
+                        </div>
+                    </div>
+
+                    <p class="subtitle">Probiere diese Aufgaben aus</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">⚡</div>
+                            <h4>Challenge 1: Schneller blinken</h4>
+                            <p>Ändere <code>delay(500)</code> zu <code>delay(100)</code>. Was passiert?</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">📟</div>
+                            <h4>Challenge 2: Morse-Code</h4>
+                            <p>Programmiere SOS: 3x kurz, 3x lang, 3x kurz</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🚥</div>
+                            <h4>Challenge 3: Mehrere LEDs</h4>
+                            <p>Füge eine zweite LED an Pin 8 hinzu und lass beide abwechselnd blinken.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🔢</div>
+                            <h4>Challenge 4: Zähler</h4>
+                            <p>Lass die LED 10x blinken und stoppe dann. (Tipp: <code>for</code>-Schleife in <code>setup()</code>)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">💡</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du hast dein erstes Projekt abgeschlossen</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>pinMode()</h4>
+                                <p>Pins als Ausgang konfiguriert</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>digitalWrite()</h4>
+                                <p>HIGH und LOW verstanden</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>delay()</h4>
+                                <p>Zeitsteuerung gemeistert</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../B02_ampel/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p class="mt-10">B02: Ampelschaltung - Mehrere LEDs mit Timing steuern</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>02 Mikrocontroller - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🔌</div>
+                        <h1>Mikrocontroller-Grundlagen</h1>
+                        <p class="subtitle">Das Herz deiner Projekte: Arduino Uno</p>
+                        <div class="badge">Modul 2</div>
+                        <div class="tech-stack center mt-40">
+                            <div class="tech-badge">Arduino Uno</div>
+                            <div class="tech-badge">ATmega328P</div>
+                            <div class="tech-badge">Arduino C++</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Was ist ein Mikrocontroller? -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Grundlagen</div>
+                            <h2 class="no-margin">Was ist ein Mikrocontroller?</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <p class="content">Ein Mikrocontroller ist ein <strong>Computer auf einem Chip</strong>. Er enthält alles, was ein Computer braucht:</p>
+                            <ul class="mt-20">
+                                <li><strong>CPU</strong> - Rechenkern (Prozessor)</li>
+                                <li><strong>RAM</strong> - Arbeitsspeicher</li>
+                                <li><strong>Flash</strong> - Programmspeicher</li>
+                                <li><strong>I/O-Pins</strong> - Verbindung zur Außenwelt</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Unterschied zum PC</h4>
+                            <ul class="mt-20">
+                                <li>Viel kleiner und günstiger</li>
+                                <li>Weniger Rechenleistung</li>
+                                <li>Kein Betriebssystem nötig</li>
+                                <li>Startet sofort</li>
+                                <li>Sehr stromsparend</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Einsatzgebiete</h4>
+                        <p>Waschmaschinen, Autos, Spielzeug, Smartwatches, Industriesteuerungen, Robotik, 3D-Drucker...</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Arduino Uno -->
+                <div class="slide">
+                    <h2>Der Arduino Uno</h2>
+                    <p class="subtitle">Das perfekte Board für Einsteiger</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card card-info">
+                            <div class="emoji" style="font-size: 32px;">🔵</div>
+                            <h4>Arduino Uno Specs</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>Chip:</strong> ATmega328P (8-bit)</li>
+                                <li><strong>Takt:</strong> 16 MHz</li>
+                                <li><strong>RAM:</strong> 2 KB</li>
+                                <li><strong>Flash:</strong> 32 KB</li>
+                                <li><strong>Digital-Pins:</strong> 14 (D0-D13)</li>
+                                <li><strong>Analog-Pins:</strong> 6 (A0-A5)</li>
+                                <li><strong>PWM:</strong> 6 Pins (D3,D5,D6,D9,D10,D11)</li>
+                                <li><strong>Spannung:</strong> 5V Logik</li>
+                                <li><strong>Preis:</strong> ~25€ (Original) / ~5€ (Clone)</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Warum Arduino Uno?</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>Einfach:</strong> Perfekt für Einsteiger</li>
+                                <li><strong>Robust:</strong> 5V-tolerant, schwer kaputt zu kriegen</li>
+                                <li><strong>Dokumentiert:</strong> Riesige Community</li>
+                                <li><strong>Kompatibel:</strong> Tausende Shields und Libraries</li>
+                                <li><strong>USB:</strong> Einfache Programmierung</li>
+                                <li><strong>Wokwi:</strong> Volle Simulator-Unterstützung</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card card-dark mt-30">
+                        <h4>Unser Fokus: Arduino Uno</h4>
+                        <p>Alle 24 Projekte in diesem Kurs sind für den Arduino Uno optimiert und funktionieren im Wokwi-Simulator.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Pin-Typen -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Hardware</div>
+                            <h2 class="no-margin">Pin-Typen verstehen</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Digital Pins (D0-D13)</h4>
+                            <p class="mt-10">Ein-/Ausgänge für digitale Signale.</p>
+                            <ul class="mt-10" style="font-size: 16px;">
+                                <li><strong>Input:</strong> Taster, Sensoren</li>
+                                <li><strong>Output:</strong> LEDs, Relais</li>
+                                <li>Zustände: HIGH (5V) oder LOW (0V)</li>
+                                <li>D0/D1 reserviert für Serial (USB)</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Analog Pins (A0-A5)</h4>
+                            <p class="mt-10">Wandelt analoge Spannung in digitalen Wert.</p>
+                            <ul class="mt-10" style="font-size: 16px;">
+                                <li><strong>ADC:</strong> 10-bit (0-1023)</li>
+                                <li><strong>Bereich:</strong> 0V bis 5V</li>
+                                <li>Anwendung: Potis, LDR, NTC</li>
+                                <li>Können auch als Digital verwendet werden</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>PWM Pins (~)</h4>
+                            <p class="mt-10">Erzeugt "pseudo-analoge" Signale durch schnelles Schalten.</p>
+                            <ul class="mt-10" style="font-size: 16px;">
+                                <li><strong>Pins:</strong> D3, D5, D6, D9, D10, D11</li>
+                                <li><strong>Auflösung:</strong> 8-bit (0-255)</li>
+                                <li>LED dimmen, Motor steuern</li>
+                                <li>Servo-Signale</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Power Pins</h4>
+                            <p class="mt-10">Stromversorgung für externe Komponenten.</p>
+                            <ul class="mt-10" style="font-size: 16px;">
+                                <li><strong>5V:</strong> Für die meisten Komponenten</li>
+                                <li><strong>3.3V:</strong> Für 3.3V-Sensoren</li>
+                                <li><strong>GND:</strong> Masse (gemeinsam)</li>
+                                <li><strong>Vin:</strong> Externe Versorgung (7-12V)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Arduino Uno Pinout -->
+                <div class="slide">
+                    <h2>Arduino Uno Pinout</h2>
+                    <p class="subtitle">Wichtige Pins auf einen Blick</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Digitale Pins</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>D0, D1:</strong> Serial (TX, RX) - nicht verwenden!</li>
+                                <li><strong>D2, D3:</strong> Externe Interrupts</li>
+                                <li><strong>D3, D5, D6, D9, D10, D11:</strong> PWM (~)</li>
+                                <li><strong>D13:</strong> Onboard-LED</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Analoge Pins</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>A0-A5:</strong> 6 analoge Eingänge</li>
+                                <li><strong>A4 (SDA):</strong> I2C Daten</li>
+                                <li><strong>A5 (SCL):</strong> I2C Takt</li>
+                                <li>Alle als Digital nutzbar (D14-D19)</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>SPI (für schnelle Kommunikation)</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>D10:</strong> SS (Slave Select)</li>
+                                <li><strong>D11:</strong> MOSI (Master Out)</li>
+                                <li><strong>D12:</strong> MISO (Master In)</li>
+                                <li><strong>D13:</strong> SCK (Clock)</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>I2C (für Sensoren/Displays)</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>A4:</strong> SDA (Daten)</li>
+                                <li><strong>A5:</strong> SCL (Takt)</li>
+                                <li>Bis zu 128 Geräte am Bus</li>
+                                <li>Für OLED, LCD, RTC, Sensoren</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>💡 Tipp</h4>
+                        <p>PWM-Pins sind mit ~ gekennzeichnet. Für LEDs, Motoren und Servos brauchst du diese Pins!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Kommunikationsprotokolle -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Protokolle</div>
+                            <h2 class="no-margin">Kommunikation mit Sensoren</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>I²C (Inter-Integrated Circuit)</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>Leitungen:</strong> 2 (SDA, SCL)</li>
+                                <li><strong>Speed:</strong> 100-400 kHz</li>
+                                <li><strong>Adressen:</strong> Bis zu 128 Geräte</li>
+                                <li><strong>Anwendung:</strong> Sensoren, OLED, LCD, RTC</li>
+                            </ul>
+                            <p class="mt-10" style="font-size: 14px;">Ideal für viele Sensoren mit wenigen Kabeln!</p>
+                        </div>
+                        <div class="card">
+                            <h4>SPI (Serial Peripheral Interface)</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>Leitungen:</strong> 4 (MOSI, MISO, SCK, SS)</li>
+                                <li><strong>Speed:</strong> Bis zu 8 MHz</li>
+                                <li><strong>Anwendung:</strong> TFT-Displays, SD-Karten</li>
+                            </ul>
+                            <p class="mt-10" style="font-size: 14px;">Schnell, aber mehr Kabel nötig.</p>
+                        </div>
+                        <div class="card">
+                            <h4>UART (Serial)</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>Leitungen:</strong> 2 (TX, RX)</li>
+                                <li><strong>Speed:</strong> 9600-115200 Baud</li>
+                                <li><strong>Anwendung:</strong> GPS, Bluetooth-Module, Debug</li>
+                            </ul>
+                            <p class="mt-10" style="font-size: 14px;">Einfach, Punkt-zu-Punkt-Verbindung.</p>
+                        </div>
+                        <div class="card">
+                            <h4>1-Wire</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>Leitungen:</strong> 1 (+ GND)</li>
+                                <li><strong>Speed:</strong> ~16 kbps</li>
+                                <li><strong>Anwendung:</strong> DS18B20 Temperatursensor</li>
+                            </ul>
+                            <p class="mt-10" style="font-size: 14px;">Minimaler Verdrahtungsaufwand.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: I2C Beispiel -->
+                <div class="slide">
+                    <h2>I2C in der Praxis</h2>
+                    <p class="subtitle">So findest du Geräte auf dem Bus</p>
+
+                    <div class="code-block"><pre><code><span class="comment">// I2C-Scanner: Findet alle verbundenen Geräte</span>
+<span class="keyword">#include</span> <span class="string">&lt;Wire.h&gt;</span>
+
+<span class="keyword">void</span> setup() {
+  Serial.begin(<span class="number">9600</span>);
+  Wire.begin();
+
+  Serial.println(<span class="string">"I2C Scanner startet..."</span>);
+
+  <span class="keyword">for</span> (<span class="keyword">byte</span> addr = <span class="number">1</span>; addr &lt; <span class="number">127</span>; addr++) {
+    Wire.beginTransmission(addr);
+    <span class="keyword">if</span> (Wire.endTransmission() == <span class="number">0</span>) {
+      Serial.print(<span class="string">"Gerät gefunden: 0x"</span>);
+      Serial.println(addr, HEX);
+    }
+  }
+}
+
+<span class="keyword">void</span> loop() { }</code></pre></div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Typische I2C-Adressen</h4>
+                        <div class="grid-2 mt-10">
+                            <ul style="font-size: 16px;">
+                                <li><strong>0x27 / 0x3F:</strong> LCD 1602</li>
+                                <li><strong>0x3C:</strong> SSD1306 OLED</li>
+                                <li><strong>0x68:</strong> DS3231 RTC</li>
+                            </ul>
+                            <ul style="font-size: 16px;">
+                                <li><strong>0x76 / 0x77:</strong> BMP280</li>
+                                <li><strong>0x48:</strong> ADS1115 ADC</li>
+                                <li><strong>0x29:</strong> VL53L0X ToF</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Arduino C++ Grundstruktur -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Software</div>
+                            <h2 class="no-margin">Arduino C++ Grundstruktur</h2>
+                        </div>
+                    </div>
+
+                    <p class="subtitle">Jedes Arduino-Programm besteht aus zwei Funktionen</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>setup() - Einmalige Initialisierung</h4>
+                            <div class="code-block" style="margin-top: 10px;"><pre><code><span class="keyword">void</span> setup() {
+  <span class="comment">// Wird einmal beim Start ausgeführt</span>
+
+  pinMode(<span class="number">7</span>, OUTPUT);    <span class="comment">// Pin als Ausgang</span>
+  pinMode(<span class="number">6</span>, INPUT_PULLUP); <span class="comment">// Mit Pull-up</span>
+
+  Serial.begin(<span class="number">9600</span>);   <span class="comment">// Serial starten</span>
+}</code></pre></div>
+                        </div>
+                        <div class="card">
+                            <h4>loop() - Endlosschleife</h4>
+                            <div class="code-block" style="margin-top: 10px;"><pre><code><span class="keyword">void</span> loop() {
+  <span class="comment">// Wird endlos wiederholt</span>
+
+  digitalWrite(<span class="number">7</span>, HIGH); <span class="comment">// LED an</span>
+  delay(<span class="number">500</span>);            <span class="comment">// Warte 500ms</span>
+  digitalWrite(<span class="number">7</span>, LOW);  <span class="comment">// LED aus</span>
+  delay(<span class="number">500</span>);            <span class="comment">// Warte 500ms</span>
+}</code></pre></div>
+                        </div>
+                    </div>
+
+                    <div class="card card-dark mt-30">
+                        <h4>Wichtige Funktionen</h4>
+                        <div class="grid-2 mt-10">
+                            <ul style="font-size: 14px; color: white;">
+                                <li><code>pinMode(pin, mode)</code> - Pin konfigurieren</li>
+                                <li><code>digitalWrite(pin, value)</code> - Digital schreiben</li>
+                                <li><code>digitalRead(pin)</code> - Digital lesen</li>
+                            </ul>
+                            <ul style="font-size: 14px; color: white;">
+                                <li><code>analogRead(pin)</code> - Analog lesen (0-1023)</li>
+                                <li><code>analogWrite(pin, value)</code> - PWM (0-255)</li>
+                                <li><code>delay(ms)</code> - Pause in Millisekunden</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: Bibliotheken -->
+                <div class="slide">
+                    <h2>Arduino-Bibliotheken</h2>
+                    <p class="subtitle">Vorgefertigter Code für Sensoren und Module</p>
+
+                    <div class="grid-3 mt-30">
+                        <div class="card">
+                            <h4>Wire.h</h4>
+                            <p style="font-size: 14px;">I2C-Kommunikation</p>
+                            <div class="code-block mt-10"><pre><code><span class="keyword">#include</span> <span class="string">&lt;Wire.h&gt;</span></code></pre></div>
+                        </div>
+                        <div class="card">
+                            <h4>Servo.h</h4>
+                            <p style="font-size: 14px;">Servomotoren steuern</p>
+                            <div class="code-block mt-10"><pre><code><span class="keyword">#include</span> <span class="string">&lt;Servo.h&gt;</span></code></pre></div>
+                        </div>
+                        <div class="card">
+                            <h4>DHT.h</h4>
+                            <p style="font-size: 14px;">DHT11/DHT22 Sensoren</p>
+                            <div class="code-block mt-10"><pre><code><span class="keyword">#include</span> <span class="string">&lt;DHT.h&gt;</span></code></pre></div>
+                        </div>
+                        <div class="card">
+                            <h4>LiquidCrystal_I2C.h</h4>
+                            <p style="font-size: 14px;">I2C LCD Displays</p>
+                            <div class="code-block mt-10"><pre><code><span class="keyword">#include</span> <span class="string">&lt;LiquidCrystal_I2C.h&gt;</span></code></pre></div>
+                        </div>
+                        <div class="card">
+                            <h4>Adafruit_SSD1306.h</h4>
+                            <p style="font-size: 14px;">OLED Displays</p>
+                            <div class="code-block mt-10"><pre><code><span class="keyword">#include</span> <span class="string">&lt;Adafruit_SSD1306.h&gt;</span></code></pre></div>
+                        </div>
+                        <div class="card">
+                            <h4>FastLED.h</h4>
+                            <p style="font-size: 14px;">NeoPixel/WS2812</p>
+                            <div class="code-block mt-10"><pre><code><span class="keyword">#include</span> <span class="string">&lt;FastLED.h&gt;</span></code></pre></div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>💡 Bibliotheken in Wokwi</h4>
+                        <p>Wokwi kennt die meisten Arduino-Bibliotheken. Einfach <code>#include</code> hinzufügen und es funktioniert!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🔌</div>
+                        <h1>Zusammenfassung</h1>
+                        <p class="subtitle">Das Wichtigste über Arduino Uno</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Hardware</h4>
+                                <p>ATmega328P, 5V, 14 Digital + 6 Analog Pins</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Pins</h4>
+                                <p>Digital, Analog, PWM und Protokolle verstanden</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Code</h4>
+                                <p>setup() + loop() Struktur</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../03_oekosystem/index.html">
+                            <h3>Nächster Schritt</h3>
+                            <p class="mt-10">Modul 3: Das Ökosystem - Arduino IDE und Wokwi</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Start</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">10</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../presentation_framework/script.js"></script>
+</body>
+</html>

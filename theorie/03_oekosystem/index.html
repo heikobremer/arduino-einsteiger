@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>03 Ökosystem - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🛠️</div>
+                        <h1>Das Ökosystem</h1>
+                        <p class="subtitle">Arduino IDE und der Wokwi-Simulator</p>
+                        <div class="badge">Modul 3</div>
+                        <div class="tech-stack center mt-40">
+                            <div class="tech-badge">Wokwi</div>
+                            <div class="tech-badge">Arduino IDE</div>
+                            <div class="tech-badge">VS Code</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Übersicht -->
+                <div class="slide">
+                    <h2>Was brauchst du zum Programmieren?</h2>
+                    <p class="subtitle">Die Werkzeuge im Überblick</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">💻</div>
+                            <h4>Entwicklungsumgebung (IDE)</h4>
+                            <p>Hier schreibst du deinen Code. Die Arduino IDE ist der Standard, VS Code für Fortgeschrittene.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🔬</div>
+                            <h4>Simulator</h4>
+                            <p>Wokwi simuliert echte Hardware im Browser. Keine Kosten, keine Fehler beim Verdrahten!</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">📚</div>
+                            <h4>Bibliotheken</h4>
+                            <p>Vorgefertigter Code für Sensoren und Displays. Spart Zeit und vereinfacht die Arbeit.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">📖</div>
+                            <h4>Dokumentation</h4>
+                            <p>Arduino Reference, Sensor-Datenblätter und Community-Tutorials.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Wokwi Einführung -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Simulator</div>
+                            <h2 class="no-margin">Wokwi - Der Online-Simulator</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Warum Wokwi?</h3>
+                            <ul class="mt-20">
+                                <li><strong>Kostenlos</strong> - Keine Hardware nötig</li>
+                                <li><strong>Sofort einsatzbereit</strong> - Keine Installation</li>
+                                <li><strong>Alle Komponenten</strong> - LEDs, Sensoren, Displays...</li>
+                                <li><strong>Arduino C++</strong> - Volle Unterstützung</li>
+                                <li><strong>Teilen</strong> - Projekte per Link versenden</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Unterstützte Boards</h4>
+                            <ul class="mt-20">
+                                <li><strong>Arduino Uno</strong> ← Unser Fokus!</li>
+                                <li>Arduino Mega</li>
+                                <li>Arduino Nano</li>
+                                <li>ESP32</li>
+                                <li>Raspberry Pi Pico</li>
+                                <li>...und viele mehr</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>🌐 Jetzt ausprobieren</h4>
+                        <p><a href="https://wokwi.com/" target="_blank" style="color: #0071e3;">wokwi.com</a> - Erstelle kostenlos einen Account und starte dein erstes Projekt!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Wokwi Oberfläche -->
+                <div class="slide">
+                    <h2>Die Wokwi-Oberfläche</h2>
+                    <p class="subtitle">So findest du dich zurecht</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>1. Code-Editor (links)</h4>
+                            <ul style="font-size: 16px;">
+                                <li>Hier schreibst du deinen Arduino-Code</li>
+                                <li>Syntax-Highlighting für bessere Lesbarkeit</li>
+                                <li>Datei-Tab für sketch.ino</li>
+                                <li>Bibliotheken über libraries.txt hinzufügen</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>2. Simulation (rechts)</h4>
+                            <ul style="font-size: 16px;">
+                                <li>Hier siehst du die virtuelle Hardware</li>
+                                <li>Komponenten per Drag & Drop platzieren</li>
+                                <li>Kabel ziehen durch Klick auf Pins</li>
+                                <li>Interaktive Elemente (Taster, Potis)</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>3. Steuerung (oben)</h4>
+                            <ul style="font-size: 16px;">
+                                <li><strong>Play-Button:</strong> Kompilieren & Starten</li>
+                                <li><strong>Stop:</strong> Simulation beenden</li>
+                                <li><strong>Teilen:</strong> Link zum Projekt</li>
+                                <li><strong>Speichern:</strong> Projekt sichern</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>4. Serial Monitor (unten)</h4>
+                            <ul style="font-size: 16px;">
+                                <li>Serielle Ausgabe (Serial.println)</li>
+                                <li>Fehlermeldungen anzeigen</li>
+                                <li>Eingaben möglich (Serial.read)</li>
+                                <li>Wichtig zum Debuggen!</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Wokwi Tutorial -->
+                <div class="slide">
+                    <h2>Erstes Wokwi-Projekt</h2>
+                    <p class="subtitle">Schritt für Schritt</p>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>1. Projekt erstellen</h3>
+                            <ul class="mt-10">
+                                <li>Auf wokwi.com einloggen</li>
+                                <li>"New Project" klicken</li>
+                                <li>"Arduino Uno" auswählen</li>
+                                <li>Sprache: Arduino (C++)</li>
+                            </ul>
+
+                            <h3 class="mt-30">2. Komponente hinzufügen</h3>
+                            <ul class="mt-10">
+                                <li>Auf das "+" klicken</li>
+                                <li>Nach "LED" suchen</li>
+                                <li>LED in die Simulation ziehen</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3>3. Verbindungen</h3>
+                            <ul class="mt-10">
+                                <li>Auf LED-Anode klicken</li>
+                                <li>Zum Arduino-Pin 7 ziehen</li>
+                                <li>LED-Kathode mit GND verbinden</li>
+                            </ul>
+
+                            <h3 class="mt-30">4. Code schreiben</h3>
+                            <div class="code-block" style="margin-top: 10px;"><pre><code><span class="keyword">void</span> setup() {
+  pinMode(<span class="number">7</span>, OUTPUT);
+}
+
+<span class="keyword">void</span> loop() {
+  digitalWrite(<span class="number">7</span>, HIGH);
+  delay(<span class="number">500</span>);
+  digitalWrite(<span class="number">7</span>, LOW);
+  delay(<span class="number">500</span>);
+}</code></pre></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: diagram.json -->
+                <div class="slide">
+                    <h2>diagram.json verstehen</h2>
+                    <p class="subtitle">So speichert Wokwi Schaltungen</p>
+
+                    <div class="code-block"><pre><code>{
+  <span class="string">"version"</span>: <span class="number">1</span>,
+  <span class="string">"author"</span>: <span class="string">"Dein Name"</span>,
+  <span class="string">"editor"</span>: <span class="string">"wokwi"</span>,
+  <span class="string">"parts"</span>: [
+    { <span class="string">"type"</span>: <span class="string">"wokwi-arduino-uno"</span>, <span class="string">"id"</span>: <span class="string">"uno"</span>, <span class="string">"top"</span>: <span class="number">0</span>, <span class="string">"left"</span>: <span class="number">0</span> },
+    { <span class="string">"type"</span>: <span class="string">"wokwi-led"</span>, <span class="string">"id"</span>: <span class="string">"led1"</span>, <span class="string">"top"</span>: <span class="number">-50</span>, <span class="string">"left"</span>: <span class="number">100</span>,
+      <span class="string">"attrs"</span>: { <span class="string">"color"</span>: <span class="string">"red"</span> } }
+  ],
+  <span class="string">"connections"</span>: [
+    [ <span class="string">"uno:7"</span>, <span class="string">"led1:A"</span>, <span class="string">"green"</span>, [ <span class="string">"h"</span>, <span class="number">10</span> ] ],
+    [ <span class="string">"uno:GND.1"</span>, <span class="string">"led1:C"</span>, <span class="string">"black"</span>, [ <span class="string">"v"</span>, <span class="number">20</span> ] ]
+  ]
+}</code></pre></div>
+
+                    <div class="card card-info mt-30">
+                        <h4>💡 Tipp</h4>
+                        <p>Du kannst diagram.json exportieren und in anderen Projekten wiederverwenden. Im Kurs stellen wir dir fertige Schaltpläne zur Verfügung!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Arduino IDE -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">IDE</div>
+                            <h2 class="no-margin">Arduino IDE - Der Standard</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Warum Arduino IDE?</h3>
+                            <ul class="mt-20">
+                                <li><strong>Einfach</strong> - Perfekt für Anfänger</li>
+                                <li><strong>Offiziell</strong> - Von Arduino entwickelt</li>
+                                <li><strong>Board-Manager</strong> - Alle Boards unterstützt</li>
+                                <li><strong>Bibliotheks-Manager</strong> - Ein-Klick-Installation</li>
+                                <li><strong>Kostenlos</strong> - Open Source</li>
+                            </ul>
+
+                            <div class="card card-info mt-30">
+                                <h4>Download</h4>
+                                <p><a href="https://www.arduino.cc/en/software" target="_blank" style="color: #0071e3;">arduino.cc/en/software</a></p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4>So verbindest du den Arduino</h4>
+                            <ol style="font-size: 16px;">
+                                <li class="mt-10">Arduino IDE starten</li>
+                                <li class="mt-10">Arduino per USB anschließen</li>
+                                <li class="mt-10">Werkzeuge → Board → "Arduino Uno"</li>
+                                <li class="mt-10">Werkzeuge → Port → COM-Port wählen</li>
+                                <li class="mt-10">Hochladen-Button (→) klicken</li>
+                            </ol>
+                            <p class="mt-20" style="font-size: 14px;">Fertig! Der Code läuft auf dem Arduino.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: VS Code -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">IDE</div>
+                            <h2 class="no-margin">VS Code - Für Fortgeschrittene</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Vorteile</h3>
+                            <ul class="mt-20">
+                                <li><strong>Professionell</strong> - Industrie-Standard</li>
+                                <li><strong>Erweiterbar</strong> - Tausende Extensions</li>
+                                <li><strong>Git-Integration</strong> - Versionskontrolle</li>
+                                <li><strong>IntelliSense</strong> - Code-Vervollständigung</li>
+                            </ul>
+
+                            <h3 class="mt-30">Empfohlene Extensions</h3>
+                            <div class="tech-stack mt-20">
+                                <div class="tech-badge">PlatformIO</div>
+                                <div class="tech-badge">C/C++</div>
+                                <div class="tech-badge">Arduino</div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4>PlatformIO Extension</h4>
+                            <ul style="font-size: 16px;">
+                                <li>Professionelle Arduino-Entwicklung</li>
+                                <li>Automatische Bibliotheksverwaltung</li>
+                                <li>Debugger-Unterstützung</li>
+                                <li>Mehrere Boards gleichzeitig</li>
+                            </ul>
+                            <p class="mt-20" style="font-size: 14px;">Installieren: Extensions suchen → "PlatformIO IDE"</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>💡 Empfehlung</h4>
+                        <p>Starte mit Wokwi + Arduino IDE. Wechsle zu VS Code + PlatformIO, wenn du dich sicher fühlst.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: Bibliotheken -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Software</div>
+                            <h2 class="no-margin">Bibliotheken installieren</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>In Wokwi</h4>
+                            <ol style="font-size: 16px;">
+                                <li class="mt-10">Datei "libraries.txt" erstellen</li>
+                                <li class="mt-10">Bibliotheksname eintragen</li>
+                                <li class="mt-10">Beispiel:</li>
+                            </ol>
+                            <div class="code-block mt-10"><pre><code><span class="comment"># libraries.txt</span>
+Adafruit SSD1306
+DHT sensor library
+FastLED</code></pre></div>
+                        </div>
+                        <div class="card">
+                            <h4>In Arduino IDE</h4>
+                            <ol style="font-size: 16px;">
+                                <li class="mt-10">Werkzeuge → Bibliotheken verwalten</li>
+                                <li class="mt-10">Nach Bibliothek suchen</li>
+                                <li class="mt-10">"Installieren" klicken</li>
+                                <li class="mt-10">Mit #include einbinden</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <h3 class="mt-40">Wichtige Bibliotheken</h3>
+                    <div class="grid-3 mt-20">
+                        <div class="card">
+                            <h4>LiquidCrystal_I2C</h4>
+                            <p style="font-size: 14px;">I2C LCD Displays</p>
+                        </div>
+                        <div class="card">
+                            <h4>DHT sensor library</h4>
+                            <p style="font-size: 14px;">DHT11/DHT22 Sensoren</p>
+                        </div>
+                        <div class="card">
+                            <h4>FastLED</h4>
+                            <p style="font-size: 14px;">WS2812 NeoPixel LEDs</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🛠️</div>
+                        <h1>Zusammenfassung</h1>
+                        <p class="subtitle">Dein Werkzeugkasten ist bereit</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Wokwi</h4>
+                                <p>Simulator für alle Projekte</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Arduino IDE</h4>
+                                <p>Einfache IDE für echte Hardware</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Bibliotheken</h4>
+                                <p>Fertige Module einbinden</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../04_setup/index.html">
+                            <h3>Nächster Schritt</h3>
+                            <p class="mt-10">Modul 4: Setup - Arbeitsumgebung einrichten</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Start</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">10</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../presentation_framework/script.js"></script>
+</body>
+</html>

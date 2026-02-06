@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 200, "left": 0, "attrs": {} },
+    { "type": "wokwi-lcd1602", "id": "lcd1", "top": -80, "left": -52, "attrs": { "pins": "i2c" } },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_right",
+      "top": 80,
+      "left": -180,
+      "attrs": { "color": "green", "label": "RIGHT" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_up",
+      "top": 80,
+      "left": -120,
+      "attrs": { "color": "blue", "label": "UP" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_down",
+      "top": 80,
+      "left": -60,
+      "attrs": { "color": "blue", "label": "DOWN" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_left",
+      "top": 80,
+      "left": 0,
+      "attrs": { "color": "blue", "label": "LEFT" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_select",
+      "top": 80,
+      "left": 60,
+      "attrs": { "color": "red", "label": "SELECT" }
+    }
+  ],
+  "connections": [
+    [ "lcd1:GND", "uno:GND.1", "black", [ "v20", "h-144", "v237" ] ],
+    [ "lcd1:VCC", "uno:5V", "red", [ "h-153.6", "v451.3", "h361.6" ] ],
+    [ "lcd1:SDA", "uno:A4", "green", [ "h-57.6", "v105.8", "h351.6" ] ],
+    [ "lcd1:SCL", "uno:A5", "green", [ "h-38.4", "v86.7", "h341.9" ] ],
+    [ "btn_right:1.l", "uno:GND.2", "black", [ "v50", "h20" ] ],
+    [ "btn_right:2.l", "uno:2", "orange", [ "v60", "h40" ] ],
+    [ "btn_up:1.l", "uno:GND.2", "black", [ "v50", "h30" ] ],
+    [ "btn_up:2.l", "uno:3", "orange", [ "v70", "h50" ] ],
+    [ "btn_down:1.l", "uno:GND.2", "black", [ "v50", "h40" ] ],
+    [ "btn_down:2.l", "uno:4", "orange", [ "v80", "h60" ] ],
+    [ "btn_left:1.l", "uno:GND.2", "black", [ "v50", "h50" ] ],
+    [ "btn_left:2.l", "uno:5", "orange", [ "v90", "h70" ] ],
+    [ "btn_select:1.l", "uno:GND.2", "black", [ "v50", "h60" ] ],
+    [ "btn_select:2.l", "uno:6", "orange", [ "v100", "h80" ] ]
+  ],
+  "dependencies": {}
+}

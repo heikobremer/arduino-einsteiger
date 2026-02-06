@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P01: LCD Keypad Shield Demo - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🎛️</div>
+                        <h1>LCD Keypad Shield Demo</h1>
+                        <p class="subtitle">Projekt P01 - Grundlagen des LCD Keypad Shields</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Plus</div>
+                            <div class="tech-badge">LCD I2C</div>
+                            <div class="tech-badge">Digital Buttons</div>
+                            <div class="tech-badge">LiquidCrystal_I2C</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div><h2 class="no-margin">Was du lernst</h2></div>
+                    </div>
+                    <ul class="mt-40">
+                        <li><strong>LCD Keypad Shield</strong> - Beliebtes Shield für Arduino Uno</li>
+                        <li><strong>Analoger Tasteneingang</strong> - 5 Tasten über einen Pin (A0)</li>
+                        <li><strong>Wertebereiche</strong> - Robuste Tastenerkennung mit Toleranzen</li>
+                        <li><strong>Code-Struktur</strong> - Konstanten, Hilfsfunktionen, Enums</li>
+                    </ul>
+                    <div class="card card-dark mt-30">
+                        <h3>Komponenten</h3>
+                        <p>Arduino Uno, LCD 1602 (parallel), 5 Taster mit Widerstandsnetzwerk</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div><h2 class="no-margin">Das LCD Keypad Shield</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Shield-Aufbau</h3>
+                        <ul>
+                            <li><strong>LCD 1602</strong> - 16 Zeichen x 2 Zeilen</li>
+                            <li><strong>5 Tasten</strong> - SELECT, LEFT, DOWN, UP, RIGHT</li>
+                            <li><strong>1 Analogpin A0</strong> - Spannungsteiler für alle Tasten</li>
+                            <li><strong>Pins 4-9</strong> - LCD-Steuerung (RS, EN, D4-D7)</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Trick: Ein Pin für 5 Tasten</h3>
+                        <p>Jede Taste erzeugt durch Widerstände einen anderen Spannungswert an A0!</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div><h2 class="no-margin">Analoge Tastenwerte</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Typische ADC-Werte (0-1023)</h3>
+                        <ul>
+                            <li><strong>RIGHT</strong> - ca. 0 (Bereich: 0-60)</li>
+                            <li><strong>UP</strong> - ca. 145 (Bereich: 60-200)</li>
+                            <li><strong>DOWN</strong> - ca. 329 (Bereich: 200-400)</li>
+                            <li><strong>LEFT</strong> - ca. 505 (Bereich: 400-600)</li>
+                            <li><strong>SELECT</strong> - ca. 741 (Bereich: 600-800)</li>
+                            <li><strong>NONE</strong> - ca. 1023 (> 800)</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Wichtig: Wertebereiche nutzen!</h3>
+                        <p>Exakte Werte variieren je nach Shield. Bereiche sind robuster.</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Code - Konstanten & Enum</h2>
+                    <div class="code-block"><pre><code><span class="keyword">#include</span> <span class="string">&lt;LiquidCrystal.h&gt;</span>
+
+<span class="comment">// LCD Pin-Definitionen (Shield-Standard)</span>
+<span class="keyword">const int</span> PIN_RS = <span class="number">8</span>;
+<span class="keyword">const int</span> PIN_EN = <span class="number">9</span>;
+<span class="keyword">const int</span> PIN_D4 = <span class="number">4</span>;
+<span class="keyword">const int</span> PIN_D5 = <span class="number">5</span>;
+<span class="keyword">const int</span> PIN_D6 = <span class="number">6</span>;
+<span class="keyword">const int</span> PIN_D7 = <span class="number">7</span>;
+<span class="keyword">const int</span> PIN_BUTTONS = A0;
+
+<span class="comment">// Schwellwerte für Tastenerkennung</span>
+<span class="keyword">const int</span> THRESHOLD_RIGHT  = <span class="number">60</span>;
+<span class="keyword">const int</span> THRESHOLD_UP     = <span class="number">200</span>;
+<span class="keyword">const int</span> THRESHOLD_DOWN   = <span class="number">400</span>;
+<span class="keyword">const int</span> THRESHOLD_LEFT   = <span class="number">600</span>;
+<span class="keyword">const int</span> THRESHOLD_SELECT = <span class="number">800</span>;
+
+<span class="comment">// Tasten-Enum für sauberen Code</span>
+<span class="keyword">enum</span> Button { BTN_NONE, BTN_RIGHT, BTN_UP,
+              BTN_DOWN, BTN_LEFT, BTN_SELECT };</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <h2>Code - Hilfsfunktionen</h2>
+                    <div class="code-block"><pre><code>LiquidCrystal lcd(PIN_RS, PIN_EN, PIN_D4,
+                  PIN_D5, PIN_D6, PIN_D7);
+
+<span class="comment">// Taste erkennen mit Wertebereichen</span>
+Button readButton() {
+  <span class="keyword">int</span> val = analogRead(PIN_BUTTONS);
+
+  <span class="keyword">if</span> (val < THRESHOLD_RIGHT)  <span class="keyword">return</span> BTN_RIGHT;
+  <span class="keyword">if</span> (val < THRESHOLD_UP)     <span class="keyword">return</span> BTN_UP;
+  <span class="keyword">if</span> (val < THRESHOLD_DOWN)   <span class="keyword">return</span> BTN_DOWN;
+  <span class="keyword">if</span> (val < THRESHOLD_LEFT)   <span class="keyword">return</span> BTN_LEFT;
+  <span class="keyword">if</span> (val < THRESHOLD_SELECT) <span class="keyword">return</span> BTN_SELECT;
+
+  <span class="keyword">return</span> BTN_NONE;
+}
+
+<span class="comment">// Tastenname als String</span>
+<span class="keyword">const char</span>* getButtonName(Button btn) {
+  <span class="keyword">switch</span>(btn) {
+    <span class="keyword">case</span> BTN_RIGHT:  <span class="keyword">return</span> <span class="string">"Rechts"</span>;
+    <span class="keyword">case</span> BTN_UP:     <span class="keyword">return</span> <span class="string">"Hoch"</span>;
+    <span class="keyword">case</span> BTN_DOWN:   <span class="keyword">return</span> <span class="string">"Runter"</span>;
+    <span class="keyword">case</span> BTN_LEFT:   <span class="keyword">return</span> <span class="string">"Links"</span>;
+    <span class="keyword">case</span> BTN_SELECT: <span class="keyword">return</span> <span class="string">"Select"</span>;
+    <span class="keyword">default</span>:         <span class="keyword">return</span> <span class="string">"Keine"</span>;
+  }
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <h2>Code - Setup & Loop</h2>
+                    <div class="code-block"><pre><code><span class="keyword">void</span> setup() {
+  lcd.begin(<span class="number">16</span>, <span class="number">2</span>);
+  lcd.print(<span class="string">"LCD Keypad Demo"</span>);
+  lcd.setCursor(<span class="number">0</span>, <span class="number">1</span>);
+  lcd.print(<span class="string">"Taste druecken!"</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="keyword">static</span> Button lastButton = BTN_NONE;
+  Button currentButton = readButton();
+
+  <span class="comment">// Nur bei Änderung aktualisieren</span>
+  <span class="keyword">if</span> (currentButton != lastButton) {
+    lastButton = currentButton;
+
+    <span class="keyword">if</span> (currentButton != BTN_NONE) {
+      lcd.clear();
+      lcd.print(<span class="string">"Taste:"</span>);
+      lcd.setCursor(<span class="number">0</span>, <span class="number">1</span>);
+      lcd.print(getButtonName(currentButton));
+      lcd.print(<span class="string">" ("</span>);
+      lcd.print(analogRead(PIN_BUTTONS));
+      lcd.print(<span class="string">")"</span>);
+    }
+  }
+  delay(<span class="number">50</span>);  <span class="comment">// Entprellen</span>
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div><h2 class="no-margin">Code-Struktur erklärt</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Gute Praktiken</h3>
+                        <ul>
+                            <li><strong>Konstanten</strong> - Pins und Schwellwerte benannt</li>
+                            <li><strong>Enum</strong> - Lesbare Tastennamen statt Zahlen</li>
+                            <li><strong>Hilfsfunktionen</strong> - readButton() und getButtonName()</li>
+                            <li><strong>static Variable</strong> - Letzte Taste merken</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Vorteil Wertebereiche</h3>
+                        <p>Funktioniert auch bei leicht abweichenden Shields oder Temperaturschwankungen!</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">5</div>
+                        <div><h2 class="no-margin">Wokwi-Simulation</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>In Wokwi nachgebaut</h3>
+                        <p>Das LCD Keypad Shield wird aus Einzelkomponenten simuliert:</p>
+                        <ul>
+                            <li>LCD 1602 (parallel, nicht I2C)</li>
+                            <li>5 Pushbuttons mit Widerstandsnetzwerk an A0</li>
+                            <li>Widerstände erzeugen verschiedene Spannungen</li>
+                        </ul>
+                    </div>
+                    <div class="card card-dark mt-20">
+                        <h3>Testen</h3>
+                        <p>Klicke auf verschiedene Buttons und beobachte die Anzeige!</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🎛️</div>
+                        <h1>Geschafft!</h1>
+                        <p class="mt-30">Du kennst jetzt das LCD Keypad Shield!</p>
+                        <div class="card card-dark mt-50" data-next="../P02_multiclock/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p>P02: Multiclock - Uhr, Stoppuhr, Alarm und Timer</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="controls">
+                <div class="navigation"><a href="../../plus.html">Plus</a></div>
+                <div class="controls-center">
+                    <span class="navigation">&larr; &rarr;</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">10</span></div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": -96.6, "attrs": {} },
+    { "type": "wokwi-ir-receiver", "id": "ir1", "top": -100, "left": 100, "attrs": {} },
+    { "type": "wokwi-ir-remote", "id": "remote1", "top": -100, "left": 220, "attrs": {} },
+    { "type": "wokwi-rgb-led", "id": "rgb1", "top": -80, "left": -50, "attrs": { "common": "cathode" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": -10, "left": -80, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r2", "top": -10, "left": -50, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r3", "top": -10, "left": -20, "rotate": 90, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "ir1:VCC", "uno:5V", "red", [ "v48", "h-140" ] ],
+    [ "ir1:GND", "uno:GND.1", "black", [ "v105", "h-110" ] ],
+    [ "ir1:DAT", "uno:7", "green", [ "v58", "h-35" ] ],
+    [ "rgb1:R", "r1:1", "red", [] ],
+    [ "r1:2", "uno:9", "red", [ "v0" ] ],
+    [ "rgb1:COM", "uno:GND.2", "black", [ "v0" ] ],
+    [ "rgb1:G", "r2:1", "green", [] ],
+    [ "r2:2", "uno:10", "green", [ "v0" ] ],
+    [ "rgb1:B", "r3:1", "blue", [] ],
+    [ "r3:2", "uno:11", "blue", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}

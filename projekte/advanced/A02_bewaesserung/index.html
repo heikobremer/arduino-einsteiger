@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A02: Pflanzenbewässerung - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🌱</div>
+                        <h1>Pflanzenbewässerung</h1>
+                        <p class="subtitle">Projekt A02 - Automatische Bewässerung mit Bodenfeuchtesensor</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Advanced</div>
+                            <div class="tech-badge">Soil Sensor</div>
+                            <div class="tech-badge">Relais</div>
+                            <div class="tech-badge">ADC</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div><h2 class="no-margin">Was du lernst</h2></div>
+                    </div>
+                    <ul class="mt-40">
+                        <li><strong>Analoge Sensoren</strong> - Bodenfeuchtesensor auslesen (ADC)</li>
+                        <li><strong>Relais-Steuerung</strong> - Pumpe sicher schalten</li>
+                        <li><strong>Schwellwert-Logik</strong> - Automatische Entscheidungen treffen</li>
+                        <li><strong>Hysterese</strong> - Pumpen-Flatter verhindern</li>
+                    </ul>
+                    <div class="card card-dark mt-30">
+                        <h3>Komponenten</h3>
+                        <p>Arduino Uno, Bodenfeuchtesensor (kapazitiv), Relais-Modul, 3 LEDs</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div><h2 class="no-margin">Schaltung</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Pin-Belegung</h3>
+                        <ul>
+                            <li><strong>A0</strong> - Bodenfeuchtesensor (analog)</li>
+                            <li><strong>D7</strong> - Relais (Pumpe)</li>
+                            <li><strong>D8</strong> - Status-LED (blau, Pumpe läuft)</li>
+                            <li><strong>D9</strong> - Trocken-LED (rot)</li>
+                            <li><strong>D10</strong> - OK-LED (grün)</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Hysterese-Prinzip</h3>
+                        <p>Zwei Schwellwerte verhindern ständiges Ein/Aus-Schalten der Pumpe</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Der Code</h2>
+                    <div class="code-block"><pre><code><span class="comment">// Pin-Definitionen</span>
+<span class="keyword">const int</span> SOIL_PIN = A0;
+<span class="keyword">const int</span> RELAY_PIN = <span class="number">7</span>;
+<span class="keyword">const int</span> LED_DRY = <span class="number">9</span>;
+
+<span class="comment">// Schwellwerte mit Hysterese</span>
+<span class="keyword">const int</span> TROCKEN = <span class="number">400</span>;  <span class="comment">// Unter: giessen</span>
+<span class="keyword">const int</span> FEUCHT = <span class="number">600</span>;   <span class="comment">// Über: stoppen</span>
+
+<span class="keyword">void</span> loop() {
+  <span class="keyword">int</span> wert = analogRead(SOIL_PIN);
+
+  <span class="keyword">if</span> (wert < TROCKEN) {
+    digitalWrite(RELAY_PIN, HIGH);
+    Serial.println(<span class="string">"Giessen!"</span>);
+  } <span class="keyword">else if</span> (wert > FEUCHT) {
+    digitalWrite(RELAY_PIN, LOW);
+  }
+  delay(<span class="number">5000</span>);
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div><h2 class="no-margin">Test & Erweiterung</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-30">
+                        <h3>Testen im Wokwi</h3>
+                        <ul>
+                            <li>Potentiometer simuliert Bodenfeuchtesensor</li>
+                            <li>Drehe nach links = trocken (Pumpe an)</li>
+                            <li>Drehe nach rechts = feucht (Pumpe aus)</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Erweiterungsideen</h3>
+                        <ul>
+                            <li>LCD-Display für Feuchtigkeitsanzeige</li>
+                            <li>Mehrere Sensoren für verschiedene Pflanzen</li>
+                            <li>Zeitgesteuerte Bewässerung mit RTC</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🌱</div>
+                        <h1>Geschafft!</h1>
+                        <p class="mt-30">Du hast ein automatisches Bewässerungssystem gebaut!</p>
+                        <div class="card card-dark mt-50" data-next="../A03_waage/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p>A03: Digitale Waage mit HX711</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="controls">
+                <div class="navigation"><a href="../../advanced.html">Advanced</a></div>
+                <div class="controls-center">
+                    <span class="navigation">&larr; &rarr;</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">6</span></div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

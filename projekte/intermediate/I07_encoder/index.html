@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I07: Rotary Encoder - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🎛️</div>
+                        <h1>Rotary Encoder</h1>
+                        <p class="subtitle">Projekt I07 - Drehgeber mit Taster und Interrupts</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Intermediate</div>
+                            <div class="tech-badge">KY-040</div>
+                            <div class="tech-badge">Interrupt</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>Hardware-Interrupts</strong> - Schnelle Reaktion auf Signaländerungen mit attachInterrupt()</li>
+                        <li><strong>volatile Variablen</strong> - Sichere Kommunikation zwischen ISR und Hauptprogramm</li>
+                        <li><strong>Taster-Entprellung</strong> - Software-Debouncing fuer zuverlaessige Eingaben</li>
+                        <li><strong>Drehrichtungserkennung</strong> - Quadratur-Signale auswerten</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Beginner-Projekte B01-B08 abgeschlossen, Grundlagen von digitalRead() und Zustandsvariablen bekannt</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Komponenten -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Der KY-040 Rotary Encoder</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🎛️</div>
+                            <h4>KY-040 Encoder</h4>
+                            <p>Inkrementeller Drehgeber mit integriertem Taster. Liefert Quadratur-Signale zur Richtungserkennung - perfekt fuer Menusteuerung!</p>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Typ:</strong> Inkrementeller Encoder (relativ, nicht absolut)</p>
+                            <p style="font-size: 14px;"><strong>Aufloesung:</strong> 20 Rastpunkte pro Umdrehung</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">📌</div>
+                            <h4>KY-040 Pinbelegung</h4>
+                            <ul style="font-size: 14px;" class="mt-10">
+                                <li><strong>CLK (A)</strong> - Clock/Phase A Signal</li>
+                                <li><strong>DT (B)</strong> - Data/Phase B Signal</li>
+                                <li><strong>SW</strong> - Switch (Taster beim Druecken)</li>
+                                <li><strong>+ (VCC)</strong> - Versorgung 5V</li>
+                                <li><strong>GND</strong> - Masse</li>
+                            </ul>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Logik:</strong> Aktiv LOW (interne Pull-Ups im Modul)</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Interrupt-faehige Pins beim Arduino Uno</h4>
+                        <p>Nur <strong>Pin 2</strong> (INT0) und <strong>Pin 3</strong> (INT1) koennen Hardware-Interrupts ausloesen. Daher CLK an Pin 2!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Theorie -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">Quadratur-Encoder</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Wie funktioniert es?</h3>
+                            <ul class="mt-20">
+                                <li>Zwei Signale (A und B) sind 90 Grad phasenverschoben</li>
+                                <li>Bei Drehung rechts: A aendert sich VOR B</li>
+                                <li>Bei Drehung links: B aendert sich VOR A</li>
+                                <li>Durch Vergleich der Pegel: Richtung erkennbar!</li>
+                            </ul>
+
+                            <h3 class="mt-30">Gray-Code Prinzip</h3>
+                            <p class="mt-10">Bei jedem Rastpunkt aendert sich nur EIN Bit - das verhindert Fehlzaehlungen bei Uebergaengen.</p>
+                        </div>
+                        <div class="card">
+                            <h4>Quadratur-Signal</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 12px;">
+Drehung RECHTS:        Drehung LINKS:
+
+CLK ──┐   ┌───┐        CLK ───┐   ┌──
+      └───┘   └──             └───┘
+
+DT  ────┐   ┌───       DT  ─┐   ┌────
+        └───┘   ─           └───┘
+
+Bei CLK-Flanke:        Bei CLK-Flanke:
+CLK != DT -> ++        CLK == DT -> --
+            </pre></div>
+                            <p class="mt-20" style="font-size: 14px;"><strong>Trick:</strong> Bei jeder CLK-Aenderung pruefen: Sind CLK und DT unterschiedlich? Dann Rechtsdrehung!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Schaltplan -->
+                <div class="slide">
+                    <h2>Schaltplan</h2>
+                    <p class="subtitle">Verbindungen zum Arduino</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Wokwi-Aufbau</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 14px;">
+    Arduino Uno          KY-040
+   ┌───────────┐        ┌───────┐
+   │           │        │  CLK  │─── Pin 2 (INT0)
+   │  Pin 2 ───┼────────┤  DT   │─── Pin 3
+   │  Pin 3 ───┼────────┤  SW   │─── Pin 4
+   │  Pin 4 ───┼────────┤   +   │─── 5V
+   │           │        │  GND  │─── GND
+   │  5V ──────┼────────┤       │
+   │  GND ─────┼────────┘       │
+   └───────────┘        └───────┘
+            </pre></div>
+                        </div>
+                        <div class="card card-info">
+                            <h4>Wichtige Verbindungen</h4>
+                            <ul class="mt-20">
+                                <li><strong>CLK</strong> → Arduino Pin 2 (Interrupt!)</li>
+                                <li><strong>DT</strong> → Arduino Pin 3</li>
+                                <li><strong>SW</strong> → Arduino Pin 4</li>
+                                <li><strong>+</strong> → Arduino 5V</li>
+                                <li><strong>GND</strong> → Arduino GND</li>
+                            </ul>
+
+                            <h4 class="mt-30">Warum Pin 2?</h4>
+                            <p style="font-size: 14px;">CLK muss an einen Interrupt-Pin! Nur Pin 2 und 3 koennen beim Uno Hardware-Interrupts.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Code Schritt 1 - Setup und Interrupt -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 1: Pins und Interrupt</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// I07: Rotary Encoder (KY-040)</span>
+
+<span class="comment">// Encoder-Pins (CLK auf Pin 2 fuer Interrupt)</span>
+<span class="keyword">#define</span> CLK_PIN <span class="number">2</span>   <span class="comment">// Clock (A) - Interrupt-faehig!</span>
+<span class="keyword">#define</span> DT_PIN <span class="number">3</span>    <span class="comment">// Data (B)</span>
+<span class="keyword">#define</span> SW_PIN <span class="number">4</span>    <span class="comment">// Switch (Taster)</span>
+
+<span class="comment">// WICHTIG: volatile fuer Variablen in ISR!</span>
+<span class="keyword">volatile int</span> counter = <span class="number">0</span>;
+<span class="keyword">volatile bool</span> encoderMoved = <span class="number">false</span>;
+
+<span class="keyword">void</span> setup() {
+    Serial.begin(<span class="number">9600</span>);
+
+    <span class="comment">// Pins als Input mit Pull-Up</span>
+    pinMode(CLK_PIN, INPUT_PULLUP);
+    pinMode(DT_PIN, INPUT_PULLUP);
+    pinMode(SW_PIN, INPUT_PULLUP);
+
+    <span class="comment">// Interrupt auf CLK-Pin bei jeder Aenderung</span>
+    attachInterrupt(digitalPinToInterrupt(CLK_PIN),
+                    encoderISR, CHANGE);
+}</code></pre></div>
+
+                    <div class="grid-2 mt-20">
+                        <div class="card">
+                            <h4>volatile erklaert</h4>
+                            <p style="font-size: 14px;">Teilt dem Compiler mit: Diese Variable kann sich jederzeit aendern (durch Interrupt). Verhindert Optimierungen!</p>
+                        </div>
+                        <div class="card">
+                            <h4>attachInterrupt()</h4>
+                            <p style="font-size: 14px;"><code>CHANGE</code> = bei jeder Flanke (HIGH→LOW und LOW→HIGH). Andere: RISING, FALLING, LOW.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Code Schritt 2 - ISR -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 2: Interrupt Service Routine</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// ISR = Interrupt Service Routine</span>
+<span class="comment">// Wird bei jeder CLK-Flanke automatisch aufgerufen!</span>
+
+<span class="keyword">void</span> encoderISR() {
+    <span class="comment">// Richtung bestimmen durch Vergleich CLK mit DT</span>
+    <span class="keyword">if</span> (digitalRead(CLK_PIN) != digitalRead(DT_PIN)) {
+        counter++;   <span class="comment">// Rechtsdrehung</span>
+    } <span class="keyword">else</span> {
+        counter--;   <span class="comment">// Linksdrehung</span>
+    }
+    encoderMoved = <span class="keyword">true</span>;
+}
+
+<span class="comment">// Merke: ISR soll SCHNELL sein!</span>
+<span class="comment">// - Kein Serial.print() in der ISR</span>
+<span class="comment">// - Kein delay() in der ISR</span>
+<span class="comment">// - Nur Flag setzen, Rest im loop()</span></code></pre></div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Warum funktioniert der Trick?</h4>
+                        <p>Bei <strong>Rechtsdrehung</strong> aendert sich CLK bevor DT folgt - beim Lesen sind sie unterschiedlich. Bei <strong>Linksdrehung</strong> sind beide zum Lesezeitpunkt gleich. Einfach aber effektiv!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Code Schritt 3 - Taster-Entprellung -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 3: Taster-Entprellung</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Entprellzeit in Millisekunden</span>
+<span class="keyword">#define</span> DEBOUNCE_TIME <span class="number">50</span>
+<span class="keyword">unsigned long</span> lastButtonTime = <span class="number">0</span>;
+<span class="keyword">bool</span> buttonPressed = <span class="keyword">false</span>;
+
+<span class="keyword">void</span> checkButton() {
+    <span class="keyword">unsigned long</span> currentTime = millis();
+
+    <span class="keyword">if</span> (digitalRead(SW_PIN) == LOW) {  <span class="comment">// Taster gedrueckt</span>
+        <span class="keyword">if</span> (!buttonPressed) {
+            <span class="keyword">if</span> (currentTime - lastButtonTime > DEBOUNCE_TIME) {
+                buttonPressed = <span class="keyword">true</span>;
+                lastButtonTime = currentTime;
+
+                <span class="comment">// Aktion bei Tastendruck</span>
+                counter = <span class="number">0</span>;
+                Serial.println(<span class="string">"*** RESET ***"</span>);
+            }
+        }
+    } <span class="keyword">else</span> {
+        buttonPressed = <span class="keyword">false</span>;  <span class="comment">// Taster losgelassen</span>
+    }
+}</code></pre></div>
+
+                    <div class="card card-info mt-20">
+                        <h4>Warum Entprellung?</h4>
+                        <p>Mechanische Taster "prellen" beim Druecken - sie schalten mehrfach schnell ein/aus. Die 50ms Wartezeit filtert diese Stoerimpulse.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: Wokwi Demo -->
+                <div class="slide">
+                    <h2>Ausprobieren</h2>
+                    <p class="subtitle">Simulation in Wokwi</p>
+
+                    <div class="center mt-40">
+                        <div class="card card-dark">
+                            <h3>Wokwi Projekt</h3>
+                            <p class="mt-20">Erstelle ein neues Projekt mit Arduino Uno und KY-040:</p>
+                            <div class="mt-30">
+                                <a href="https://wokwi.com/projects/new/arduino-uno" target="_blank" style="color: #0071e3; font-size: 20px; text-decoration: none;">
+                                    Neues Arduino-Projekt in Wokwi
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-40">
+                        <h4>So testest du</h4>
+                        <ul>
+                            <li>Fuege einen KY-040 hinzu (Suche: "rotary encoder")</li>
+                            <li>Verbinde: CLK → Pin 2, DT → Pin 3, SW → Pin 4, + → 5V, GND → GND</li>
+                            <li>Kopiere den Code in die sketch.ino</li>
+                            <li>Klicke auf Play - drehe am Encoder im Simulator!</li>
+                            <li><strong>Tipp:</strong> Klicke auf den Encoder um die Richtung zu wechseln, klicke in die Mitte fuer den Taster!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Challenges -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Challenges</div>
+                            <h2 class="no-margin">Erweiterungen</h2>
+                        </div>
+                    </div>
+
+                    <p class="subtitle">Probiere diese Aufgaben aus</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">💡</div>
+                            <h4>Challenge 1: LED-Helligkeit</h4>
+                            <p>Steuere die Helligkeit einer LED mit PWM (0-255). Encoder dreht = heller/dunkler.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">📋</div>
+                            <h4>Challenge 2: LCD-Menue</h4>
+                            <p>Blaettere durch ein Menue auf dem LCD. Encoder = navigieren, Taster = auswaehlen.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🌈</div>
+                            <h4>Challenge 3: RGB-Farbe</h4>
+                            <p>RGB-LED steuern: Encoder waehlt Farbwert, Taster wechselt zwischen R/G/B Kanal.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🦾</div>
+                            <h4>Challenge 4: Servo-Winkel</h4>
+                            <p>Encoder steuert Servo-Position von 0 bis 180 Grad. Praezise Positionierung!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🎛️</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du beherrschst jetzt Hardware-Interrupts</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">⚡</div>
+                                <h4>Interrupts</h4>
+                                <p>Schnelle Reaktion mit attachInterrupt()</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">🔒</div>
+                                <h4>volatile</h4>
+                                <p>Sichere ISR-Variablen</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">🎚️</div>
+                                <h4>Entprellung</h4>
+                                <p>Zuverlaessige Tastereingabe</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../I08_ir_remote/index.html">
+                            <h3>Naechstes Projekt</h3>
+                            <p class="mt-10">I08: IR-Fernbedienung - Infrarot-Signale empfangen und dekodieren</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

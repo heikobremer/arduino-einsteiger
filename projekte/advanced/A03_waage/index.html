@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A03: Digitale Waage - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#9878;</div>
+                        <h1>Digitale Waage</h1>
+                        <p class="subtitle">Projekt A03 - Präzisionsmessung mit HX711 Wägezelle</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Advanced</div>
+                            <div class="tech-badge">HX711</div>
+                            <div class="tech-badge">Load Cell</div>
+                            <div class="tech-badge">Library</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div><h2 class="no-margin">Was du lernst</h2></div>
+                    </div>
+                    <ul class="mt-40">
+                        <li><strong>Wägezellen</strong> - Dehnungsmessstreifen und Wheatstone-Brücke</li>
+                        <li><strong>HX711 ADC</strong> - 24-Bit Analog-Digital-Wandler</li>
+                        <li><strong>Arduino Library</strong> - HX711.h verwenden</li>
+                        <li><strong>Tara-Funktion</strong> - Nullpunkt setzen</li>
+                    </ul>
+                    <div class="card card-dark mt-30">
+                        <h3>Komponenten</h3>
+                        <p>Arduino Uno, HX711 Modul, Wägezelle (1-5kg), 2 Taster</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div><h2 class="no-margin">Schaltung</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Pin-Belegung</h3>
+                        <ul>
+                            <li><strong>D4</strong> - HX711 DT (Data)</li>
+                            <li><strong>D5</strong> - HX711 SCK (Clock)</li>
+                            <li><strong>D2</strong> - Taster Tara (INPUT_PULLUP)</li>
+                            <li><strong>D3</strong> - Taster Einheit (INPUT_PULLUP)</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Library installieren</h3>
+                        <p>Arduino IDE: Sketch > Bibliothek einbinden > "HX711" suchen</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Der Code</h2>
+                    <div class="code-block"><pre><code><span class="keyword">#include</span> <span class="string">"HX711.h"</span>
+
+HX711 scale;
+<span class="keyword">const int</span> DT = <span class="number">4</span>, SCK = <span class="number">5</span>;
+<span class="keyword">const int</span> BTN_TARE = <span class="number">2</span>;
+
+<span class="keyword">void</span> setup() {
+  Serial.begin(<span class="number">9600</span>);
+  pinMode(BTN_TARE, INPUT_PULLUP);
+
+  scale.begin(DT, SCK);
+  scale.set_scale(<span class="number">420.0</span>);  <span class="comment">// Kalibrierung</span>
+  scale.tare();            <span class="comment">// Nullpunkt</span>
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="keyword">if</span> (digitalRead(BTN_TARE) == LOW) {
+    scale.tare();
+    delay(<span class="number">500</span>);
+  }
+  <span class="keyword">float</span> gewicht = scale.get_units(<span class="number">5</span>);
+  Serial.println(gewicht);
+  delay(<span class="number">200</span>);
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div><h2 class="no-margin">Kalibrierung</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-30">
+                        <h3>Kalibrierungsschritte</h3>
+                        <ol>
+                            <li>Waage leer lassen, Tara drücken</li>
+                            <li>Bekanntes Gewicht auflegen (z.B. 100g)</li>
+                            <li>Rohwert notieren: scale.get_units(10)</li>
+                            <li>Faktor = Rohwert / bekanntes Gewicht</li>
+                        </ol>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Einheiten wechseln</h3>
+                        <p>g, kg, oz - Umrechnung erfolgt durch Multiplikation</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#9878;</div>
+                        <h1>Geschafft!</h1>
+                        <p class="mt-30">Du hast eine präzise digitale Waage gebaut!</p>
+                        <div class="card card-dark mt-50" data-next="../A04_schrittmotor/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p>A04: Schrittmotor-Steuerung</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="controls">
+                <div class="navigation"><a href="../../advanced.html">Advanced</a></div>
+                <div class="controls-center">
+                    <span class="navigation">&larr; &rarr;</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">6</span></div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

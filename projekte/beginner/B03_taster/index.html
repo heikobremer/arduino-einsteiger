@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B03: Taster und Entprellung - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🔘</div>
+                        <h1>Taster und Entprellung</h1>
+                        <p class="subtitle">Projekt B03 - Eingaben verarbeiten</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Beginner</div>
+                            <div class="tech-badge">Taster</div>
+                            <div class="tech-badge">LED</div>
+                            <div class="tech-badge">Pull-up</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>GPIO als Eingang</strong> - Pins zum Lesen von Signalen konfigurieren</li>
+                        <li><strong>Pull-up/Pull-down</strong> - Definierte Zustände bei offenem Taster</li>
+                        <li><strong>Entprellung</strong> - Mechanisches Prellen softwareseitig filtern</li>
+                        <li><strong>Flanken erkennen</strong> - Unterschied zwischen gedrückt halten und einmal drücken</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Projekt B01 und B02 abgeschlossen</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Komponenten -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Was du brauchst</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🔘</div>
+                            <h4>Taster (Push Button)</h4>
+                            <p>Schließt den Stromkreis nur solange er gedrückt wird. Typisch: 4 Pins (je 2 verbunden).</p>
+                            <p class="mt-10" style="font-size: 14px;"><strong>In Wokwi:</strong> "pushbutton" suchen</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">💡</div>
+                            <h4>LED + 220Ω Widerstand</h4>
+                            <p>Zeigt visuell an, ob der Taster erkannt wurde.</p>
+                            <p class="mt-10" style="font-size: 14px;">Von Projekt B01 bereits bekannt</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Pull-up Widerstand?</h4>
+                        <p>Der Arduino hat <strong>interne Pull-ups</strong>! Du brauchst keinen externen Widerstand. Wir nutzen <code>INPUT_PULLUP</code> im Code.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Theorie -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">Warum Pull-up?</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Das Problem</h3>
+                            <p class="mt-10">Ein offener GPIO-Pin hat keinen definierten Zustand - er "schwebt" (floating) und kann zufällig HIGH oder LOW sein.</p>
+
+                            <h3 class="mt-30">Die Lösung: Pull-up</h3>
+                            <p class="mt-10">Ein Pull-up Widerstand zieht den Pin auf HIGH, wenn der Taster offen ist.</p>
+                            <ul class="mt-10" style="font-size: 16px;">
+                                <li><strong>Taster offen:</strong> GPIO = HIGH (1)</li>
+                                <li><strong>Taster gedrückt:</strong> GPIO = LOW (0)</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Schaltung mit Pull-up</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 14px;">
+   5V
+     │
+    [R] ← Pull-up (intern!)
+     │
+     ├──► GPIO (liest HIGH)
+     │
+    [/] ← Taster
+     │
+    GND
+
+Gedrückt: GPIO → GND = LOW
+            </pre></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Entprellung -->
+                <div class="slide">
+                    <h2>Das Prellen</h2>
+                    <p class="subtitle">Warum ein Tastendruck mehrfach erkannt wird</p>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>Was passiert?</h3>
+                            <p class="mt-10">Mechanische Taster "prellen" - der Kontakt öffnet und schließt mehrmals sehr schnell, bevor er stabil ist.</p>
+
+                            <h3 class="mt-30">In der Praxis</h3>
+                            <p class="mt-10">Ein Tastendruck kann als 5-10 Tastendrücke erkannt werden!</p>
+
+                            <h3 class="mt-30">Lösung: Debouncing</h3>
+                            <ul class="mt-10" style="font-size: 16px;">
+                                <li><strong>Software:</strong> Kurze Pause nach Erkennung</li>
+                                <li><strong>Hardware:</strong> Kondensator (optional)</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Signal ohne Entprellung</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 12px;">
+HIGH ─┐   ┌┐  ┌┐  ┌───────────
+      │   ││  ││  │
+LOW   └───┘└──┘└──┘
+
+      ↑ Prellen (mehrere Flanken)
+            </pre></div>
+
+                            <h4 class="mt-20">Nach Entprellung</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 12px;">
+HIGH ─┐               ┌────────
+      │               │
+LOW   └───────────────┘
+
+      ↑ Saubere Flanke
+            </pre></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Code Schritt 1 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 1: Taster ohne Entprellung</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 1: Einfaches Taster-Lesen (noch ohne Entprellung)</span>
+
+<span class="keyword">const int</span> LED_PIN = <span class="number">7</span>;
+<span class="keyword">const int</span> TASTER_PIN = <span class="number">6</span>;
+
+<span class="keyword">void</span> setup() {
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(TASTER_PIN, INPUT_PULLUP);  <span class="comment">// Mit internem Pull-up</span>
+  Serial.begin(<span class="number">9600</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="keyword">if</span> (digitalRead(TASTER_PIN) == LOW) {  <span class="comment">// LOW = gedrueckt</span>
+    digitalWrite(LED_PIN, HIGH);
+    Serial.println(<span class="string">"Taster gedrueckt!"</span>);
+  } <span class="keyword">else</span> {
+    digitalWrite(LED_PIN, LOW);
+  }
+  delay(<span class="number">10</span>);
+}</code></pre></div>
+
+                    <div class="card card-info mt-20">
+                        <h4>Problem</h4>
+                        <p>Die LED leuchtet nur solange der Taster gedrückt wird. Und "Taster gedrückt!" erscheint sehr oft in der Konsole!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Code Schritt 2 -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 2: Einfache Entprellung</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 2: Mit einfacher Entprellung</span>
+
+<span class="keyword">const int</span> LED_PIN = <span class="number">7</span>;
+<span class="keyword">const int</span> TASTER_PIN = <span class="number">6</span>;
+<span class="keyword">int</span> ledZustand = LOW;
+
+<span class="keyword">void</span> setup() {
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(TASTER_PIN, INPUT_PULLUP);
+  Serial.begin(<span class="number">9600</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="keyword">if</span> (digitalRead(TASTER_PIN) == LOW) {  <span class="comment">// Gedrueckt?</span>
+    delay(<span class="number">50</span>);  <span class="comment">// Entprellzeit abwarten</span>
+    <span class="keyword">if</span> (digitalRead(TASTER_PIN) == LOW) {  <span class="comment">// Immer noch?</span>
+      ledZustand = !ledZustand;  <span class="comment">// LED umschalten</span>
+      digitalWrite(LED_PIN, ledZustand);
+      Serial.println(<span class="string">"Klick!"</span>);
+      <span class="comment">// Warten bis losgelassen</span>
+      <span class="keyword">while</span> (digitalRead(TASTER_PIN) == LOW) {
+        delay(<span class="number">10</span>);
+      }
+    }
+  }
+  delay(<span class="number">10</span>);
+}</code></pre></div>
+
+                    <div class="card card-info mt-20">
+                        <h4>Verbesserung</h4>
+                        <p>Jetzt wird pro Tastendruck nur einmal "Klick!" ausgegeben und die LED toggelt zuverlässig.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Code Schritt 3 (Fertig) -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 3: Mit Zähler</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Fertige Version: Taster mit Zaehler</span>
+
+<span class="keyword">const int</span> LED_PIN = <span class="number">7</span>;
+<span class="keyword">const int</span> TASTER_PIN = <span class="number">6</span>;
+<span class="keyword">int</span> zaehler = <span class="number">0</span>;
+<span class="keyword">int</span> ledZustand = LOW;
+
+<span class="keyword">void</span> setup() {
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(TASTER_PIN, INPUT_PULLUP);
+  Serial.begin(<span class="number">9600</span>);
+  Serial.println(<span class="string">"Druecke den Taster!"</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="keyword">if</span> (digitalRead(TASTER_PIN) == LOW) {
+    delay(<span class="number">50</span>);  <span class="comment">// Entprellen</span>
+    <span class="keyword">if</span> (digitalRead(TASTER_PIN) == LOW) {
+      zaehler++;
+      ledZustand = !ledZustand;
+      digitalWrite(LED_PIN, ledZustand);
+      Serial.print(<span class="string">"Tastendruck #"</span>);
+      Serial.println(zaehler);
+      <span class="keyword">while</span> (digitalRead(TASTER_PIN) == LOW) {
+        delay(<span class="number">10</span>);
+      }
+    }
+  }
+  delay(<span class="number">10</span>);
+}</code></pre></div>
+
+                    <div class="card card-info mt-20">
+                        <h4>Ergebnis</h4>
+                        <p>Jeder Tastendruck wird gezählt und die LED toggelt. Perfekt zum Testen der Entprellung!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: Wokwi Demo -->
+                <div class="slide">
+                    <h2>Ausprobieren</h2>
+                    <p class="subtitle">Simulation in Wokwi</p>
+
+                    <div class="center mt-40">
+                        <div class="card card-dark">
+                            <h3>Wokwi Projekt</h3>
+                            <p class="mt-20">Füge einen Taster (pushbutton) und eine LED hinzu:</p>
+                            <div class="mt-30">
+                                <a href="https://wokwi.com/projects/new/arduino-uno" target="_blank" style="color: #0071e3; font-size: 20px; text-decoration: none;">
+                                    Neues Arduino-Projekt in Wokwi →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-40">
+                        <h4>Verbindungen</h4>
+                        <ul>
+                            <li><strong>Taster Pin 1</strong> → Pin 6</li>
+                            <li><strong>Taster Pin 2</strong> → GND</li>
+                            <li><strong>LED</strong> → Pin 7 (mit Widerstand)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Erweiterungen -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Challenges</div>
+                            <h2 class="no-margin">Erweiterungen</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">⏱️</div>
+                            <h4>Challenge 1: Langer Druck</h4>
+                            <p>Erkenne ob der Taster kurz (&lt;500ms) oder lang (&gt;1s) gedrückt wurde. Unterschiedliche Aktionen!</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">✌️</div>
+                            <h4>Challenge 2: Doppelklick</h4>
+                            <p>Erkenne einen Doppelklick (zwei Klicks innerhalb von 300ms).</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🔢</div>
+                            <h4>Challenge 3: Binärzähler</h4>
+                            <p>Nutze 3 LEDs um den Zählerstand binär anzuzeigen (0-7).</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🎮</div>
+                            <h4>Challenge 4: Modi</h4>
+                            <p>Wechsle mit dem Taster zwischen verschiedenen Blink-Modi der LED.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🔘</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du kannst jetzt Eingaben verarbeiten</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>GPIO Input</h4>
+                                <p>Pins als Eingang nutzen</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Pull-up</h4>
+                                <p>Interne Widerstände</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Debouncing</h4>
+                                <p>Saubere Erkennung</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../B04_potentiometer/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p class="mt-10">B04: Potentiometer - Analoge Werte lesen und LED dimmen</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

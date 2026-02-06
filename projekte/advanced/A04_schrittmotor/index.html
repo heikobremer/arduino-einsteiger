@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A04: Schrittmotor - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#9881;</div>
+                        <h1>Schrittmotor</h1>
+                        <p class="subtitle">Projekt A04 - 28BYJ-48 mit ULN2003 Treiber</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Advanced</div>
+                            <div class="tech-badge">28BYJ-48</div>
+                            <div class="tech-badge">Stepper.h</div>
+                            <div class="tech-badge">Sequenz</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div><h2 class="no-margin">Was du lernst</h2></div>
+                    </div>
+                    <ul class="mt-40">
+                        <li><strong>Schrittmotoren</strong> - Unipolar, 4-Phasen, Schrittwinkel</li>
+                        <li><strong>Schrittsequenzen</strong> - Vollschritt, Halbschritt, Wellenschritt</li>
+                        <li><strong>ULN2003</strong> - Darlington-Array als Treiber</li>
+                        <li><strong>Stepper Library</strong> - Einfache Ansteuerung</li>
+                    </ul>
+                    <div class="card card-dark mt-30">
+                        <h3>Komponenten</h3>
+                        <p>Arduino Uno, 28BYJ-48 Schrittmotor, ULN2003 Treiberplatine, Potentiometer, Taster</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div><h2 class="no-margin">Schaltung</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Pin-Belegung</h3>
+                        <ul>
+                            <li><strong>D8-D11</strong> - ULN2003 IN1-IN4</li>
+                            <li><strong>A0</strong> - Potentiometer (Geschwindigkeit)</li>
+                            <li><strong>D2</strong> - Taster (Richtungswechsel)</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>28BYJ-48 Spezifikationen</h3>
+                        <p>2048 Schritte/Umdrehung (Vollschritt), 5.625 Grad/Schritt, 1:64 Getriebe</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Der Code</h2>
+                    <div class="code-block"><pre><code><span class="keyword">#include</span> <span class="string">&lt;Stepper.h&gt;</span>
+
+<span class="keyword">const int</span> STEPS = <span class="number">2048</span>;
+Stepper motor(STEPS, <span class="number">8</span>, <span class="number">10</span>, <span class="number">9</span>, <span class="number">11</span>);
+
+<span class="keyword">int</span> richtung = <span class="number">1</span>;
+
+<span class="keyword">void</span> setup() {
+  pinMode(<span class="number">2</span>, INPUT_PULLUP);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="keyword">if</span> (digitalRead(<span class="number">2</span>) == LOW) {
+    richtung *= -<span class="number">1</span>;
+    delay(<span class="number">300</span>);
+  }
+
+  <span class="keyword">int</span> poti = analogRead(A0);
+  <span class="keyword">int</span> rpm = map(poti, <span class="number">0</span>, <span class="number">1023</span>, <span class="number">1</span>, <span class="number">15</span>);
+
+  motor.setSpeed(rpm);
+  motor.step(richtung);
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div><h2 class="no-margin">Schrittmodi</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-30">
+                        <h3>Vollschritt (Full Step)</h3>
+                        <p>2 Spulen gleichzeitig aktiv - höchstes Drehmoment</p>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Halbschritt (Half Step)</h3>
+                        <p>Abwechselnd 1 oder 2 Spulen - sanfterer Lauf, doppelte Auflösung</p>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Wellenschritt (Wave Step)</h3>
+                        <p>Nur 1 Spule aktiv - weniger Stromverbrauch</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#9881;</div>
+                        <h1>Geschafft!</h1>
+                        <p class="mt-30">Du kannst jetzt Schrittmotoren präzise steuern!</p>
+                        <div class="card card-dark mt-50" data-next="../A05_memory_game/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p>A05: Memory Game</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="controls">
+                <div class="navigation"><a href="../../advanced.html">Advanced</a></div>
+                <div class="controls-center">
+                    <span class="navigation">&larr; &rarr;</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">6</span></div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

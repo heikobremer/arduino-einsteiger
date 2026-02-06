@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A01: Multi-Sensor Dashboard - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#127777;</div>
+                        <h1>Multi-Sensor Dashboard</h1>
+                        <p class="subtitle">Projekt A01 - DHT22 mit LCD und Status-LEDs</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Advanced</div>
+                            <div class="tech-badge">DHT22</div>
+                            <div class="tech-badge">LCD I2C</div>
+                            <div class="tech-badge">Libraries</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div><h2 class="no-margin">Was du lernst</h2></div>
+                    </div>
+                    <ul class="mt-40">
+                        <li><strong>DHT22 Sensor</strong> - Temperatur und Luftfeuchtigkeit messen</li>
+                        <li><strong>I2C LCD</strong> - 16x2 Display ansteuern mit nur 2 Datenpins</li>
+                        <li><strong>Arduino Libraries</strong> - DHT.h und LiquidCrystal_I2C.h</li>
+                        <li><strong>Schwellwert-Logik</strong> - Komfortzone mit LED-Anzeige</li>
+                    </ul>
+                    <div class="card card-dark mt-30">
+                        <h3>Komponenten</h3>
+                        <p>Arduino Uno, DHT22 Sensor, LCD 16x2 I2C, grüne LED, rote LED</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div><h2 class="no-margin">Schaltung</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Pin-Belegung</h3>
+                        <ul>
+                            <li><strong>D7</strong> - DHT22 Datenpin</li>
+                            <li><strong>A4</strong> - LCD SDA (I2C)</li>
+                            <li><strong>A5</strong> - LCD SCL (I2C)</li>
+                            <li><strong>D8</strong> - Grüne LED (Komfortzone)</li>
+                            <li><strong>D9</strong> - Rote LED (außerhalb)</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Libraries installieren</h3>
+                        <p>DHT sensor library, LiquidCrystal I2C (Frank de Brabander)</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Der Code</h2>
+                    <div class="code-block"><pre><code><span class="keyword">#include</span> <span class="string">&lt;DHT.h&gt;</span>
+<span class="keyword">#include</span> <span class="string">&lt;LiquidCrystal_I2C.h&gt;</span>
+
+DHT dht(<span class="number">7</span>, DHT22);
+LiquidCrystal_I2C lcd(<span class="number">0x27</span>, <span class="number">16</span>, <span class="number">2</span>);
+
+<span class="keyword">const float</span> TEMP_MIN = <span class="number">18.0</span>;
+<span class="keyword">const float</span> TEMP_MAX = <span class="number">25.0</span>;
+
+<span class="keyword">void</span> setup() {
+  dht.begin();
+  lcd.init();
+  lcd.backlight();
+  pinMode(<span class="number">8</span>, OUTPUT);  <span class="comment">// Grün</span>
+  pinMode(<span class="number">9</span>, OUTPUT);  <span class="comment">// Rot</span>
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="keyword">float</span> t = dht.readTemperature();
+  <span class="keyword">float</span> h = dht.readHumidity();
+
+  lcd.setCursor(<span class="number">0</span>, <span class="number">0</span>);
+  lcd.print(<span class="string">"Temp: "</span>); lcd.print(t);
+
+  <span class="keyword">if</span> (t >= TEMP_MIN && t <= TEMP_MAX) {
+    digitalWrite(<span class="number">8</span>, HIGH);
+    digitalWrite(<span class="number">9</span>, LOW);
+  } <span class="keyword">else</span> {
+    digitalWrite(<span class="number">8</span>, LOW);
+    digitalWrite(<span class="number">9</span>, HIGH);
+  }
+  delay(<span class="number">2000</span>);
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div><h2 class="no-margin">I2C Kommunikation</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-30">
+                        <h3>Vorteile von I2C</h3>
+                        <ul>
+                            <li>Nur 2 Leitungen: SDA (Daten) und SCL (Takt)</li>
+                            <li>Mehrere Geräte am gleichen Bus möglich</li>
+                            <li>Jedes Gerät hat eigene Adresse (LCD: 0x27)</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>I2C Scanner</h3>
+                        <p>Falls LCD-Adresse unbekannt: I2C Scanner Sketch verwenden!</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div><h2 class="no-margin">Komfortzone</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-30">
+                        <h3>Ideale Raumtemperatur</h3>
+                        <ul>
+                            <li><strong>18-25 C</strong> - Allgemeiner Komfortbereich</li>
+                            <li><strong>40-60%</strong> - Ideale Luftfeuchtigkeit</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Erweiterungsideen</h3>
+                        <ul>
+                            <li>Buzzer-Alarm bei extremen Werten</li>
+                            <li>Min/Max-Speicherung mit EEPROM</li>
+                            <li>Datenlogging auf SD-Karte</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#127777;</div>
+                        <h1>Geschafft!</h1>
+                        <p class="mt-30">Du hast ein Multi-Sensor Dashboard gebaut!</p>
+                        <div class="card card-dark mt-50" data-next="../A02_bewaesserung/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p>A02: Automatische Pflanzenbewässerung</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="controls">
+                <div class="navigation"><a href="../../advanced.html">Advanced</a></div>
+                <div class="controls-center">
+                    <span class="navigation">&larr; &rarr;</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">7</span></div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

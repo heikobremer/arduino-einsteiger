@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": -96.6, "attrs": {} },
+    { "type": "wokwi-ir-receiver", "id": "ir1", "top": -100, "left": 100, "attrs": {} },
+    { "type": "wokwi-ir-remote", "id": "remote1", "top": -100, "left": 220, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": -80, "left": -50, "attrs": { "color": "white" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": -10, "left": -60, "rotate": 90, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "ir1:VCC", "uno:5V", "red", [ "v48", "h-140" ] ],
+    [ "ir1:GND", "uno:GND.1", "black", [ "v105", "h-110" ] ],
+    [ "ir1:DAT", "uno:7", "green", [ "v58", "h-35" ] ],
+    [ "led1:A", "uno:9", "orange", [ "v0" ] ],
+    [ "led1:C", "r1:1", "black", [] ],
+    [ "r1:2", "uno:GND.2", "black", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B06: Piezo-Summer - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🔊</div>
+                        <h1>Piezo-Summer</h1>
+                        <p class="subtitle">Projekt B06 - Töne und Melodien erzeugen</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Beginner</div>
+                            <div class="tech-badge">tone()</div>
+                            <div class="tech-badge">Piezo</div>
+                            <div class="tech-badge">Frequenzen</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>tone() Funktion</strong> - Töne mit Frequenzen erzeugen</li>
+                        <li><strong>Noten und Frequenzen</strong> - Musiknoten als Zahlen</li>
+                        <li><strong>Melodien programmieren</strong> - Sequenzen von Tönen abspielen</li>
+                        <li><strong>Piezo-Buzzer</strong> - Passiver vs. aktiver Buzzer</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Grundlagen aus B01-B05 verstanden</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Theorie -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">Noten und Frequenzen</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Frequenztabelle (4. Oktave)</h4>
+                            <div style="font-size: 16px; margin-top: 10px;">
+                                <p><strong>C4</strong> = 262 Hz</p>
+                                <p><strong>D4</strong> = 294 Hz</p>
+                                <p><strong>E4</strong> = 330 Hz</p>
+                                <p><strong>F4</strong> = 349 Hz</p>
+                                <p><strong>G4</strong> = 392 Hz</p>
+                                <p><strong>A4</strong> = 440 Hz (Kammerton)</p>
+                                <p><strong>H4</strong> = 494 Hz</p>
+                                <p><strong>C5</strong> = 523 Hz</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4>Wie funktioniert ein Piezo?</h4>
+                            <p class="mt-10">Ein <strong>passiver Piezo</strong> wandelt elektrische Schwingungen in Schall um.</p>
+                            <ul class="mt-20" style="font-size: 16px;">
+                                <li>Frequenz = Tonhöhe</li>
+                                <li><code>tone(pin, freq)</code> erzeugt den Ton</li>
+                                <li><code>noTone(pin)</code> stoppt den Ton</li>
+                            </ul>
+                            <p class="mt-20" style="font-size: 14px;"><strong>Aktiver Buzzer:</strong> Erzeugt nur einen festen Ton bei HIGH. Wir nutzen passiv!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Code Einfacher Ton -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 1: Einzelner Ton</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 1: Einen Ton erzeugen</span>
+
+<span class="keyword">const int</span> BUZZER_PIN = <span class="number">9</span>;
+
+<span class="keyword">void</span> setup() {
+  pinMode(BUZZER_PIN, OUTPUT);
+
+  <span class="comment">// A4 (Kammerton) fuer 1 Sekunde spielen</span>
+  tone(BUZZER_PIN, <span class="number">440</span>);  <span class="comment">// 440 Hz = A4</span>
+  delay(<span class="number">1000</span>);
+  noTone(BUZZER_PIN);      <span class="comment">// Ton aus</span>
+
+  Serial.begin(<span class="number">9600</span>);
+  Serial.println(<span class="string">"Fertig!"</span>);
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="comment">// Leer</span>
+}</code></pre></div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Teste es!</h4>
+                        <p>Du solltest einen klaren Ton bei 440 Hz hören (A4, der Kammerton zum Stimmen).</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Code Tonleiter -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 2: Tonleiter spielen</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Schritt 2: C-Dur Tonleiter</span>
+
+<span class="keyword">const int</span> BUZZER_PIN = <span class="number">9</span>;
+
+<span class="comment">// Noten als Konstanten</span>
+<span class="keyword">#define</span> NOTE_C4 <span class="number">262</span>
+<span class="keyword">#define</span> NOTE_D4 <span class="number">294</span>
+<span class="keyword">#define</span> NOTE_E4 <span class="number">330</span>
+<span class="keyword">#define</span> NOTE_F4 <span class="number">349</span>
+<span class="keyword">#define</span> NOTE_G4 <span class="number">392</span>
+<span class="keyword">#define</span> NOTE_A4 <span class="number">440</span>
+<span class="keyword">#define</span> NOTE_B4 <span class="number">494</span>
+<span class="keyword">#define</span> NOTE_C5 <span class="number">523</span>
+
+<span class="keyword">int</span> tonleiter[] = {NOTE_C4, NOTE_D4, NOTE_E4, NOTE_F4,
+                   NOTE_G4, NOTE_A4, NOTE_B4, NOTE_C5};
+
+<span class="keyword">void</span> setup() {
+  pinMode(BUZZER_PIN, OUTPUT);
+
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < <span class="number">8</span>; i++) {
+    tone(BUZZER_PIN, tonleiter[i], <span class="number">300</span>);  <span class="comment">// 300ms</span>
+    delay(<span class="number">350</span>);  <span class="comment">// Kurze Pause zwischen Noten</span>
+  }
+}
+
+<span class="keyword">void</span> loop() { }</code></pre></div>
+                </div>
+
+                <!-- SLIDE 6: Code Melodie -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 3: Melodie programmieren</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Fertige Version: "Alle meine Entchen"</span>
+
+<span class="keyword">const int</span> BUZZER_PIN = <span class="number">9</span>;
+
+<span class="keyword">#define</span> C4 <span class="number">262</span>
+<span class="keyword">#define</span> D4 <span class="number">294</span>
+<span class="keyword">#define</span> E4 <span class="number">330</span>
+<span class="keyword">#define</span> F4 <span class="number">349</span>
+<span class="keyword">#define</span> G4 <span class="number">392</span>
+<span class="keyword">#define</span> A4 <span class="number">440</span>
+<span class="keyword">#define</span> P  <span class="number">0</span>  <span class="comment">// Pause</span>
+
+<span class="keyword">int</span> melodie[] = {C4,D4,E4,F4, G4,G4, A4,A4,A4,A4, G4,P};
+<span class="keyword">int</span> dauer[]   = {300,300,300,300, 600,600, 300,300,300,300, 1200,300};
+
+<span class="keyword">void</span> setup() {
+  pinMode(BUZZER_PIN, OUTPUT);
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < <span class="number">12</span>; i++) {
+    <span class="keyword">if</span> (melodie[i] == P) {
+      noTone(BUZZER_PIN);
+    } <span class="keyword">else</span> {
+      tone(BUZZER_PIN, melodie[i], dauer[i]);
+    }
+    delay(dauer[i] + <span class="number">30</span>);
+  }
+}
+
+<span class="keyword">void</span> loop() { }</code></pre></div>
+                </div>
+
+                <!-- SLIDE 7: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🔊</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du kannst jetzt Töne und Melodien erzeugen</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>tone()</h4>
+                                <p>Töne erzeugen</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Noten</h4>
+                                <p>Frequenztabelle nutzen</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Melodien</h4>
+                                <p>Sequenzen abspielen</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../B07_lcd_display/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p class="mt-10">B07: LCD 1602 Display - Text anzeigen mit I2C</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">7</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

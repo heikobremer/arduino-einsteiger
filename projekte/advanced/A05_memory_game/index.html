@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A05: Memory Game - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#127918;</div>
+                        <h1>Memory Game</h1>
+                        <p class="subtitle">Projekt A05 - Simon Says mit Arduino</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Advanced</div>
+                            <div class="tech-badge">4 LEDs</div>
+                            <div class="tech-badge">4 Buttons</div>
+                            <div class="tech-badge">Piezo</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div><h2 class="no-margin">Was du lernst</h2></div>
+                    </div>
+                    <ul class="mt-40">
+                        <li><strong>Arrays</strong> - Sequenzen speichern und verwalten</li>
+                        <li><strong>Spiellogik</strong> - Zustände und Übergänge programmieren</li>
+                        <li><strong>tone() Funktion</strong> - Töne mit dem Piezo erzeugen</li>
+                        <li><strong>Zufallszahlen</strong> - random() für Spielvariationen</li>
+                    </ul>
+                    <div class="card card-dark mt-30">
+                        <h3>Komponenten</h3>
+                        <p>Arduino Uno, 4x LEDs (rot, gelb, grün, blau), 4x Taster, Piezo-Summer</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div><h2 class="no-margin">Schaltung</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Pin-Belegung</h3>
+                        <ul>
+                            <li><strong>D2-D5</strong> - LEDs (rot, gelb, grün, blau)</li>
+                            <li><strong>D6-D9</strong> - Buttons (INPUT_PULLUP)</li>
+                            <li><strong>D10</strong> - Piezo-Summer</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Spielprinzip</h3>
+                        <p>Das Spiel zeigt eine Sequenz von LEDs. Der Spieler muss sie nachspielen. Jedes Level fügt ein Element hinzu!</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Der Code</h2>
+                    <div class="code-block"><pre><code><span class="keyword">const int</span> LED[] = {<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>};
+<span class="keyword">const int</span> BTN[] = {<span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>};
+<span class="keyword">const int</span> TONES[] = {<span class="number">262</span>, <span class="number">330</span>, <span class="number">392</span>, <span class="number">523</span>};
+<span class="keyword">int</span> sequence[<span class="number">20</span>];
+<span class="keyword">int</span> level = <span class="number">0</span>;
+
+<span class="keyword">void</span> showSequence() {
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < level; i++) {
+    <span class="keyword">int</span> led = sequence[i];
+    digitalWrite(LED[led], HIGH);
+    tone(<span class="number">10</span>, TONES[led], <span class="number">400</span>);
+    delay(<span class="number">500</span>);
+    digitalWrite(LED[led], LOW);
+    delay(<span class="number">200</span>);
+  }
+}
+
+<span class="keyword">void</span> addToSequence() {
+  sequence[level] = random(<span class="number">0</span>, <span class="number">4</span>);
+  level++;
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div><h2 class="no-margin">Spielablauf</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-30">
+                        <h3>Spielzyklus</h3>
+                        <ol>
+                            <li>Neues Element zur Sequenz hinzufügen</li>
+                            <li>Gesamte Sequenz mit LEDs und Tönen anzeigen</li>
+                            <li>Spieler drückt Buttons in richtiger Reihenfolge</li>
+                            <li>Richtig? Nächstes Level. Falsch? Game Over!</li>
+                        </ol>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Töne</h3>
+                        <p>Jede Farbe hat einen eigenen Ton: C (262Hz), E (330Hz), G (392Hz), C' (523Hz)</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div><h2 class="no-margin">Eingabe prüfen</h2></div>
+                    </div>
+                    <div class="code-block"><pre><code><span class="keyword">int</span> getButtonPress() {
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < <span class="number">4</span>; i++) {
+    <span class="keyword">if</span> (digitalRead(BTN[i]) == LOW) {
+      digitalWrite(LED[i], HIGH);
+      tone(<span class="number">10</span>, TONES[i], <span class="number">150</span>);
+      <span class="keyword">while</span> (digitalRead(BTN[i]) == LOW);
+      digitalWrite(LED[i], LOW);
+      <span class="keyword">return</span> i;
+    }
+  }
+  <span class="keyword">return</span> -<span class="number">1</span>;
+}
+
+<span class="comment">// In loop(): Eingabe vergleichen</span>
+<span class="keyword">if</span> (button == sequence[position]) {
+  position++;  <span class="comment">// Richtig!</span>
+} <span class="keyword">else</span> {
+  gameOver = <span class="keyword">true</span>;  <span class="comment">// Falsch!</span>
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">5</div>
+                        <div><h2 class="no-margin">Erweiterungen</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-30">
+                        <h3>Ideen</h3>
+                        <ul>
+                            <li>Highscore im EEPROM speichern</li>
+                            <li>Schwierigkeitsgrade (schneller, mehr LEDs)</li>
+                            <li>Zwei-Spieler-Modus</li>
+                            <li>LCD-Anzeige für Level und Punkte</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#127918;</div>
+                        <h1>Geschafft!</h1>
+                        <p class="mt-30">Du hast ein Memory Game programmiert!</p>
+                        <div class="card card-dark mt-50" data-next="../A06_binary_counter/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p>A06: Binary Counter</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="controls">
+                <div class="navigation"><a href="../../advanced.html">Advanced</a></div>
+                <div class="controls-center">
+                    <span class="navigation">&larr; &rarr;</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">8</span></div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

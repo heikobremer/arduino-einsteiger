@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I05: WS2812 NeoPixel - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <!-- SLIDE 1: Titel -->
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🌈</div>
+                        <h1>NeoPixel LEDs</h1>
+                        <p class="subtitle">Projekt I05 - WS2812 RGB-LED-Ring steuern</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Intermediate</div>
+                            <div class="tech-badge">WS2812</div>
+                            <div class="tech-badge">RGB</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Lernziele -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="badge">Lernziele</div>
+                            <h2 class="no-margin">Was du lernst</h2>
+                        </div>
+                    </div>
+
+                    <ul class="mt-40">
+                        <li><strong>Adressierbare LEDs</strong> - Jede LED im Ring einzeln ansteuern</li>
+                        <li><strong>FastLED Library</strong> - Die mächtige Bibliothek für LED-Strips</li>
+                        <li><strong>RGB-Farbmischung</strong> - 16 Millionen Farben aus Rot, Grün und Blau</li>
+                        <li><strong>Lichteffekte</strong> - Animationen wie Rainbow, Wipe und Lauflicht</li>
+                    </ul>
+
+                    <div class="card card-info mt-40">
+                        <h4>Voraussetzungen</h4>
+                        <p>Grundlagen der LED-Steuerung (B01-B03), Arrays und Schleifen verstanden</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Komponenten -->
+                <div class="slide">
+                    <h2>Komponenten</h2>
+                    <p class="subtitle">Der WS2812 NeoPixel Ring</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">💎</div>
+                            <h4>WS2812 LED-Ring (8 LEDs)</h4>
+                            <p>Jede LED enthält einen eigenen Controller-Chip. Alle LEDs werden über nur einen Datenpin gesteuert!</p>
+                            <p class="mt-10" style="font-size: 14px;"><strong>Betriebsspannung:</strong> 5V, ca. 60mA pro LED bei voller Helligkeit</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 36px;">🔌</div>
+                            <h4>Anschlüsse</h4>
+                            <ul style="font-size: 14px;">
+                                <li><strong>VCC:</strong> 5V Stromversorgung</li>
+                                <li><strong>GND:</strong> Masse</li>
+                                <li><strong>DIN:</strong> Data-In (vom Arduino)</li>
+                                <li><strong>DOUT:</strong> Data-Out (zum nächsten Ring)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Verkettung (Daisy Chain)</h4>
+                        <p>WS2812 LEDs können in Kette geschaltet werden: DOUT des ersten Rings an DIN des nächsten. So steuerst du hunderte LEDs mit nur einem Pin!</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Theorie -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="badge">Theorie</div>
+                            <h2 class="no-margin">RGB-Farbmodell und Timing</h2>
+                        </div>
+                    </div>
+
+                    <div class="grid-2 mt-30">
+                        <div>
+                            <h3>24-Bit Farben</h3>
+                            <ul class="mt-20">
+                                <li>Jede LED hat RGB-Werte: 0-255</li>
+                                <li><strong>Rot:</strong> 8 Bit = 256 Stufen</li>
+                                <li><strong>Grün:</strong> 8 Bit = 256 Stufen</li>
+                                <li><strong>Blau:</strong> 8 Bit = 256 Stufen</li>
+                                <li>256 x 256 x 256 = <strong>16.7 Mio Farben</strong></li>
+                            </ul>
+
+                            <h3 class="mt-30">Das Timing-Protokoll</h3>
+                            <p class="mt-10">WS2812 nutzt ein spezielles 800kHz Signal. Die FastLED Library kümmert sich um das präzise Timing!</p>
+                        </div>
+                        <div class="card">
+                            <h4>Farbbeispiele</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 14px;">
+CRGB::Red     = (255,   0,   0)
+CRGB::Green   = (  0, 255,   0)
+CRGB::Blue    = (  0,   0, 255)
+CRGB::Yellow  = (255, 255,   0)
+CRGB::Magenta = (255,   0, 255)
+CRGB::Cyan    = (  0, 255, 255)
+CRGB::White   = (255, 255, 255)
+CRGB::Black   = (  0,   0,   0)
+            </pre></div>
+                            <p class="mt-20" style="font-size: 14px;"><strong>Tipp:</strong> Mit <code>CRGB(r, g, b)</code> kannst du eigene Farben mischen!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: Schaltplan -->
+                <div class="slide">
+                    <h2>Schaltplan</h2>
+                    <p class="subtitle">Einfache Verkabelung mit nur 3 Leitungen</p>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Wokwi-Aufbau</h4>
+                            <div class="code-block" style="background: #f5f5f7; color: #1d1d1f; margin-top: 10px;"><pre style="font-family: monospace; font-size: 14px;">
+     Arduino Uno          NeoPixel Ring
+    ┌─────────────┐      ┌───────────┐
+    │             │      │  (8 LEDs) │
+    │  Pin 7  ────┼──────┼─▶ DIN     │
+    │             │      │           │
+    │  5V    ─────┼──────┼── VCC     │
+    │             │      │           │
+    │  GND   ─────┼──────┼── GND     │
+    │             │      │           │
+    └─────────────┘      │    DOUT ──┼─▶ ...
+                         └───────────┘
+            </pre></div>
+                        </div>
+                        <div class="card card-info">
+                            <h4>Wichtige Verbindungen</h4>
+                            <ul class="mt-20">
+                                <li><strong>Arduino Pin 7</strong> → Ring DIN</li>
+                                <li><strong>Arduino 5V</strong> → Ring VCC</li>
+                                <li><strong>Arduino GND</strong> → Ring GND</li>
+                            </ul>
+
+                            <h4 class="mt-30">Hinweis zur Stromversorgung</h4>
+                            <p style="font-size: 14px;">Bei mehr als 8 LEDs: Externe 5V-Versorgung verwenden! Der Arduino-USB liefert nur ca. 500mA.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Code Setup -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 1: Setup mit FastLED</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="keyword">#include</span> <span class="string">&lt;FastLED.h&gt;</span>
+
+<span class="comment">// NeoPixel-Ring an Pin 7 mit 8 LEDs</span>
+<span class="keyword">#define</span> DATA_PIN <span class="number">7</span>
+<span class="keyword">#define</span> NUM_LEDS <span class="number">8</span>
+
+<span class="comment">// Array für alle LED-Farben</span>
+CRGB leds[NUM_LEDS];
+
+<span class="keyword">void</span> setup() {
+  Serial.begin(<span class="number">9600</span>);
+
+  <span class="comment">// FastLED initialisieren: Chip-Typ, Pin, Farbreihenfolge</span>
+  FastLED.addLeds&lt;WS2812, DATA_PIN, GRB&gt;(leds, NUM_LEDS);
+  FastLED.setBrightness(<span class="number">128</span>);  <span class="comment">// 50% Helligkeit (0-255)</span>
+
+  Serial.println(<span class="string">"NeoPixel Ring bereit!"</span>);
+}</code></pre></div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>Erklärung</h4>
+                            <ul style="font-size: 16px;">
+                                <li><code>CRGB leds[]</code> - Array speichert Farbe jeder LED</li>
+                                <li><code>addLeds&lt;WS2812&gt;</code> - Chip-Typ festlegen</li>
+                                <li><code>GRB</code> - Farbreihenfolge (WS2812 Standard)</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h4>Helligkeit</h4>
+                            <p style="font-size: 14px;"><code>setBrightness(128)</code> begrenzt auf 50%. Spart Strom und schont die Augen beim Testen!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Code Grundfunktionen -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 2: Grundfunktionen</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Alle LEDs ausschalten</span>
+<span class="keyword">void</span> clearAll() {
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < NUM_LEDS; i++) {
+    leds[i] = CRGB::Black;
+  }
+  FastLED.show();  <span class="comment">// WICHTIG: Änderungen übertragen!</span>
+}
+
+<span class="comment">// Alle LEDs auf eine Farbe setzen</span>
+<span class="keyword">void</span> setAll(CRGB color) {
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < NUM_LEDS; i++) {
+    leds[i] = color;
+  }
+  FastLED.show();
+}
+
+<span class="comment">// Color Wipe: LEDs nacheinander füllen</span>
+<span class="keyword">void</span> colorWipe(CRGB color, <span class="keyword">int</span> wait) {
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < NUM_LEDS; i++) {
+    leds[i] = color;
+    FastLED.show();
+    delay(wait);
+  }
+}</code></pre></div>
+
+                    <div class="card card-info mt-30">
+                        <h4>Wichtig: FastLED.show()</h4>
+                        <p>Änderungen am <code>leds[]</code> Array werden erst sichtbar, wenn du <code>FastLED.show()</code> aufrufst! Das ermöglicht komplexe Animationen vorzubereiten.</p>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Code Effekte -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="badge">Code</div>
+                            <h2 class="no-margin">Schritt 3: Regenbogen-Effekt</h2>
+                        </div>
+                    </div>
+
+                    <div class="code-block"><pre><code><span class="comment">// Regenbogen-Zyklus über alle LEDs</span>
+<span class="keyword">void</span> rainbowCycle(<span class="keyword">int</span> wait) {
+  <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j < <span class="number">256</span>; j++) {  <span class="comment">// 256 Farbphasen</span>
+    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < NUM_LEDS; i++) {
+      <span class="comment">// Position im Farbkreis berechnen</span>
+      <span class="keyword">int</span> pos = (i * <span class="number">256</span> / NUM_LEDS + j) & <span class="number">255</span>;
+      leds[i] = CHSV(pos, <span class="number">255</span>, <span class="number">255</span>);  <span class="comment">// HSV-Farbe</span>
+    }
+    FastLED.show();
+    delay(wait);
+  }
+}
+
+<span class="keyword">void</span> loop() {
+  colorWipe(CRGB::Red, <span class="number">100</span>);   <span class="comment">// Rot füllen</span>
+  colorWipe(CRGB::Green, <span class="number">100</span>); <span class="comment">// Grün füllen</span>
+  colorWipe(CRGB::Blue, <span class="number">100</span>);  <span class="comment">// Blau füllen</span>
+  rainbowCycle(<span class="number">20</span>);            <span class="comment">// Regenbogen</span>
+}</code></pre></div>
+
+                    <div class="grid-2 mt-30">
+                        <div class="card">
+                            <h4>CHSV vs CRGB</h4>
+                            <ul style="font-size: 14px;">
+                                <li><code>CRGB(r, g, b)</code> - Rot, Grün, Blau</li>
+                                <li><code>CHSV(h, s, v)</code> - Farbton, Sättigung, Helligkeit</li>
+                            </ul>
+                            <p class="mt-10" style="font-size: 14px;">HSV ist ideal für Farbübergänge!</p>
+                        </div>
+                        <div class="card">
+                            <h4>Der Farbkreis</h4>
+                            <p style="font-size: 14px;">Hue (H) von 0-255: Rot → Gelb → Grün → Cyan → Blau → Magenta → Rot</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: Wokwi Demo -->
+                <div class="slide">
+                    <h2>Ausprobieren</h2>
+                    <p class="subtitle">Simulation in Wokwi</p>
+
+                    <div class="center mt-40">
+                        <div class="card card-dark">
+                            <h3>Wokwi Projekt</h3>
+                            <p class="mt-20">Erstelle ein neues Projekt mit Arduino Uno und NeoPixel Ring:</p>
+                            <div class="mt-30">
+                                <a href="https://wokwi.com/projects/new/arduino-uno" target="_blank" style="color: #0071e3; font-size: 20px; text-decoration: none;">
+                                    Neues Arduino-Projekt in Wokwi →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-info mt-40">
+                        <h4>So testest du</h4>
+                        <ul>
+                            <li>Klicke (+) → Suche "neopixel" → NeoPixel Ring hinzufügen</li>
+                            <li>Klicke auf den Ring → setze "pixels" auf 8</li>
+                            <li>Verbinde: VCC→5V, GND→GND, DIN→Pin 7</li>
+                            <li>Kopiere den Code und klicke Play!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Challenges -->
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="badge">Challenges</div>
+                            <h2 class="no-margin">Erweiterungen</h2>
+                        </div>
+                    </div>
+
+                    <p class="subtitle">Probiere diese Aufgaben aus</p>
+
+                    <div class="grid-2 mt-40">
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🔥</div>
+                            <h4>Challenge 1: Feuer-Effekt</h4>
+                            <p>Simuliere ein flackerndes Feuer oder eine Kerze mit zufälligen Orange/Rot-Tönen.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🎨</div>
+                            <h4>Challenge 2: Poti-Farbsteuerung</h4>
+                            <p>Ein Potentiometer steuert den Farbton (Hue) aller LEDs. Drehen = Farbwechsel!</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🚗</div>
+                            <h4>Challenge 3: Knight Rider</h4>
+                            <p>Ein Lauflicht das hin und her wandert - wie beim berühmten Serien-Auto K.I.T.T.</p>
+                        </div>
+                        <div class="card">
+                            <div class="emoji" style="font-size: 32px;">🎮</div>
+                            <h4>Challenge 4: Reaktionsspiel</h4>
+                            <p>Drücke den Taster genau wenn eine bestimmte LED leuchtet. Miss deine Reaktionszeit!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Zusammenfassung -->
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">🌈</div>
+                        <h1>Geschafft!</h1>
+                        <p class="subtitle">Du beherrschst jetzt adressierbare RGB-LEDs</p>
+
+                        <div class="grid-3 mt-50">
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>FastLED</h4>
+                                <p>Library eingebunden und konfiguriert</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>CRGB Array</h4>
+                                <p>Einzelne LEDs angesteuert</p>
+                            </div>
+                            <div class="card">
+                                <div class="emoji" style="font-size: 32px;">✅</div>
+                                <h4>Effekte</h4>
+                                <p>Animationen programmiert</p>
+                            </div>
+                        </div>
+
+                        <div class="card card-dark mt-50" data-next="../I06_rtc/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p class="mt-10">I06: Echtzeituhr (RTC) - Uhrzeit und Datum mit DS1307/DS3231</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="controls">
+                <div class="navigation">
+                    <a href="../../index.html">Projekte</a>
+                </div>
+                <div class="controls-center">
+                    <span class="navigation">← →</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">11</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

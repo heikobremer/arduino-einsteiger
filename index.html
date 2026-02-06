@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arduino für Einsteiger - Arduino C++ Kurs</title>
+    <link rel="stylesheet" href="presentation_framework/styles.css">
+    <style>
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-top: 50px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .nav-card {
+            background: #f5f5f7;
+            border-radius: 20px;
+            padding: 36px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: block;
+            text-align: center;
+        }
+        .nav-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+        }
+        .nav-card .emoji {
+            font-size: 56px;
+            margin-bottom: 12px;
+        }
+        .nav-card h3 {
+            margin: 0 0 8px 0;
+            color: #1d1d1f;
+            font-size: 24px;
+        }
+        .nav-card p {
+            font-size: 15px;
+            color: #515154;
+            margin: 0;
+        }
+        .nav-card .count {
+            display: inline-block;
+            background: rgba(0,0,0,0.08);
+            padding: 4px 14px;
+            border-radius: 14px;
+            font-size: 13px;
+            margin-top: 14px;
+            font-weight: 500;
+        }
+        .nav-card.theorie {
+            background: linear-gradient(135deg, #e8e8ed 0%, #d2d2d7 100%);
+        }
+        .nav-card.projekte {
+            background: linear-gradient(135deg, #0071e3 0%, #005bb5 100%);
+            color: white;
+        }
+        .nav-card.projekte h3, .nav-card.projekte p { color: white; }
+        .nav-card.projekte .count { background: rgba(255,255,255,0.2); color: white; }
+        .nav-card.ressourcen {
+            background: linear-gradient(135deg, #f5f5f7 0%, #e8e8ed 100%);
+        }
+        .nav-card.schnellstart {
+            background: linear-gradient(135deg, #34c759 0%, #28a745 100%);
+            color: white;
+        }
+        .nav-card.schnellstart h3, .nav-card.schnellstart p { color: white; }
+        .nav-card.schnellstart .count { background: rgba(255,255,255,0.2); color: white; }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container" style="height: auto; min-height: 90vh;">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper" style="padding-bottom: 40px;">
+
+                <div class="center" style="margin-top: 40px;">
+                    <div class="emoji" style="font-size: 64px;">🚀</div>
+                    <h1>Arduino für Einsteiger</h1>
+                    <p class="subtitle">Arduino C++ mit Arduino Uno</p>
+                </div>
+
+                <div class="nav-grid">
+                    <a href="grundlagen.html" class="nav-card theorie">
+                        <div class="emoji">📘</div>
+                        <h3>Grundlagen</h3>
+                        <p>Theorie-Module zu Hardware, Tools und Elektronik</p>
+                        <span class="count">5 Module</span>
+                    </a>
+                    <a href="projekte/index.html" class="nav-card projekte">
+                        <div class="emoji">📦</div>
+                        <h3>Projekte</h3>
+                        <p>Praktische Projekte von Beginner bis Advanced</p>
+                        <span class="count">24 Projekte</span>
+                    </a>
+                    <a href="schnellzugriff.html" class="nav-card ressourcen">
+                        <div class="emoji">🔗</div>
+                        <h3>Ressourcen</h3>
+                        <p>Tools, Dokumentation und externe Links</p>
+                        <span class="count">Schnellzugriff</span>
+                    </a>
+                    <a href="projekte/beginner/B01_led_blink/index.html" class="nav-card schnellstart">
+                        <div class="emoji">💡</div>
+                        <h3>Schnellstart</h3>
+                        <p>Direkt zum ersten Projekt: LED Blinken</p>
+                        <span class="count">Los geht's!</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

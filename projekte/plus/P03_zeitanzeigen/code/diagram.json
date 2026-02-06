@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 300, "left": 200, "attrs": {} },
+    { "type": "wokwi-tm1637-7segment", "id": "tm1637", "top": 50, "left": 400, "attrs": {} },
+    { "type": "wokwi-ds1307", "id": "rtc1", "top": 150, "left": 450, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht1", "top": 250, "left": 480, "attrs": {} },
+    { "type": "wokwi-led-ring", "id": "ring_temp", "top": 30, "left": -100, "attrs": { "pixels": "10" } },
+    { "type": "wokwi-led-ring", "id": "ring_humid", "top": 200, "left": -100, "attrs": { "pixels": "10" } }
+  ],
+  "connections": [
+    [ "tm1637:CLK", "uno:2", "green", [ "h0", "v200", "h-180" ] ],
+    [ "tm1637:DIO", "uno:3", "blue", [ "h10", "v190", "h-190" ] ],
+    [ "tm1637:VCC", "uno:5V", "red", [ "h20", "v180", "h-200" ] ],
+    [ "tm1637:GND", "uno:GND.1", "black", [ "h30", "v170", "h-210" ] ],
+
+    [ "rtc1:SDA", "uno:A4", "purple", [ "h0", "v100", "h-180" ] ],
+    [ "rtc1:SCL", "uno:A5", "violet", [ "h10", "v90", "h-190" ] ],
+    [ "rtc1:VCC", "uno:5V", "red", [ "h20", "v80", "h-200" ] ],
+    [ "rtc1:GND", "uno:GND.1", "black", [ "h30", "v70", "h-210" ] ],
+
+    [ "dht1:SDA", "uno:4", "green", [ "h0", "v10", "h-240" ] ],
+    [ "dht1:VCC", "uno:5V", "red", [ "h10", "v20", "h-250" ] ],
+    [ "dht1:GND", "uno:GND.2", "black", [ "h20", "v30", "h-260" ] ],
+
+    [ "ring_temp:DIN", "uno:5", "orange", [ "h-30", "v250", "h280" ] ],
+    [ "ring_temp:VCC", "uno:5V", "red", [ "h-40", "v260", "h300" ] ],
+    [ "ring_temp:GND", "uno:GND.2", "black", [ "h-50", "v270", "h320" ] ],
+
+    [ "ring_humid:DIN", "uno:6", "cyan", [ "h-30", "v170", "h280" ] ],
+    [ "ring_humid:VCC", "uno:5V", "red", [ "h-40", "v180", "h300" ] ],
+    [ "ring_humid:GND", "uno:GND.2", "black", [ "h-50", "v190", "h320" ] ]
+  ],
+  "dependencies": {}
+}

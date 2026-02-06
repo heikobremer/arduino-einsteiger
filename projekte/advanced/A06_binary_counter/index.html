@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A06: Binary Counter - Arduino für Einsteiger</title>
+    <link rel="stylesheet" href="../../../presentation_framework/styles.css">
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-container">
+            <img src="https://sqlmore.de/images/SQLmore.png" alt="Logo" class="logo">
+
+            <div class="slide-content-wrapper">
+
+                <div class="slide active">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#128290;</div>
+                        <h1>Binary Counter</h1>
+                        <p class="subtitle">Projekt A06 - 8-Bit Binärzähler mit LEDs</p>
+                        <div class="tech-stack center mt-30">
+                            <div class="tech-badge">Advanced</div>
+                            <div class="tech-badge">8 LEDs</div>
+                            <div class="tech-badge">3 Buttons</div>
+                            <div class="tech-badge">Bit-Ops</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">1</div>
+                        <div><h2 class="no-margin">Was du lernst</h2></div>
+                    </div>
+                    <ul class="mt-40">
+                        <li><strong>Binärsystem</strong> - Zahlen als Bits verstehen</li>
+                        <li><strong>Bit-Operationen</strong> - Shift und AND verwenden</li>
+                        <li><strong>byte Datentyp</strong> - 8-Bit Wertebereich (0-255)</li>
+                        <li><strong>Überlauf</strong> - Was passiert bei 255+1?</li>
+                    </ul>
+                    <div class="card card-dark mt-30">
+                        <h3>Komponenten</h3>
+                        <p>Arduino Uno, 8 LEDs (verschiedene Farben), 3 Taster</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">2</div>
+                        <div><h2 class="no-margin">Schaltung</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>Pin-Belegung</h3>
+                        <ul>
+                            <li><strong>D2-D9</strong> - 8 LEDs (Bit 0 bis Bit 7)</li>
+                            <li><strong>D10</strong> - Button UP (hochzählen)</li>
+                            <li><strong>D11</strong> - Button DOWN (runterzählen)</li>
+                            <li><strong>D12</strong> - Button RESET (auf 0 setzen)</li>
+                        </ul>
+                    </div>
+                    <div class="card card-info mt-20">
+                        <h3>Binär visualisiert</h3>
+                        <p>LED an = 1, LED aus = 0. Von rechts nach links: 1, 2, 4, 8, 16, 32, 64, 128</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <h2>Der Code</h2>
+                    <div class="code-block"><pre><code><span class="keyword">const int</span> LED[] = {<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>};
+<span class="keyword">byte</span> counter = <span class="number">0</span>;
+
+<span class="keyword">void</span> displayValue() {
+  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i < <span class="number">8</span>; i++) {
+    <span class="comment">// Bit i extrahieren</span>
+    <span class="keyword">bool</span> bit = (counter >> i) & <span class="number">1</span>;
+    digitalWrite(LED[i], bit);
+  }
+}
+
+<span class="keyword">void</span> loop() {
+  <span class="keyword">if</span> (digitalRead(<span class="number">10</span>) == LOW) {
+    counter++;  <span class="comment">// 255 + 1 = 0 (Überlauf)</span>
+    displayValue();
+    delay(<span class="number">150</span>);
+  }
+  <span class="keyword">if</span> (digitalRead(<span class="number">11</span>) == LOW) {
+    counter--;  <span class="comment">// 0 - 1 = 255 (Unterlauf)</span>
+    displayValue();
+    delay(<span class="number">150</span>);
+  }
+}</code></pre></div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">3</div>
+                        <div><h2 class="no-margin">Bit-Operationen</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-30">
+                        <h3>Shift-Operator (>>)</h3>
+                        <p>counter >> i verschiebt alle Bits um i Positionen nach rechts</p>
+                        <p>Beispiel: 42 (00101010) >> 1 = 21 (00010101)</p>
+                    </div>
+                    <div class="card card-neutral mt-20">
+                        <h3>AND-Operator (&)</h3>
+                        <p>& 1 extrahiert das niederwertigste Bit</p>
+                        <p>Beispiel: 42 (00101010) & 1 = 0</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="phase-header">
+                        <div class="phase-number">4</div>
+                        <div><h2 class="no-margin">Zahlensysteme</h2></div>
+                    </div>
+                    <div class="card card-neutral mt-30">
+                        <h3>Beispiele</h3>
+                        <table style="width:100%; text-align:left;">
+                            <tr><th>Dezimal</th><th>Binär</th><th>Hex</th></tr>
+                            <tr><td>0</td><td>0000 0000</td><td>0x00</td></tr>
+                            <tr><td>15</td><td>0000 1111</td><td>0x0F</td></tr>
+                            <tr><td>42</td><td>0010 1010</td><td>0x2A</td></tr>
+                            <tr><td>255</td><td>1111 1111</td><td>0xFF</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <div class="center mt-10vh">
+                        <div class="emoji">&#128290;</div>
+                        <h1>Geschafft!</h1>
+                        <p class="mt-30">Du verstehst jetzt das Binärsystem!</p>
+                        <div class="card card-dark mt-50" data-next="../A07_light_theremin/index.html">
+                            <h3>Nächstes Projekt</h3>
+                            <p>A07: Light Theremin</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="controls">
+                <div class="navigation"><a href="../../advanced.html">Advanced</a></div>
+                <div class="controls-center">
+                    <span class="navigation">&larr; &rarr;</span>
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="slide-number"><span class="current">1</span> / <span class="total">7</span></div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../presentation_framework/script.js"></script>
+</body>
+</html>

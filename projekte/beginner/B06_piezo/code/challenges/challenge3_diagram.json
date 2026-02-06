@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": -96.6, "attrs": {} },
+    { "type": "wokwi-buzzer", "id": "buzzer1", "top": -100, "left": 140, "attrs": {} },
+    { "type": "wokwi-photoresistor-sensor", "id": "ldr1", "top": -130, "left": -80, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": -150, "left": 60, "attrs": { "color": "red" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": -76.8, "left": 3.8, "rotate": 270, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "uno:9", "buzzer1:1", "purple", [ "v-58", "h140" ] ],
+    [ "buzzer1:2", "uno:GND.1", "black", [ "v105", "h-149" ] ],
+    [ "ldr1:VCC", "uno:5V", "red", [ "v108", "h-40" ] ],
+    [ "ldr1:GND", "uno:GND.2", "black", [ "v78", "h20" ] ],
+    [ "ldr1:AO", "uno:A0", "green", [ "v88", "h60" ] ],
+    [ "uno:7", "r1:1", "red", [ "v-48", "h-48" ] ],
+    [ "r1:2", "led1:A", "red", [ "v0" ] ],
+    [ "led1:C", "uno:GND.1", "black", [ "h-114", "v156" ] ]
+  ],
+  "dependencies": {}
+}
