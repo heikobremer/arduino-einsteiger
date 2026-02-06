@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/arduino.avr.uno/challenge4_zaehler.ino.hex'
+elf = 'build/arduino.avr.uno/challenge4_zaehler.ino.elf'

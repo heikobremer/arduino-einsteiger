@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "author": "Bremer",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 48.6, "left": -96.6, "attrs": {} },
+    { "type": "wokwi-buzzer", "id": "buzzer1", "top": -100, "left": 80, "attrs": {} }
+  ],
+  "connections": [
+    [ "uno:9", "buzzer1:1", "green", [ "v-58", "h80" ] ],
+    [ "buzzer1:2", "uno:GND.1", "black", [ "v105", "h-89" ] ]
+  ],
+  "dependencies": {}
+}
